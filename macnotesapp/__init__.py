@@ -86,9 +86,13 @@ class NotesApp:
             matches.extend([Note(account, id_) for id_ in set(all_matches[account])])
         return matches
 
+    def activate(self):
+        """Activate Notes.app"""
+        run_script("notesActivate")
+
     def quit(self):
         """Quit Notes.app"""
-        return run_script("notesQuit")
+        run_script("notesQuit")
 
     def __len__(self):
         """Return count of notes"""

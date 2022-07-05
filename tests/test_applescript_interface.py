@@ -100,6 +100,11 @@ def test_notes_quit(notes):
     assert prompt("Did Notes.app quit?")
 
 
+def test_notes_activate(notes):
+    notes.activate()
+    assert prompt("Did Notes.app activate?")
+
+
 ##### Test Account #####
 
 
@@ -120,17 +125,28 @@ def test_account(notes):
         f"\nPlease type a name of a note to search for in account {account_name}: "
     )
     matches = account.find_notes(name=name)
-    assert prompt(f"Found {len(matches)} matching notes. Is this correct?")
+    assert prompt(
+        f"Found {len(matches)} matching note(s) with text '{name}' in name:\n"
+        f"{chr(10).join([f'- {note.name}' for note in matches])}.\n\nIs this correct?"
+    )
+
     text = input(
         f"\nPlease type a text of a note to search for in account {account_name}: "
     )
     matches = account.find_notes(text=text)
-    assert prompt(f"Found {len(matches)} matching notes. Is this correct?")
+    assert prompt(
+        f"Found {len(matches)} matching note(s) with text '{text}' in body:\n"
+        f"{chr(10).join([f'- {note.name}' for note in matches])}.\n\nIs this correct?"
+    )
+
     text = input(
         f"\nPlease type a text of a note to search both name and body for in account {account_name}: "
     )
-    matches = account.find_notes(text=text)
-    assert prompt(f"Found {len(matches)} matching notes. Is this correct?")
+    matches = account.find_notes(name=text, text=text)
+    assert prompt(
+        f"Found {len(matches)} matching note(s) with text '{text}' in body:\n"
+        f"{chr(10).join([f'- {note.name}' for note in matches])}.\n\nIs this correct?"
+    )
 
     assert prompt(
         f"After you press 'y' and Enter, Notes.app will show account {account_name}."

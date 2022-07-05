@@ -1,8 +1,25 @@
 (********* AppleScript for macnotesapp  *********)
 
+(*
+Note: the AppleScript interface for Notes on Catalina (10.15.x) is pretty buggy.  
+
+See for example:
+- https://talk.automators.fm/t/applescript-error-catalina/5880/7
+- https://hookproductivity.com/help/integration/using-hook-with-apple-notes/hook-and-macos-10-15-catalina-notes-app/
+
+Unfortanately, my Mac runs Catalina and so I can't fully develop this until I upgrade. I've done the best I can to work around some of these bugs so some of the methods are a little hacky but they do work.
+*)
+
 property WAIT_FOR_SCRIPT : 0.05
 
 (******** NotesApp Class *********)
+
+on notesActivate()
+	(* Quit Notes *)
+	tell application "Notes"
+		activate
+	end tell
+end notesActivate
 
 on notesQuit()
 	(* Quit Notes *)
@@ -120,34 +137,6 @@ on notesFindWithText(noteText)
 	end tell
 	return notesResults
 end notesFindWithText
-
-(*
-on notes_get_selected()
-	tell application "Notes"
-		if ((count of windows) = 1) or (name of window 1 is "Notes") then
-			if "4.7" ≤ its version then -- `selection` property not compatible before MacOS 10.15
-				if (count of selection) = 1 then
-					set noteID to «class seld» of (selection as record)
-					set noteContainerID to «class seld» of ((container of note id noteID) as record)
-					set selectedNoteName to name of note id noteID
-					set selectedNoteFolderName to name of (first folder whose id is noteContainerID)
-				else
-					-- multiple notes selected
-					return ""
-				end if
-			end if
-			--tell application "System Events" to tell application process "Notes"
-			--click menu item "Float Selected Note" of menu "Window" of menu bar 1
-			--end tell
-			--delay 0.05
-		end if
-		-- get name of window 1 as string
-	end tell
-	
-	return {note_Name:selectedNoteName, folder_Name:selectedNoteFolderName}
-end notes_get_selected
-*)
-
 
 on notesGetDefaultAccount()
 	(* Get name of default account *)
@@ -348,10 +337,8 @@ on folderGetCount(accountName, folderID)
 	return count of folderNotes
 end folderGetCount
 
-*)
 
-(*
-	--Does not appear to work on Catalina if in subfolder so defer to later when I have access to Big Sur+ 
+--Does not appear to work on Catalina if in subfolder so defer to later when I have access to Big Sur+ 
 
 on folderGetContainer(accountName, folderID)
 	(* Get parent folder for folder *)
@@ -362,6 +349,7 @@ on folderGetContainer(accountName, folderID)
 		end tell
 	end tell
 end folderGetContainer
+
 *)
 
 (********** Account Class *********)
@@ -453,7 +441,7 @@ on accountFindWithText(accountName, noteText)
 end accountFindWithText
 
 on accountName(accountName)
-	(* name of account *)
+	(* Get name of account *)
 	tell application "Notes"
 		tell account accountName
 			return its name
@@ -472,85 +460,3 @@ end accountID
 
 (********** Test **********)
 
---notes_all_notes()
---notes_count()
-
---set noteid to "x-coredata://BA47E88C-3599-48BE-88DD-5CBC118E9CE6/ICNote/p857"
---note_get_name(noteid)
---note_get_container(noteid)
---notes_get_selected()
---note_get_body(noteid)
---note_get_plaintext(noteid)
---note_get_modification_date(noteid)
---note_get_password_protected(noteid)
-
---set noteid to "x-coredata://BA47E88C-3599-48BE-88DD-5CBC118E9CE6/ICNote/p665"
---set account_ to notes_get_default_account()
---set folder_ to account_get_default_folder(account_)
---notes_get_accounts()
---notes_create_note("Notes", "Test", "Hello World")
---notes_create_note_with_account(account_, folder_, "Test", "Hello World")
---account_get_default_folder("iCloud")
-
---accountAllNotes("Google")
---accountGetDefaultFolder("Google")
---notesGetDefaultAccount()
-
---notesGetAccounts()
---notesGetSelected()
---notesCreateNoteWithAccount("Google", "Notes", "Hello", "World")
---notesCreateNote("Hello", "Cruel World")
---accountCount("iCloud")
---notesGetCount()
---notesGetAllNotes()
---noteGetName("Google", "x-coredata://19B82A76-B3FE-4427-9C5E-5107C1E3CA57/IMAPNote/p3")
---noteGetContainer("Google", "x-coredata://19B82A76-B3FE-4427-9C5E-5107C1E3CA57/IMAPNote/p3")
---set theNotes to notesGetSelected()
---set theNote to item 1 of theNotes
---set theAccount to noteGetAccount(theNote)
---noteGetContainer(theAccount, theNote)
---notesGetSelected()
-(*
-tell application "Notes"
-	tell account "Google"
-		set noteID to "x-coredata://19B82A76-B3FE-4427-9C5E-5107C1E3CA57/IMAPNote/p5"
-		set noteRecord to note id noteID
-	end tell
-end tell
-*)
-
---set firstNote to item 1 of notesGetSelected()
---set accountName to item 1 of firstNote
---set noteID to item 2 of firstNote
---set folderID to noteGetContainer(accountName, noteID)
---folderGetCount(accountName, folderID)
-
-
---noteGetContainer(accountName, noteID)
---folderGetName(accountName, folderID)
---set parentID to folderGetContainer(accountName, folderID)
---folderGetName(accountName, parentID)
---noteGetBody(accountName, noteID)
---noteGetName(accountName, noteID)
---noteGetPlainText(accountName, noteID)
---noteGetCreationDate(accountName, noteID)
---noteGetModificationDate(accountName, noteID)
---noteGetPasswordProtected(accountName, noteID)
-(*
-set allNotes to notesGetAllNotes()
-repeat with noteRecord in allNotes
-	accountName = item 1 of noteRecord
-	noteID = item 2 of noteRecord
-	set pw to noteGetPasswordProtected(accountName, noteID)
-	if pw = true then
-		return noteGetName(accountName, noteID)
-	end if
-end repeat
-*)
---notesGetSelected()
---notesFindWithName("sunrise")
-
---noteShow("iCloud", "x-coredata://BA47E88C-3599-48BE-88DD-5CBC118E9CE6/ICNote/p661")
-
---accountName("iCloud")
---accountID("iCloud")
