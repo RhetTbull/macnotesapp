@@ -160,6 +160,24 @@ class Account:
         # return Note objects
         return [Note(self._account, id_) for id_ in set(all_matches)]
 
+    def make_note(self, name: str, body: str, folder: Optional[str] = None) -> "Note":
+        """Create new note
+
+        Args:
+            name: name of note
+            body: body of note (plaintext or HTML)
+            folder: create note in folder; if None, uses default folder for account
+        """
+        folder = folder or self.default_folder
+        account = self._account
+        if noteid := run_script(
+            "notesMakeNoteWithAccount", account, folder, name, body
+        ):
+            return Note(account, noteid)
+        raise AppleScriptError(
+            f"Could not create note '{name}' with body '{body}' in folder '{folder}' of account '{account}'"
+        )
+
     def _run_script(self, script, *args):
         return run_script(script, self._account, *args)
 

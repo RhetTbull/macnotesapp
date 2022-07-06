@@ -95,6 +95,15 @@ def test_notes_find_notes_name_and_body(notes):
     )
 
 
+def test_notes_make_note(notes):
+    """Test NotesApp.make_note"""
+    print("This test will make a new note in the default account.")
+    name = input("\nPlease type name of note to make: ")
+    body = input("\nPlease type body of note to make: ")
+    note = notes.make_note(name=name, body=body)
+    assert prompt(f"Was a new note named '{name}' created in default account?")
+
+
 def test_notes_quit(notes):
     notes.quit()
     assert prompt("Did Notes.app quit?")
@@ -153,6 +162,35 @@ def test_account(notes):
     )
     account.show()
     assert prompt(f"Did account {account_name} show in Notes.app?")
+
+
+def test_account_make_note(notes):
+    """Test Account.make_note"""
+    print("\nThis test will make a new note in an account you choose.")
+    account_name = input(
+        f"\nYou have the following Notes accounts: {notes.accounts}.\nPlease type name of account to use for test: "
+    )
+    account = Account(account_name)
+    name = input("\nPlease type name of note to make: ")
+    body = input("\nPlease type body of note to make: ")
+    note = account.make_note(name=name, body=body)
+    assert prompt(f"Was a new note named '{name}' created in account '{account.name}'?")
+
+
+def test_account_make_note_in_folder(notes):
+    """Test Account.make_note in a folder"""
+    print("\nThis test will make a new note in an account and folder you choose.")
+    account_name = input(
+        f"\nYou have the following Notes accounts: {notes.accounts}.\nPlease type name of account to use for test: "
+    )
+    account = Account(account_name)
+    folder = input("\nPlease type name of folder to create note in: ")
+    name = input("\nPlease type name of note to make: ")
+    body = input("\nPlease type body of note to make: ")
+    note = account.make_note(name=name, body=body, folder=folder)
+    assert prompt(
+        f"Was a new note named '{name}' created in folder '{folder}' of account '{account.name}'?"
+    )
 
 
 ##### Test Note #####
