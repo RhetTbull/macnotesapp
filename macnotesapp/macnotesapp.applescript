@@ -205,6 +205,15 @@ on noteGetName(accountName, noteID)
 	end tell
 end noteGetName
 
+on noteSetName(accountName, noteID, noteName)
+	(* Set name of noteID in accountName *)
+	tell application "Notes"
+		tell account accountName
+			set name of note id (noteID) to noteName
+		end tell
+	end tell
+end noteSetName
+
 on noteGetAccount(noteID)
 	(* Get account that note belongs to *)
 	-- This is a hack but best I can think of
@@ -244,6 +253,15 @@ on noteGetBody(accountName, noteID)
 		end tell
 	end tell
 end noteGetBody
+
+on noteSetBody(accountName, noteID, noteBody)
+	(* Set body (as HTML) of noteID in accountName *)
+	tell application "Notes"
+		tell account accountName
+			set body of note id (noteID) to noteBody
+		end tell
+	end tell
+end noteSetBody
 
 on noteGetPlainText(accountName, noteID)
 	(* Get plain text contents of noteID in accountName *)
@@ -459,4 +477,3 @@ on accountID(accountName)
 end accountID
 
 (********** Test **********)
-

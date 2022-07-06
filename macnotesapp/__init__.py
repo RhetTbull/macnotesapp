@@ -204,10 +204,20 @@ class Note:
         """Name of note"""
         return self._run_script("noteGetName")
 
+    @name.setter
+    def name(self, name: str):
+        """Set name of note"""
+        self._run_script("noteSetName", name)
+
     @property
     def body(self) -> str:
         """Return body of note"""
         return self._run_script("noteGetBody")
+
+    @body.setter
+    def body(self, body: str):
+        """Set body of note"""
+        self._run_script("noteSetBody", body)
 
     @property
     def plaintext(self) -> str:

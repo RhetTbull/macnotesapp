@@ -215,3 +215,29 @@ def test_note(notes):
     assert prompt(
         f"Did the original note you selected ({note.name}) show in Notes.app? "
     )
+
+
+def test_note_set_name(notes):
+    """Test Note.name setter"""
+    assert prompt("Select a note for testing that can be renamed")
+    selection = notes.selection
+    assert selection
+    note = selection[0]
+    old_name = note.name
+    new_name = input(
+        f"\nEnter new name for note that is currently named '{old_name}': "
+    )
+    note.name = new_name
+    assert prompt(f"Was note '{old_name}' renamed to '{new_name}'?")
+
+
+def test_note_set_body(notes):
+    """Test Note.body setter"""
+    assert prompt("Select a note for testing that can be changed")
+    selection = notes.selection
+    assert selection
+    note = selection[0]
+    old_body = note.body
+    new_body = input(f"\nEnter new body for note named '{note.name}': ")
+    note.body = new_body
+    assert prompt(f"Was note body for note '{note.name}' changed to '{new_body}'?")
