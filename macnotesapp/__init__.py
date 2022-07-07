@@ -5,6 +5,8 @@ from typing import List, Optional
 
 from .script_loader import run_script
 
+__version__ = "0.1.0"
+
 
 class AppleScriptError(Exception):
     def __init__(self, *message):
