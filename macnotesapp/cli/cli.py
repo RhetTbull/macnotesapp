@@ -13,6 +13,8 @@ from macnotesapp import __version__
 
 from .cli_help import help
 
+# extra features to support for Markdown to HTML conversion with markdown2
+MARKDOWN_EXTRAS = ["fenced-code-blocks"]
 
 @click.command(name="accounts")
 @click.option(
@@ -111,8 +113,7 @@ def add_note(show, file, html, markdown, edit, account_name, folder_name, note):
 
     if markdown:
         # convert Markdown to HTML
-        body = markdown2.markdown(body)
-        print(body)
+        body = markdown2.markdown(body, extras=MARKDOWN_EXTRAS)
     elif not html:
         # convert plain text to HTML
         body = "".join(f"<div>{line or '<br>'}</div>\n" for line in body.split("\n"))
