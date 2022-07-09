@@ -88,6 +88,10 @@ class NotesApp:
             matches.extend([Note(account, id_) for id_ in set(all_matches[account])])
         return matches
 
+    def account(self, account: Optional[str] = None) -> "Account":
+        """Return Account object for account; if None, returns default account"""
+        return Account(account) if account else Account(self.default_account)
+
     def activate(self):
         """Activate Notes.app"""
         run_script("notesActivate")
