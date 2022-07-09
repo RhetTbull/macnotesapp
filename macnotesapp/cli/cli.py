@@ -5,6 +5,7 @@ import sys
 from typing import Dict
 
 import click
+import markdown2
 from applescript import ScriptError
 
 import macnotesapp
@@ -97,7 +98,8 @@ def add_note(show, file, html, markdown, edit, account_name, folder_name, note):
         note_text = note
 
     if edit:
-        note_text = click.edit(note_text)
+        ext = ".html" if html else ".md" if markdown else ".txt"
+        note_text = click.edit(note_text, extension=ext)
 
     if not note_text:
         click.echo("No note text.", err=True)
@@ -109,7 +111,8 @@ def add_note(show, file, html, markdown, edit, account_name, folder_name, note):
 
     if markdown:
         # convert Markdown to HTML
-        raise NotImplementedError("--markdown not yet implemented")
+        body = markdown2.markdown(body)
+        print(body)
     elif not html:
         # convert plain text to HTML
         body = "".join(f"<div>{line or '<br>'}</div>\n" for line in body.split("\n"))
@@ -178,6 +181,3 @@ def get_account_data() -> Dict:
 
 for command in [accounts, add_note, config, help]:
     cli_main.add_command(command)
-
-if __name__ == "__main__":
-    cli_main()
