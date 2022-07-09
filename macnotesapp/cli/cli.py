@@ -14,7 +14,8 @@ from macnotesapp import __version__
 from .cli_help import help
 
 # extra features to support for Markdown to HTML conversion with markdown2
-MARKDOWN_EXTRAS = ["fenced-code-blocks"]
+MARKDOWN_EXTRAS = ["fenced-code-blocks", "footnotes", "tables"]
+
 
 @click.command(name="accounts")
 @click.option(
