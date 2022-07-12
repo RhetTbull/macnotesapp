@@ -384,6 +384,18 @@ on accountGetDefaultFolder(accountName)
 	return 0
 end accountGetDefaultFolder
 
+on accountGetFolderNames(accountName)
+	(* Get folders in accountName *)
+	tell application "Notes"
+		repeat with accountRecord in accounts
+			if name of accountRecord = accountName then
+				return name of every folder of accountRecord
+			end if
+		end repeat
+	end tell
+	return 0
+end accountGetFolderNames
+
 on accountGetAllNotes(accountName)
 	(* Get all notes for an account
 	
@@ -477,3 +489,4 @@ on accountID(accountName)
 end accountID
 
 (********** Test **********)
+

@@ -1,6 +1,7 @@
 """Test Python to AppleScript interface for macnotesapp """
 
 import pytest
+import questionary
 
 from macnotesapp import Account, Note, NotesApp
 
@@ -30,6 +31,20 @@ def test_notes_default_account(notes):
     """Test NotesApp.default_account"""
     default = notes.default_account
     assert prompt(f"Is default account {default}?")
+
+
+def test_notes_account(notes):
+    """Test NotesApp.account()"""
+    account = notes.account()
+    assert prompt(f"Is default account {account.name}?")
+
+
+def test_notes_account_with_name(notes):
+    """Test NotesApp.account(account_name)"""
+    account_name = notes.accounts[0]
+    account = notes.account(account_name)
+    assert isinstance(account, Account)
+    assert account.name == account_name
 
 
 def test_notes_len(notes):
@@ -119,9 +134,11 @@ def test_notes_activate(notes):
 
 def test_account(notes):
     """Test Account"""
-    account_name = input(
-        f"\nYou have the following Notes accounts: {notes.accounts}.\nPlease type name of account to use for test: "
-    )
+    account_name = questionary.select(
+        "\nPlease select name of account to use for test: ",
+        choices=notes.accounts,
+        default=notes.default_account,
+    ).ask()
     account = Account(account_name)
     assert prompt(f"Is name of account '{account.name}'?")
     assert prompt(f"Is default folder of account '{account.default_folder}'?")
@@ -129,6 +146,7 @@ def test_account(notes):
     assert prompt(f"Does account contain {len(account.notes)} notes?")
     all_notes = list(account.notes)
     assert prompt(f"Does account contain {len(all_notes)} notes?")
+    assert prompt(f"Does account contain {account.folders} folders?")
 
     name = input(
         f"\nPlease type a name of a note to search for in account {account_name}: "
@@ -167,9 +185,11 @@ def test_account(notes):
 def test_account_make_note(notes):
     """Test Account.make_note"""
     print("\nThis test will make a new note in an account you choose.")
-    account_name = input(
-        f"\nYou have the following Notes accounts: {notes.accounts}.\nPlease type name of account to use for test: "
-    )
+    account_name = questionary.select(
+        "\nPlease select name of account to use for test: ",
+        choices=notes.accounts,
+        default=notes.default_account,
+    ).ask()
     account = Account(account_name)
     name = input("\nPlease type name of note to make: ")
     body = input("\nPlease type body of note to make: ")
@@ -180,11 +200,17 @@ def test_account_make_note(notes):
 def test_account_make_note_in_folder(notes):
     """Test Account.make_note in a folder"""
     print("\nThis test will make a new note in an account and folder you choose.")
-    account_name = input(
-        f"\nYou have the following Notes accounts: {notes.accounts}.\nPlease type name of account to use for test: "
-    )
+    account_name = questionary.select(
+        "\nPlease select name of account to use for test: ",
+        choices=notes.accounts,
+        default=notes.default_account,
+    ).ask()
     account = Account(account_name)
-    folder = input("\nPlease type name of folder to create note in: ")
+    folder = questionary.select(
+        "\nPlease select name of folder to use for test: ",
+        choices=account.folders,
+        default=account.default_folder,
+    ).ask()
     name = input("\nPlease type name of note to make: ")
     body = input("\nPlease type body of note to make: ")
     note = account.make_note(name=name, body=body, folder=folder)

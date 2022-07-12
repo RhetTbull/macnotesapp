@@ -31,6 +31,16 @@ def get_help_msg(command):
         return command.get_help(ctx)
 
 
+class RichHelpCommand(click.Command):
+    """Custom click.Command that overrides get_help() to print rich help text"""
+
+    def get_help(self, ctx):
+        help_text = super().get_help(ctx)
+        formatter = click.HelpFormatter(width=HELP_WIDTH)
+        formatter.write(rich_text(help_text, width=HELP_WIDTH))
+        return formatter.getvalue()
+
+
 @click.command()
 @click.option(
     "--width",
@@ -82,7 +92,9 @@ def help(ctx, topic, subtopic, width, **kw):
     if topic in ctx.obj.group.commands:
         ctx.info_name = topic
         # click.echo_via_pager(ctx.obj.group.commands[topic].get_help(ctx))
-        rich_echo_via_pager(ctx.obj.group.commands[topic].get_help(ctx), width=HELP_WIDTH)
+        rich_echo_via_pager(
+            ctx.obj.group.commands[topic].get_help(ctx), width=HELP_WIDTH
+        )
         return
 
     # didn't find any valid help topics

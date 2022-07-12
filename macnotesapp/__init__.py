@@ -22,12 +22,12 @@ class NotesApp:
     @property
     def accounts(self) -> List[str]:
         """Return list of accounts"""
-        return run_script("notesGetAccounts")
+        return [str(a) for a in run_script("notesGetAccounts")]
 
     @property
     def default_account(self) -> str:
         """Return name of default account"""
-        return run_script("notesGetDefaultAccount")
+        return str(run_script("notesGetDefaultAccount"))
 
     @property
     def notes(self) -> List["Note"]:
@@ -48,7 +48,7 @@ class NotesApp:
     @property
     def version(self):
         """Return version of Notes.app"""
-        return run_script("notesVersion")
+        return str(run_script("notesVersion"))
 
     def make_note(self, name: str, body: str) -> "Note":
         """Create new note in default folder of default account"""
@@ -121,17 +121,22 @@ class Account:
 
     @property
     def name(self):
-        return self._run_script("accountName")
+        return str(self._run_script("accountName"))
+
+    @property
+    def folders(self) -> List[str]:
+        """Return list of folder names"""
+        return [str(f) for f in self._run_script("accountGetFolderNames")]
 
     @property
     def default_folder(self) -> str:
         """Return default folder for account"""
-        return self._run_script("accountGetDefaultFolder")
+        return str(self._run_script("accountGetDefaultFolder"))
 
     @property
     def id(self) -> str:
         """Return ID of account"""
-        return self._run_script("accountID")
+        return str(self._run_script("accountID"))
 
     @property
     def notes(self) -> List["Note"]:
@@ -208,7 +213,7 @@ class Note:
     @property
     def name(self) -> str:
         """Name of note"""
-        return self._run_script("noteGetName")
+        return str(self._run_script("noteGetName"))
 
     @name.setter
     def name(self, name: str):
@@ -218,7 +223,7 @@ class Note:
     @property
     def body(self) -> str:
         """Return body of note"""
-        return self._run_script("noteGetBody")
+        return str(self._run_script("noteGetBody"))
 
     @body.setter
     def body(self, body: str):
@@ -228,7 +233,7 @@ class Note:
     @property
     def plaintext(self) -> str:
         """Return plaintext of note"""
-        return self._run_script("noteGetPlainText")
+        return str(self._run_script("noteGetPlainText"))
 
     @property
     def creation_date(self) -> datetime:
@@ -243,12 +248,12 @@ class Note:
     @property
     def password_protected(self) -> bool:
         """Return password protected status of note"""
-        return self._run_script("noteGetPasswordProtected")
+        return bool(self._run_script("noteGetPasswordProtected"))
 
     @property
     def folder(self) -> str:
         """Return folder note is contained in"""
-        return self._run_script("noteGetContainer")
+        return str(self._run_script("noteGetContainer"))
 
     def show(self):
         """Show note in Notes.app UI"""
