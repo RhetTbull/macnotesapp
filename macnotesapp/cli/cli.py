@@ -4,12 +4,13 @@ import json
 import os
 import pathlib
 import sys
-from typing import Dict
+from typing import Dict, Iterable
 
 import click
 import markdown2
 import questionary
 from applescript import ScriptError
+from rich.console import Console
 
 import macnotesapp
 from macnotesapp import __version__
@@ -177,6 +178,52 @@ def add_note(
         raise click.Abort() from e
 
 
+@click.command(name="list")
+@click.option(
+    "--account",
+    "-a",
+    "account_name",
+    metavar="ACCOUNT",
+    multiple=True,
+    type=str,
+    help="Limit results to account ACCOUNT; may be repeated to include multiple accounts.",
+)
+# @click.option(
+#     "--folder",
+#     "-f",
+#     "folder_name",
+#     metavar="FOLDER",
+#     multiple=True,
+#     type=str,
+#     help="Limit results to folder FOLDER; may be repeated to include multiple folders.",
+# )
+@click.argument("text", metavar="TEXT", required=False)
+def list_notes(account_name, text):
+    """List notes, optionally filtering by account or text."""
+    notesapp = macnotesapp.NotesApp()
+    if not account_name and not text:
+        # list all notes
+        print_notes(notesapp)
+        return
+
+    account_name = account_name or notesapp.accounts
+    notes = []
+    for account_ in account_name:
+        try:
+            account = notesapp.account(account_)
+        except ScriptError:
+            click.echo(f"Invalid account: {account_}", err=True)
+            raise click.Abort()
+
+        if text:
+            notes += account.find_notes(name=text)
+            notes += account.find_notes(text=text)
+        else:
+            notes += account.notes
+    notes = list(set(notes))
+    print_notes(notes)
+
+
 @click.command(name="config")
 def config():
     """Configure default settings for account, editor, etc."""
@@ -256,7 +303,7 @@ def cli_main(ctx, debug):
     ctx.obj = CLI_Obj(group=cli_main)
 
 
-for command in [accounts, add_note, config, help]:
+for command in [accounts, add_note, config, list_notes, help]:
     cli_main.add_command(command)
 
 
@@ -274,3 +321,38 @@ def get_account_data() -> Dict:
             "default_folder": account.default_folder,
         }
     return account_data
+
+
+def print_notes(notes: Iterable[macnotesapp.Note]):
+    """Print notes to the screen"""
+    notesapp = macnotesapp.NotesApp()
+    accounts = notesapp.accounts
+    account_len = max(len(a) for a in accounts)
+    account_len = max(account_len, len("Account"))
+    folder_len = 0
+    for account in accounts:
+        folders = notesapp.account(account).folders
+        folder_len = max(folder_len, max(len(f) for f in folders))
+    folder_len = max(folder_len, len("Folder"))
+    name_len = 30
+    console = Console()
+    padding = 2
+    body_len = console.width - name_len - folder_len - account_len - padding * 3
+    body_len = max(body_len, 20)
+    format_str = (" " * padding).join(
+        "{:<" + f"{x}" + "}" for x in [account_len, folder_len, name_len, body_len]
+    )
+    print(format_str.format("Account", "Folder", "Name", "Body"))
+    for note in notes:
+        account = note.account
+        folder = note.folder
+        name = note.name
+        name = (
+            f"{name[:name_len-padding]}.." if len(name) > (name_len - padding) else name
+        )
+        body = note.plaintext
+        body = body.replace("\n", " ")
+        body = (
+            f"{body[:body_len-padding]}.." if len(body) > (body_len - padding) else body
+        )
+        print(format_str.format(account, folder, name, body))

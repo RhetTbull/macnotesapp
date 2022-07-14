@@ -118,6 +118,7 @@ class Account:
 
     def __init__(self, account: str):
         self._account = account
+        self._id = str(self._run_script("accountID"))
 
     @property
     def name(self):
@@ -211,6 +212,16 @@ class Note:
         self._id = id_
 
     @property
+    def account(self) -> str:
+        """Account note belongs to"""
+        return self._account
+
+    @property
+    def id(self) -> str:
+        """Note ID"""
+        return self._id
+
+    @property
     def name(self) -> str:
         """Name of note"""
         return str(self._run_script("noteGetName"))
@@ -261,3 +272,12 @@ class Note:
 
     def _run_script(self, script, *args):
         return run_script(script, self._account, self._id, *args)
+
+    def __repr__(self):
+        return f"Note({self.account}, {self.id})"
+
+    def __eq__(self, other):
+        return (self.id, self.account) == (other.id, other.account)
+
+    def __hash__(self):
+        return hash(repr(self))

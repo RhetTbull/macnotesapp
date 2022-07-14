@@ -228,13 +228,14 @@ def test_note(notes):
     selection = notes.selection
     assert selection
     note = selection[0]
-    assert prompt(f"Does note name = '{note.name}'")
-    assert prompt(f"Does note.body = {note.body}?")
-    assert prompt(f"Does note plain text = {note.plaintext}")
-    assert prompt(f"Does note creation date = {note.creation_date.isoformat()}")
-    assert prompt(f"Does note modification date = {note.modification_date.isoformat()}")
-    assert prompt(f"Does note folder = {note.folder}")
-    assert prompt(f"Does note password protection status = {note.password_protected}")
+    assert prompt(f"Does note account = '{note.account}'?")
+    assert prompt(f"Does note name = '{note.name}'?")
+    assert prompt(f"Does note.body = '{note.body}'?")
+    assert prompt(f"Does note plain text = '{note.plaintext}'?")
+    assert prompt(f"Does note creation date = {note.creation_date.isoformat()}?")
+    assert prompt(f"Does note modification date = {note.modification_date.isoformat()}?")
+    assert prompt(f"Does note folder = '{note.folder}'?")
+    assert prompt(f"Does note password protection status = {note.password_protected}?")
 
     prompt("\nSelect a different note then continue.")
     note.show()
