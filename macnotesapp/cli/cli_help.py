@@ -8,7 +8,7 @@ import click
 from rich.console import Console
 from rich.markdown import Markdown
 
-from .click_rich_echo import rich_echo_via_pager
+from .click_rich_echo import rich_echo_via_pager, set_rich_console
 
 HELP_WIDTH = 110
 HIGHLIGHT_COLOR = "yellow"
@@ -35,9 +35,17 @@ class RichHelpCommand(click.Command):
     """Custom click.Command that overrides get_help() to print rich help text"""
 
     def get_help(self, ctx):
+        """Get help with rich markup"""
         help_text = super().get_help(ctx)
         formatter = click.HelpFormatter(width=HELP_WIDTH)
         formatter.write(rich_text(help_text, width=HELP_WIDTH))
+        return formatter.getvalue()
+
+    def get_help_no_markup(self, ctx):
+        """Get help without any rich markup"""
+        help_text = super().get_help(ctx)
+        formatter = click.HelpFormatter(width=HELP_WIDTH)
+        formatter.write(rich_text(help_text, width=HELP_WIDTH, markup=False))
         return formatter.getvalue()
 
 
@@ -48,10 +56,13 @@ class RichHelpCommand(click.Command):
     help="Width of help text",
     hidden=True,
 )
+@click.option(
+    "--no-markup", is_flag=True, help="Print output with no markup", hidden=True
+)
 @click.argument("topic", default=None, required=False, nargs=1)
 @click.argument("subtopic", default=None, required=False, nargs=1)
 @click.pass_context
-def help(ctx, topic, subtopic, width, **kw):
+def help(ctx, topic, subtopic, width, no_markup, **kw):
     """Print help; for help on commands: help <command>."""
     if topic is None:
         click.echo(ctx.parent.get_help())
@@ -82,18 +93,32 @@ def help(ctx, topic, subtopic, width, **kw):
 
     if subtopic:
         cmd = ctx.obj.group.commands[topic]
+        help_text = get_subtopic_help(cmd, ctx, subtopic)
         rich_echo_via_pager(
-            get_subtopic_help(cmd, ctx, subtopic),
+            help_text,
             # theme=get_theme(),
             width=HELP_WIDTH,
+            color=not no_markup,
         )
         return
 
     if topic in ctx.obj.group.commands:
         ctx.info_name = topic
         # click.echo_via_pager(ctx.obj.group.commands[topic].get_help(ctx))
+        try:
+            help_text = (
+                ctx.obj.group.commands[topic].get_help_no_markup(ctx)
+                if no_markup
+                else ctx.obj.group.commands[topic].get_help(ctx)
+            )
+        except AttributeError:
+            # Not a RichHelpCommand
+            help_text = ctx.obj.group.commands[topic].get_help(ctx)
+
         rich_echo_via_pager(
-            ctx.obj.group.commands[topic].get_help(ctx), width=HELP_WIDTH
+            help_text,
+            width=HELP_WIDTH,
+            color=not no_markup,
         )
         return
 
@@ -202,9 +227,16 @@ def format_help_text(text: str, formatter: click.HelpFormatter):
         formatter.write_text(text)
 
 
-def rich_text(text, width=78, markdown=False):
-    """Return rich formatted text"""
-    console = Console(force_terminal=True, width=width)
+def rich_text(text: str, width: int = 78, markdown: bool = False, markup: bool = True):
+    """Return rich formatted text
+
+    Args:
+        text: text to format
+        width: default terminal width
+        markdown: if True, uses markdown syntax for formatting text
+        markup: if False, does not use rich markup
+    """
+    console = Console(force_terminal=markup, width=width)
     with console.capture() as capture:
         console.print(Markdown(text) if markdown else text, end="")
     return capture.get()
