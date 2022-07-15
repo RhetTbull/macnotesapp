@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from .script_loader import run_script
 
-__version__ = "0.1.0"
+from ._version import __version__
 
 
 class AppleScriptError(Exception):

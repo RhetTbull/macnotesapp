@@ -1,9 +1,13 @@
 [tool.poetry]
 name = "macnotesapp"
-version = "0.1.0"
-description = "Automate Apple / macOS Notes.app with python."
+version = "0.2.0"
+description = "Work with Apple MacOS Notes.app from the command line. Also includes python interface for scripting Notes.app from your own python code."
 authors = ["Rhet Turnbull <rturnbull@gmail.com>"]
 license = "MIT License"
+readme = "README.md"
+homepage = "https://github.com/RhetTbull/macnotesapp"
+repository = "https://github.com/RhetTbull/macnotesapp"
+keywords = ["cli", "mac", "macos"]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
