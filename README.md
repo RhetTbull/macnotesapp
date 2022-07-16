@@ -19,6 +19,8 @@ Once you've installed macnotesapp with pipx, to upgrade to the latest version:
 
     pipx upgrade macnotesapp
 
+**Note**: Currently tested on MacOS 10.15.7/Catalina; should run on newer versions of MacOS but I have not yet tested this.
+
 ## Command Line Usage
 
 <!-- [[[cog
@@ -118,3 +120,8 @@ Options:
 
 ```
 <!-- [[[end]]] -->
+
+## Known Issues
+
+* Currently, only notes in top-level folders are accessible to `macnotesapp`.
+* Only tested on MacOS 10.15.7.
