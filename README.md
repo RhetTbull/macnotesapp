@@ -92,6 +92,13 @@ Usage: notes add [OPTIONS] NOTE
 
   notes add -e
 
+  Add a new note from URL (downloads URL, creates a cleaned readable version
+  to store in new Note):
+
+  notes add --url URL
+
+  notes add -u URL
+
   If NOTE is a single line, adds new note with name NOTE and no body. If NOTE is
   more than one line, adds new note where name is first line of NOTE and body is
   remainder.
@@ -109,6 +116,7 @@ Usage: notes add [OPTIONS] NOTE
 Options:
   -s, --show             Show note in Notes after adding.
   -F, --file FILENAME
+  -u, --url URL
   -h, --html             Use HTML for body of note.
   -m, --markdown         Use Markdown for body of note.
   -p, --plaintext        Use plaintext for body of note (default unless changed

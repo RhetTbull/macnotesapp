@@ -26,6 +26,8 @@ from .cli_config import (
     ConfigSettings,
 )
 from .cli_help import RichHelpCommand, help
+from .cli_param_types import URLType
+from .readable import get_readable_html
 
 # extra features to support for Markdown to HTML conversion with markdown2
 MARKDOWN_EXTRAS = ["fenced-code-blocks", "footnotes", "tables"]
@@ -50,6 +52,7 @@ def accounts(json_):
 @click.command(name="add", cls=RichHelpCommand)
 @click.option("--show", "-s", is_flag=True, help="Show note in Notes after adding.")
 @click.option("--file", "-F", required=False, type=click.File())
+@click.option("--url", "-u", required=False, type=URLType())
 @click.option("--html", "-h", is_flag=True, help="Use HTML for body of note.")
 @click.option("--markdown", "-m", is_flag=True, help="Use Markdown for body of note.")
 @click.option(
@@ -79,7 +82,7 @@ def accounts(json_):
 )
 @click.argument("note", metavar="NOTE", required=False, default="")
 def add_note(
-    show, file, html, markdown, plaintext, edit, account_name, folder_name, note
+    show, file, url, html, markdown, plaintext, edit, account_name, folder_name, note
 ):
     """Add new note.
 
@@ -103,6 +106,12 @@ def add_note(
 
     [b]notes add -e[/]
 
+    [i]Add a new note from URL (downloads URL, creates a cleaned readable version to store in new Note):
+
+    [b]notes add --url URL
+
+    [b]notes add -u URL
+
     If NOTE is a single line, adds new note with name NOTE and no body.
     If NOTE is more than one line, adds new note where name is first line of NOTE and body is remainder.
 
@@ -122,6 +131,10 @@ def add_note(
         )
         raise click.Abort()
 
+    if file and url:
+        click.echo("Only one of --file, --url can be specified.", err=True)
+        raise click.Abort()
+
     config = ConfigSettings()
     format_ = config.format
     if html:
@@ -137,6 +150,13 @@ def add_note(
 
     if file:
         note_text = file.read()
+    elif url:
+        try:
+            name, body = get_readable_html(url)
+            note_text = f"{name}\n{body}"
+        except Exception as e:
+            click.echo(f"Error downloading url '{url}': {e}.", err=True)
+            raise click.Abort() from e
     elif note == "-" or (not note and not edit):
         note_text = sys.stdin.read()
     else:
