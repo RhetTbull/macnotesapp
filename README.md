@@ -1,6 +1,6 @@
 # MacNotesApp
 
-Work with Apple MacOS Notes.app from the command line. Also includes python interface for scripting Notes.app from your own python code.
+Work with Apple MacOS Notes.app from the command line. Also includes python interface for scripting Notes.app from your own python code. Interactive browsing of notes in a TUI (Terminal User Interface? Textual User Interface?) coming soon!
 
 ## Installation
 
