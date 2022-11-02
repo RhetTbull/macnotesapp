@@ -408,10 +408,7 @@ on accountGetAllNotes(accountName)
 	set allNotes to {}
 	tell application "Notes"
 		tell account accountName
-			repeat with i from 1 to the count of notes
-				set noteID to «class seld» of (note i as record)
-				copy noteID to end of allNotes
-			end repeat
+			set allNotes to id of notes
 		end tell
 	end tell
 	return allNotes
