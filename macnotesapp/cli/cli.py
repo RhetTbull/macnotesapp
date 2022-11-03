@@ -10,7 +10,9 @@ import click
 import markdown2
 import questionary
 from applescript import ScriptError
+from markdownify import markdownify as html2md
 from rich.console import Console
+from rich.markdown import Markdown
 
 import macnotesapp
 from macnotesapp import __version__
@@ -223,7 +225,7 @@ def list_notes(account_name, text):
     notesapp = macnotesapp.NotesApp()
     if not account_name and not text:
         # list all notes
-        print_notes(notesapp)
+        print_notes_list(notesapp)
         return
 
     account_name = account_name or notesapp.accounts
@@ -241,7 +243,44 @@ def list_notes(account_name, text):
         else:
             notes += account.notes
     notes = list(set(notes))
-    print_notes(notes)
+    print_notes_list(notes)
+
+
+@click.command(name="cat")
+@click.option("--plaintext", "-p", is_flag=True, help="Output note as plain text.")
+@click.option("--markdown", "-m", is_flag=True, help="Output note as Markdown.")
+@click.option("--html", "-h", is_flag=True, help="Output note as HTML.")
+@click.option(
+    "--json",
+    "-j",
+    "json_",
+    is_flag=True,
+    help="Output note as JSON. "
+    "The default format for the note body in JSON is HTML "
+    "(this is how the note is stored in Notes). "
+    "If --plaintext or --markdown is also specified, "
+    "the note body in the resulting JSON will be in the specified format.",
+)
+@click.argument("name", metavar="NOTE_NAME", required=True)
+def cat_notes(name, plaintext, markdown, html, json_):
+    """Print one or more notes to STDOUT"""
+    notesapp = macnotesapp.NotesApp()
+    notes = notesapp.find_notes(name=name)
+    output = (
+        "plaintext"
+        if plaintext
+        else "markdown"
+        if markdown
+        else "html"
+        if html
+        else "rich"
+    )
+
+    if json_:
+        print_notes_as_json(notes, plaintext=plaintext)
+    else:
+        for note in notes:
+            print_note(note, output=output)
 
 
 @click.command(name="config")
@@ -323,7 +362,7 @@ def cli_main(ctx, debug):
     ctx.obj = CLI_Obj(group=cli_main)
 
 
-for command in [accounts, add_note, config, list_notes, help]:
+for command in [accounts, add_note, cat_notes, config, list_notes, help]:
     cli_main.add_command(command)
 
 
@@ -343,8 +382,8 @@ def get_account_data() -> Dict:
     return account_data
 
 
-def print_notes(notes: Iterable[macnotesapp.Note]):
-    """Print notes to the screen"""
+def print_notes_list(notes: Iterable[macnotesapp.Note]):
+    """Print note list to STDOUT"""
     notesapp = macnotesapp.NotesApp()
     accounts = notesapp.accounts
     account_len = max(len(a) for a in accounts)
@@ -376,3 +415,41 @@ def print_notes(notes: Iterable[macnotesapp.Note]):
             f"{body[:body_len-padding]}.." if len(body) > (body_len - padding) else body
         )
         print(format_str.format(account, folder, name, body))
+
+
+def print_note(note: macnotesapp.Note, output: str):
+    """Print a note to STDOUT
+
+    Args:
+        note: Note to print
+        output: Output format (plaintext, markdown, html, rich)
+    """
+
+    console = Console()
+    # print note, not JSON
+    if output == "plaintext":
+        console.print(note.plaintext)
+    elif output == "rich":
+        console.print(Markdown(html2md(note.body)))
+    elif output == "markdown":
+        console.print(html2md(note.body))
+    elif output == "html":
+        console.print(note.body)
+
+
+def print_notes_as_json(notes: Iterable[macnotesapp.Note], plaintext: bool = False):
+    """Print notes as JSON to STDOUT
+
+    Args:
+        notes: Notes to print
+        plaintext: If True, print plaintext of note body instead of HTML
+    """
+
+    json_list = []
+    for note in notes:
+        json_data = note.asdict(body="html" if not plaintext else "plaintext")
+        json_data["creation_date"] = json_data["creation_date"].isoformat()
+        json_data["modification_date"] = json_data["modification_date"].isoformat()
+        json_list.append(json_data)
+    console = Console()
+    console.print(json.dumps(json_list, indent=4))

@@ -1,11 +1,12 @@
 """Python to AppleScript bridge for automating Notes.app on macOS"""
 
-from datetime import datetime
-from typing import List, Optional
+from __future__ import annotations
 
-from .script_loader import run_script
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 from ._version import __version__
+from .script_loader import run_script
 
 
 class AppleScriptError(Exception):
@@ -269,6 +270,23 @@ class Note:
     def show(self):
         """Show note in Notes.app UI"""
         self._run_script("noteShow")
+
+    def asdict(self, body="html") -> Dict[str, Any]:
+        """Return dict representation of note
+
+        Args:
+            body: "html" or "plaintext" to return body of note in that format
+        """
+        return {
+            "account": self.account,
+            "id": self.id,
+            "name": self.name,
+            "body": self.body if body == "html" else self.plaintext,
+            "creation_date": self.creation_date,
+            "modification_date": self.modification_date,
+            "password_protected": self.password_protected,
+            "folder": self.folder,
+        }
 
     def _run_script(self, script, *args):
         return run_script(script, self._account, self._id, *args)
