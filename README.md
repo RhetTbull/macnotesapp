@@ -46,7 +46,9 @@ Options:
 Commands:
   accounts  Print information about Notes accounts.
   add       Add new note.
+  cat       Print one or more notes to STDOUT
   config    Configure default settings for account, editor, etc.
+  dump      Dump all notes or selection of notes for debugging
   help      Print help; for help on commands: help <command>.
   list      List notes, optionally filtering by account or text.
 

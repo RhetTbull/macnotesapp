@@ -337,6 +337,17 @@ def config():
     click.echo(f"Settings saved to {CONFIG_FILE}")
 
 
+@click.command(name="dump")
+@click.option("--selected", "-s", is_flag=True, help="Dump only selected notes.")
+@click.option("--no-body", "-B", is_flag=True, help="Do not dump note body.")
+def dump(selected, no_body):
+    """Dump all notes or selection of notes for debugging"""
+    notesapp = macnotesapp.NotesApp()
+    notes = notesapp.selection if selected else notesapp.notes
+    for note in notes:
+        dump_note(note, no_body)
+
+
 # Click CLI object & context settings
 class CLI_Obj:
     def __init__(self, debug=False, group=None):
@@ -362,7 +373,8 @@ def cli_main(ctx, debug):
     ctx.obj = CLI_Obj(group=cli_main)
 
 
-for command in [accounts, add_note, cat_notes, config, list_notes, help]:
+# add the commands to the main group
+for command in [accounts, add_note, cat_notes, config, list_notes, dump, help]:
     cli_main.add_command(command)
 
 
@@ -453,3 +465,17 @@ def print_notes_as_json(notes: Iterable[macnotesapp.Note], plaintext: bool = Fal
         json_list.append(json_data)
     console = Console()
     console.print(json.dumps(json_list, indent=4))
+
+
+def dump_note(note: macnotesapp.Note, no_body: bool = False):
+    """Dump note data to STDOUT for debugging purposes"""
+    print(f"{note.id=}")
+    print(f"{note.name=}")
+    print(f"{note.account=}")
+    print(f"{note.folder=}")
+    print(f"{note.creation_date=}")
+    print(f"{note.modification_date=}")
+    print(f"{note.password_protected=}")
+    if not no_body:
+        print(f"{note.body=}")
+        print(f"{note.plaintext=}")
