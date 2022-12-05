@@ -19,7 +19,7 @@ Once you've installed macnotesapp with pipx, to upgrade to the latest version:
 
     pipx upgrade macnotesapp
 
-**Note**: Currently tested on MacOS 10.15.7/Catalina; should run on newer versions of MacOS but I have not yet tested this.
+**Note**: Currently tested on MacOS 10.15.7/Catalina and 13.0.1/Ventura.
 
 ## Command Line Usage
 
@@ -133,5 +133,6 @@ Options:
 
 ## Known Issues
 
-* Currently, only notes in top-level folders are accessible to `macnotesapp`.
-* Only tested on MacOS 10.15.7.
+* Currently, only notes in top-level folders are accessible to `macnotesapp` (#4)
+* Attachments are not currently handled and will be ignored (#15)
+* The title style is not correctly set (#13)
