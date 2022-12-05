@@ -10,7 +10,7 @@ repository = "https://github.com/RhetTbull/macnotesapp"
 keywords = ["cli", "mac", "macos"]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
+python = "^3.8"
 py-applescript = "^1.0.3"
 click = "^8.1.2"
 rich = "^12.4.4"
