@@ -214,7 +214,7 @@ class Account:
             format_str = "(" + ") AND (".join(or_strings) + ")"
             predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, *args)
             notes = notes.filteredArrayUsingPredicate_(predicate)
-        return [Note(note) for note in notes]
+        return [Note(note) for note in notes.get()]
 
     def folder(self, folder: str) -> "Folder":
         """Return Folder object for folder"""
