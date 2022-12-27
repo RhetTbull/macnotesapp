@@ -80,46 +80,12 @@ class NotesApp:
             format_str = "name == %@" + " OR name == %@ " * (len(accounts) - 1)
             predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, accounts)
             account_list = account_list.filteredArrayUsingPredicate_(predicate)
-        note_objects = []
+        notes = []
         for account in account_list:
-            notes = account.notes()
-            format_str = ""
-            if name and notes:
-                format_str += (
-                    " (name contains[cd] %@)"
-                    + " OR (name contains[cd] %@)" * (len(name) - 1)
-                )
-            if body and notes:
-                format_str += (
-                    " (plaintext contains[cd] %@)"
-                    + " OR (plaintext contains[cd] %@)" * (len(body) - 1)
-                )
-            if text and notes:
-                format_str += (
-                    " (name contains[cd] %@)"
-                    + " OR (name contains[cd] %@)" * (len(text) - 1)
-                    + " OR (plaintext contains[cd] %@) "
-                    + " OR (plaintext contains[cd] %@)" * (len(text) - 1)
-                )
-            if password_protected is not None and notes:
-                format_str += (
-                    " (passwordProtected == TRUE)"
-                    if password_protected
-                    else (" (passwordProtected == FALSE)")
-                )
-            if id and notes:
-                format_str += " (id == %@)" + " OR (id == %@)" * (len(id) - 1)
-            if format_str:
-                # have one or more search predicates; filter notes
-                args = name or []
-                args += body or []
-                if text:
-                    args += text * 2
-                args += id or []
-                predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, *args)
-                notes = notes.filteredArrayUsingPredicate_(predicate)
-            note_objects.extend(Note(note) for note in notes)
-        return note_objects
+            notes.extend(
+                Account(account).notes(name, body, text, password_protected, id)
+            )
+        return notes
 
     @property
     def selection(self) -> list["Note"]:
@@ -159,6 +125,10 @@ class NotesApp:
 
     def __len__(self):
         """Return count of notes"""
+        length = 0
+        for account in self.app.accounts():
+            length += len(account.notes())
+        return length
 
     def __iter__(self):
         """Generator to yield all notes contained in Notes.app"""
@@ -201,12 +171,50 @@ class Account:
             return id_
         return str(self._run_script("accountID"))
 
-    @property
-    def notes(self) -> list["Note"]:
-        """Return all notes in account"""
-        # ZZZ
-        all_notes = self._run_script("accountGetAllNotes")
-        return [Note(self._account, id_) for id_ in all_notes]
+    def notes(
+        self,
+        name: list[str] | None = None,
+        body: list[str] | None = None,
+        text: list[str] | None = None,
+        password_protected: bool | None = None,
+        id: list[str] | None = None,
+    ) -> list["Note"]:
+        """Return Note object for all notes contained in Notes.app or notes filtered by property"""
+        # TODO: should this be a generator?
+        notes = self._account.notes()
+        format_strings = []
+        if name and notes:
+            name_strings = ["(name contains[cd] %@)"] * len(name)
+            format_strings.append(name_strings)
+        if body and notes:
+            body_strings = ["(plaintext contains[cd] %@)"] * len(body)
+            format_strings.append(body_strings)
+        if text and notes:
+            text_strings = ["(name contains[cd] %@)"] * len(text)
+            text_strings.extend(["(plaintext contains[cd] %@)"] * len(text))
+            format_strings.append(text_strings)
+        if password_protected is not None and notes:
+            password_string = (
+                ["(passwordProtected == TRUE)"]
+                if password_protected
+                else ["(passwordProtected == FALSE)"]
+            )
+            format_strings.append(password_string)
+        if id and notes:
+            id_string = ["(id == %@)"] * len(id)
+            format_strings.append(id_string)
+        if format_strings:
+            # have one or more search predicates; filter notes
+            args = name or []
+            args += body or []
+            if text:
+                args += text * 2
+            args += id or []
+            or_strings = [" OR ".join(strings) for strings in format_strings]
+            format_str = "(" + ") AND (".join(or_strings) + ")"
+            predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, *args)
+            notes = notes.filteredArrayUsingPredicate_(predicate)
+        return [Note(note) for note in notes]
 
     def folder(self, folder: str) -> "Folder":
         """Return Folder object for folder"""
@@ -266,13 +274,13 @@ class Account:
 
     def __len__(self):
         """Return count of notes"""
-        return self._run_script("accountGetCount")
+        return len(self._account.notes())
+        # return self._run_script("accountGetCount")
 
     def __iter__(self):
         """Generator to yield all notes contained in Notes.app"""
-        all_notes = self._run_script("accountGetAllNotes")
-        for id_ in all_notes:
-            yield Note(self._account, id_)
+        for note in self._account.notes():
+            yield Note(note)
 
 
 class Note:
@@ -396,7 +404,6 @@ class Note:
 
     def _run_script(self, script, *args):
         """Run AppleScript script"""
-        print(f"running script: {script} {args}")
         return run_script(script, self.account, self.id, *args)
 
     def _parse_id_from_object(self) -> str:

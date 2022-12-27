@@ -238,8 +238,7 @@ def list_notes(account_name, text):
             raise click.Abort()
 
         if text:
-            notes += account.find_notes(name=text)
-            notes += account.find_notes(text=text)
+            notes += account.notes(text=[text])
         else:
             notes += account.notes
     notes = list(set(notes))
@@ -265,7 +264,7 @@ def list_notes(account_name, text):
 def cat_notes(name, plaintext, markdown, html, json_):
     """Print one or more notes to STDOUT"""
     notesapp = macnotesapp.NotesApp()
-    notes = notesapp.find_notes(name=name)
+    notes = notesapp.notes(name=[name])
     output = (
         "plaintext"
         if plaintext
