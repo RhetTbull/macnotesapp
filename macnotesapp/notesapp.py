@@ -21,6 +21,25 @@ class AppleScriptError(Exception):
         super().__init__(*message)
 
 
+class ScriptingBridgeError(Exception):
+    def __init__(self, *message):
+        super().__init__(*message)
+
+
+def parse_id_from_object(obj: ScriptingBridge.SBObject) -> str:
+    """Parse the ID from the object representation when it can't be determined by ScriptingBridge"""
+
+    # there are some conditions (e.g. using selection on Catalina or using a predicate)
+    # where the ScriptingBridge sets the object ID to 0
+    # I haven't been able to figure out why but in this case, the id can be determined
+    # by examining the string representation of the object which looks like this:
+    # <SBObject @0x7fd721544690: <class ''> id "x-coredata://19B82A76-B3FE-4427-9C5E-5107C1E3CA57/IMAPNote/p87" of application "Notes" (55036)>
+    match = re.search(r'id "(x-coredata://.+?)"', str(obj))
+    if match:
+        return match.group(1)
+    return None
+
+
 class NotesApp:
     """Represents Notes.app instance"""
 
@@ -115,20 +134,10 @@ class NotesApp:
 
     def make_note(self, name: str, body: str) -> "Note":
         """Create new note in default folder of default account"""
-        properties = {
-            "body": f"<b>{name}</b><br />{body}",
-        }
-        note = (
-            self.app.classForScriptingClass_("note")
-            .alloc()
-            .initWithData_andProperties_(None, properties)
-        )
-        print(note, type(note))
-        return
-        if noteid := run_script("notesMakeNote", name, body):
-            default_account = run_script("notesGetDefaultAccount")
-            return Note(default_account, noteid)
-        raise AppleScriptError(f"Could not create note '{name}' with body '{body}'")
+
+        # reference: https://developer.apple.com/documentation/scriptingbridge/sbobject/1423973-initwithproperties
+        account = Account(self.app.defaultAccount())
+        return account.make_note(name, body)
 
     def account(self, account: Optional[str] = None) -> "Account":
         """Return Account object for account; if None, returns default account"""
@@ -185,7 +194,7 @@ class Account:
             return default_folder.name()
         return str(self._run_script("accountGetDefaultFolder"))
 
-    @property
+    @cached_property
     def id(self) -> str:
         """Return ID of account"""
         if id_ := self._account.id():
@@ -199,27 +208,58 @@ class Account:
         all_notes = self._run_script("accountGetAllNotes")
         return [Note(self._account, id_) for id_ in all_notes]
 
+    def folder(self, folder: str) -> "Folder":
+        """Return Folder object for folder"""
+        folder_obj = self._folder_for_name(folder)
+        return Folder(folder_obj)
+
     def show(self):
         """Show account in Notes.app UI"""
         self._run_script("accountShow")
 
-    def make_note(self, name: str, body: str, folder: Optional[str] = None) -> "Note":
-        """Create new note
+    def make_note(self, name: str, body: str, folder: str | None = None) -> "Note":
+        """Create new note in account
 
         Args:
             name: name of note
-            body: body of note (plaintext or HTML)
-            folder: create note in folder; if None, uses default folder for account
+            body: body of note
+            folder: folder to create note in; if None, uses default folder
+
+        Returns:
+            Note object for new note
         """
-        folder = folder or self.default_folder
-        account = self._account
-        if noteid := run_script(
-            "notesMakeNoteWithAccount", account, folder, name, body
-        ):
-            return Note(account, noteid)
-        raise AppleScriptError(
-            f"Could not create note '{name}' with body '{body}' in folder '{folder}' of account '{account}'"
+
+        # reference: https://developer.apple.com/documentation/scriptingbridge/sbobject/1423973-initwithproperties
+        notes_app = NotesApp()
+        folder_obj = (
+            self._folder_for_name(folder) if folder else self._account.defaultFolder()
         )
+        properties = {
+            "body": f"<div><h1>{name}</h1></div>\n{body}",
+        }
+        note = (
+            notes_app.app.classForScriptingClass_("note")
+            .alloc()
+            .initWithProperties_(properties)
+        )
+        notes = folder_obj.notes()
+        len_before = len(notes)
+        notes.addObject_(note)
+        len_after = len(notes)
+
+        if len_after > len_before:
+            return Note(note)
+
+        raise ScriptingBridgeError(f"Could not create note '{name}' with body '{body}'")
+
+    def _folder_for_name(self, folder: str) -> ScriptingBridge.SBObject:
+        """Return ScriptingBridge folder object for folder"""
+        if folder_objs := self._account.folders().filteredArrayUsingPredicate_(
+            AppKit.NSPredicate.predicateWithFormat_("name == %@", folder)
+        ):
+            return folder_objs[0]
+        else:
+            raise ValueError(f"Could not find folder {folder}")
 
     def _run_script(self, script, *args):
         return run_script(script, self.name, *args)
@@ -245,7 +285,7 @@ class Note:
     def account(self) -> str:
         """Account note belongs to"""
         # can't determine this easily from the note object
-        # so need to use AppleScript
+        # so may to use AppleScript
         return str(run_script("noteGetAccount", self.id))
 
     @cached_property
@@ -256,7 +296,7 @@ class Note:
         else:
             # if note object created from selection or predicate it may show ID of 0
             # but the ID is in the string representation of the object so parse it
-            return self._parse_id_from_object() or 0
+            return parse_id_from_object(self._note) or 0
 
     @property
     def name(self) -> str:
@@ -388,7 +428,7 @@ class Attachment:
     def __init__(self, attachment: ScriptingBridge.SBObject):
         self._attachment = attachment
 
-    @property
+    @cached_property
     def id(self) -> str:
         """ID of attachment"""
         return str(self._attachment.id())
@@ -428,3 +468,24 @@ class Attachment:
         )
         self._attachment.saveIn_as_(url, OSType("item"))
         return str(url.path())
+
+
+class Folder:
+    """Folder object"""
+
+    def __init__(self, folder: ScriptingBridge.SBObject):
+        self._folder = folder
+
+    @cached_property
+    def id(self) -> str:
+        """ID of folder"""
+        return (
+            str(folder_id)
+            if (folder_id := self._folder.id())
+            else str(parse_id_from_object(self._folder.get()))
+        )
+
+    @property
+    def name(self) -> str:
+        """Name of folder"""
+        return str(self._folder.name())
