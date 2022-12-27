@@ -315,7 +315,15 @@ on noteShow(accountName, noteID)
 	end tell
 end noteShow
 
-(*********** Folder Class *********)
+on noteGetAttachments(accountName, noteID)
+	(* Get attachments for noteID in accountName *)
+	tell application "Notes"
+		tell account accountName
+			set attachmentIDs to id of attachments of note id (noteID)
+			return attachmentIDs
+		end tell
+	end tell
+end noteGetAttachments
 
 on folderGetName(accountName, folderID)
 	(* Get name of folder*)
@@ -491,6 +499,38 @@ on accountID(accountName)
 		end tell
 	end tell
 end accountID
+
+(********** Attachment Class **********)
+
+on attachmentSaveAttachment(accountName, noteID, attachmentID, thePath)
+	(* save a note attachment *)
+	tell application "Notes"
+		tell account accountName
+			repeat with theAttachment in attachments of note id (noteID)
+				set theID to «class seld» of (theAttachment as record)
+				if theID = attachmentID then
+					tell theAttachment
+						save in POSIX file thePath
+					end tell
+				end if
+			end repeat
+		end tell
+	end tell
+end attachmentSaveAttachment
+
+on attachmentGetName(accountName, noteID, attachmentID)
+	(* Return attachment name *)
+	tell application "Notes"
+		tell account accountName
+			repeat with theAttachment in attachments of note id (noteID)
+				set theID to «class seld» of (theAttachment as record)
+				if theID = attachmentID then
+					return name of theAttachment
+				end if
+			end repeat
+		end tell
+	end tell
+end attachmentGetName
 
 (********** Test **********)
 
