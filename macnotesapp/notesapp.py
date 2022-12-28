@@ -70,8 +70,8 @@ class NotesApp:
         body: list[str] | None = None,
         text: list[str] | None = None,
         password_protected: bool | None = None,
-        accounts: list[str] | None = None,
         id: list[str] | None = None,
+        accounts: list[str] | None = None,
     ) -> list["Note"]:
         """Return Note object for all notes contained in Notes.app or notes filtered by property"""
         # TODO: should this be a generator?
@@ -86,6 +86,34 @@ class NotesApp:
                 Account(account).notes(name, body, text, password_protected, id)
             )
         return notes
+
+    def noteslist(
+        self,
+        name: list[str] | None = None,
+        body: list[str] | None = None,
+        text: list[str] | None = None,
+        password_protected: bool | None = None,
+        id: list[str] | None = None,
+        accounts: list[str] | None = None,
+    ) -> "NotesList":
+        """Return NoteList object for all notes contained in account or notes filtered by property"""
+        account_list = self.app.accounts()
+        if accounts:
+            format_str = "name == %@" + " OR name == %@ " * (len(accounts) - 1)
+            predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, accounts)
+            account_list = account_list.filteredArrayUsingPredicate_(predicate)
+        noteslists = []
+        for account in account_list:
+            noteslists.append(
+                Account(account)._noteslist(
+                    name=name,
+                    body=body,
+                    text=text,
+                    password_protected=password_protected,
+                    id=id,
+                )
+            )
+        return NotesList(*noteslists)
 
     @property
     def selection(self) -> list["Note"]:
@@ -179,7 +207,7 @@ class Account:
         password_protected: bool | None = None,
         id: list[str] | None = None,
     ) -> list["Note"]:
-        """Return Note object for all notes contained in Notes.app or notes filtered by property"""
+        """Return Note object for all notes contained in account or notes filtered by property"""
         # TODO: should this be a generator?
         notes = self._account.notes()
         format_strings = []
@@ -215,6 +243,18 @@ class Account:
             predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, *args)
             notes = notes.filteredArrayUsingPredicate_(predicate)
         return [Note(note) for note in notes.get()]
+
+    def noteslist(
+        self,
+        name: list[str] | None = None,
+        body: list[str] | None = None,
+        text: list[str] | None = None,
+        password_protected: bool | None = None,
+        id: list[str] | None = None,
+    ) -> "NotesList":
+        """Return NoteList object for all notes contained in account or notes filtered by property"""
+        notes = self._noteslist(name, body, text, password_protected, id)
+        return NotesList(notes)
 
     def folder(self, folder: str) -> "Folder":
         """Return Folder object for folder"""
@@ -260,6 +300,50 @@ class Account:
 
         raise ScriptingBridgeError(f"Could not create note '{name}' with body '{body}'")
 
+    def _noteslist(
+        self,
+        name: list[str] | None = None,
+        body: list[str] | None = None,
+        text: list[str] | None = None,
+        password_protected: bool | None = None,
+        id: list[str] | None = None,
+    ) -> ScriptingBridge.SBElementArray:
+        """Return SBElementArray for all notes contained in account or notes filtered by property"""
+        notes = self._account.notes()
+        format_strings = []
+        if name and notes:
+            name_strings = ["(name contains[cd] %@)"] * len(name)
+            format_strings.append(name_strings)
+        if body and notes:
+            body_strings = ["(plaintext contains[cd] %@)"] * len(body)
+            format_strings.append(body_strings)
+        if text and notes:
+            text_strings = ["(name contains[cd] %@)"] * len(text)
+            text_strings.extend(["(plaintext contains[cd] %@)"] * len(text))
+            format_strings.append(text_strings)
+        if password_protected is not None and notes:
+            password_string = (
+                ["(passwordProtected == TRUE)"]
+                if password_protected
+                else ["(passwordProtected == FALSE)"]
+            )
+            format_strings.append(password_string)
+        if id and notes:
+            id_string = ["(id == %@)"] * len(id)
+            format_strings.append(id_string)
+        if format_strings:
+            # have one or more search predicates; filter notes
+            args = name or []
+            args += body or []
+            if text:
+                args += text * 2
+            args += id or []
+            or_strings = [" OR ".join(strings) for strings in format_strings]
+            format_str = "(" + ") AND (".join(or_strings) + ")"
+            predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, *args)
+            notes = notes.filteredArrayUsingPredicate_(predicate)
+        return notes
+
     def _folder_for_name(self, folder: str) -> ScriptingBridge.SBObject:
         """Return ScriptingBridge folder object for folder"""
         if folder_objs := self._account.folders().filteredArrayUsingPredicate_(
@@ -281,6 +365,97 @@ class Account:
         """Generator to yield all notes contained in Notes.app"""
         for note in self._account.notes():
             yield Note(note)
+
+
+class NotesList:
+    """NotesList object for list of notes"""
+
+    def __init__(self, *noteslist: ScriptingBridge.SBElementArray):
+        self._noteslist = noteslist
+
+    @property
+    def id(self) -> list[str]:
+        """Return ID of every note in list as list of strings"""
+        return self._apply_selector("id")
+
+    @property
+    def name(self) -> list[str]:
+        """Return name of every note in list as list of strings"""
+        return self._apply_selector("name")
+
+    @property
+    def body(self) -> list[str]:
+        """Return body of every note in list as list of strings"""
+        return self._apply_selector("body")
+
+    @property
+    def plaintext(self) -> list[str]:
+        """Return plaintext of every note in list as list of strings"""
+        return self._apply_selector("plaintext")
+
+    @property
+    def container(self) -> list[str]:
+        """Return container of every note in list as list of strings"""
+        return self._apply_selector("container")
+
+    @property
+    def creation_date(self) -> list[datetime.datetime]:
+        """Return creation date of every note in list as list of datetimes"""
+        return self._apply_selector("creationDate")
+
+    @property
+    def modification_date(self) -> list[datetime.datetime]:
+        """Return modification date of every note in list as list of datetimes"""
+        return self._apply_selector("modificationDate")
+
+    @property
+    def password_protected(self) -> list[bool]:
+        """Return whether every note in list is password protected as list of bools"""
+        return self._apply_selector("passwordProtected")
+
+    def asdict(self, body: str = "html") -> list[dict[str, str]]:
+        """Return list of dict representations of note
+
+        Args:
+            body: "html" or "plaintext" to return body of note in that format
+        """
+        return [
+            {
+                "id": note[0],
+                "name": note[1],
+                "body": note[2],
+                "creation_date": note[3],
+                "modification_date": note[4],
+                "password_protected": note[5],
+                "folder": note[6],
+            }
+            for note in zip(
+                self.id,
+                self.name,
+                self.body if body == "html" else self.plaintext,
+                self.creation_date,
+                self.modification_date,
+                self.password_protected,
+                self.container,
+            )
+        ]
+
+    def _apply_selector(self, selector) -> list[str]:
+        """Return note properties in list that pass selector"""
+        results_list = []
+        for noteslist in self._noteslist:
+            results = noteslist.arrayByApplyingSelector_(selector)
+            if selector in ["creationDate", "modificationDate"]:
+                results_list.extend(NSDate_to_datetime(date) for date in results)
+            elif selector == "container":
+                results_list.extend(container.name() for container in results)
+            else:
+                results_list.extend(list(results))
+        return results_list
+
+    def __len__(self):
+        """Return count of notes in list"""
+        return len(self._noteslist)
 
 
 class Note:
