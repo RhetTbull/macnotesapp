@@ -38,6 +38,7 @@ notes = "macnotesapp.__main__:cli_main"
 [tool.poetry.group.dev.dependencies]
 bump2version = "^1.0.1"
 textual = { extras = ["dev"], version = "^0.8.1" }
+mktestdocs = "^0.2.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

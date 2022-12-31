@@ -399,6 +399,11 @@ class NotesList:
         return self._apply_selector("container")
 
     @property
+    def folder(self) -> list[str]:
+        """Return folder of every note in list as list of strings"""
+        return self.container
+
+    @property
     def creation_date(self) -> list[datetime.datetime]:
         """Return creation date of every note in list as list of datetimes"""
         return self._apply_selector("creationDate")
@@ -413,26 +418,24 @@ class NotesList:
         """Return whether every note in list is password protected as list of bools"""
         return self._apply_selector("passwordProtected")
 
-    def asdict(self, body: str = "html") -> list[dict[str, str]]:
-        """Return list of dict representations of note
-
-        Args:
-            body: "html" or "plaintext" to return body of note in that format
-        """
+    def asdict(self) -> list[dict[str, str]]:
+        """Return list of dict representations of note"""
         return [
             {
                 "id": note[0],
                 "name": note[1],
                 "body": note[2],
-                "creation_date": note[3],
-                "modification_date": note[4],
-                "password_protected": note[5],
-                "folder": note[6],
+                "plaintext": note[3],
+                "creation_date": note[4],
+                "modification_date": note[5],
+                "password_protected": note[6],
+                "folder": note[7],
             }
             for note in zip(
                 self.id,
                 self.name,
-                self.body if body == "html" else self.plaintext,
+                self.body,
+                self.plaintext,
                 self.creation_date,
                 self.modification_date,
                 self.password_protected,
@@ -455,7 +458,7 @@ class NotesList:
 
     def __len__(self):
         """Return count of notes in list"""
-        return len(self._noteslist)
+        return len(self.id)
 
 
 class Note:
@@ -542,6 +545,7 @@ class Note:
     def password_protected(self) -> bool:
         """Return password protected status of note"""
         # return self._note.passwordProtected() # returns False even when note is password protected, at least on Catalina
+        # TODO: appears to work correctly on Ventura so need to check OS version
         return bool(self._run_script("noteGetPasswordProtected"))
 
     @property
@@ -560,7 +564,7 @@ class Note:
         """Show note in Notes.app UI"""
         self._run_script("noteShow")
 
-    def asdict(self, body: str = "html") -> dict[str, Any]:
+    def asdict(self) -> dict[str, Any]:
         """Return dict representation of note
 
         Args:
@@ -570,7 +574,8 @@ class Note:
             "account": self.account,
             "id": self.id,
             "name": self.name,
-            "body": self.body if body == "html" else self.plaintext,
+            "body": self.body,
+            "plaintext": self.plaintext,
             "creation_date": self.creation_date,
             "modification_date": self.modification_date,
             "password_protected": self.password_protected,
