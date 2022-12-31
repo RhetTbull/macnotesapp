@@ -34,9 +34,8 @@ def parse_id_from_object(obj: ScriptingBridge.SBObject) -> str:
     # I haven't been able to figure out why but in this case, the id can be determined
     # by examining the string representation of the object which looks like this:
     # <SBObject @0x7fd721544690: <class ''> id "x-coredata://19B82A76-B3FE-4427-9C5E-5107C1E3CA57/IMAPNote/p87" of application "Notes" (55036)>
-    match = re.search(r'id "(x-coredata://.+?)"', str(obj))
-    if match:
-        return match.group(1)
+    if match := re.search(r'id "(x-coredata://.+?)"', str(obj)):
+        return match[1]
     return None
 
 
@@ -102,17 +101,16 @@ class NotesApp:
             format_str = "name == %@" + " OR name == %@ " * (len(accounts) - 1)
             predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, accounts)
             account_list = account_list.filteredArrayUsingPredicate_(predicate)
-        noteslists = []
-        for account in account_list:
-            noteslists.append(
-                Account(account)._noteslist(
-                    name=name,
-                    body=body,
-                    text=text,
-                    password_protected=password_protected,
-                    id=id,
-                )
+        noteslists = [
+            Account(account)._noteslist(
+                name=name,
+                body=body,
+                text=text,
+                password_protected=password_protected,
+                id=id,
             )
+            for account in account_list
+        ]
         return NotesList(*noteslists)
 
     @property
@@ -153,10 +151,7 @@ class NotesApp:
 
     def __len__(self):
         """Return count of notes"""
-        length = 0
-        for account in self.app.accounts():
-            length += len(account.notes())
-        return length
+        return sum(len(account.notes()) for account in self.app.accounts())
 
     def __iter__(self):
         """Generator to yield all notes contained in Notes.app"""
@@ -594,9 +589,8 @@ class Note:
         # I haven't been able to figure out why but in this case, the id can be determined
         # by examining the string representation of the object which looks like this:
         # <SBObject @0x7fd721544690: <class ''> id "x-coredata://19B82A76-B3FE-4427-9C5E-5107C1E3CA57/IMAPNote/p87" of application "Notes" (55036)>
-        match = re.search(r'id "(x-coredata://.+?)"', str(self._note))
-        if match:
-            return match.group(1)
+        if match := re.search(r'id "(x-coredata://.+?)"', str(self._note)):
+            return match[1]
         return None
 
     def __repr__(self):
