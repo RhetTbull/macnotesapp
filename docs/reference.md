@@ -4,10 +4,28 @@
 
 ::: macnotesapp.notesapp.NotesApp
     handler: python
-    show_root_heading: false
 
 ## Account
 
 ::: macnotesapp.notesapp.Account
     handler: python
-    show_root_heading: false
+
+## Folder
+
+::: macnotesapp.notesapp.Folder
+    handler: python
+
+## Note
+
+::: macnotesapp.notesapp.Note
+    handler: python
+
+## NotesList
+
+::: macnotesapp.notesapp.NotesList
+    handler: python
+
+## Attachment
+
+::: macnotesapp.notesapp.Attachment
+    handler: python
