@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://rhettbull.github.io/macnotesapp/cli/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Command Line Reference - MacNotesApp Docs</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">MacNotesApp Docs</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">Command Line Reference</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href=".." class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" class="nav-link disabled">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#command-line-reference" class="nav-link">Command Line Reference</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#notes" class="nav-link">notes</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#accounts" class="nav-link">accounts</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#add" class="nav-link">add</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#cat" class="nav-link">cat</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#config" class="nav-link">config</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#dump" class="nav-link">dump</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#help" class="nav-link">help</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#list" class="nav-link">list</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="command-line-reference">Command Line Reference</h1>
+<h1 id="notes">notes</h1>
+<p>notes: work with Apple Notes on the command line.</p>
+<p><strong>Usage:</strong></p>
+<pre><code>notes [OPTIONS] COMMAND [ARGS]...
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code>  -v, --version  Show the version and exit.
+  --help         Show this message and exit.
+</code></pre>
+<h2 id="accounts">accounts</h2>
+<p>Print information about Notes accounts.</p>
+<p><strong>Usage:</strong></p>
+<pre><code>notes accounts [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code>  -j, --json  Print output in JSON format.
+  --help      Show this message and exit.
+</code></pre>
+<h2 id="add">add</h2>
+<p>Add new note.</p>
+<p>There are multiple ways to add a new note:</p>
+<p>Add a new note from standard input (STDIN):</p>
+<p>notes add</p>
+<p>cat file.txt | notes add</p>
+<p>notes add &lt; file.txt</p>
+<p>Add a new note by passing string on command line:</p>
+<p>notes add NOTE</p>
+<p>Add a new note by opening default editor (defined in $EDITOR or via <code>notes config</code>):</p>
+<p>notes add --edit</p>
+<p>notes add -e</p>
+<p>Add a new note from URL (downloads URL, creates a cleaned readable version to store in new Note):</p>
+<p>notes add --url URL</p>
+<p>notes add -u URL</p>
+<p>If NOTE is a single line, adds new note with name NOTE and no body.
+If NOTE is more than one line, adds new note where name is first line of NOTE and body is remainder.</p>
+<p>Body of note must be plain text unless --html/-h or --markdown/-m flag is set
+in which case body should be HTML or Markdown, respectively.
+If --edit/-e flag is set, note will be opened in default editor before being added.
+If --show/-s flag is set, note will be shown in Notes.app after being added.</p>
+<p>Account and top level folder may be specified with --account/-a and --folder/-f, respectively.
+If not provided, default account and folder are used.</p>
+<p><strong>Usage:</strong></p>
+<pre><code>notes add [OPTIONS] NOTE
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code>  -s, --show             Show note in Notes after adding.
+  -F, --file FILENAME
+  -u, --url URL
+  -h, --html             Use HTML for body of note.
+  -m, --markdown         Use Markdown for body of note.
+  -p, --plaintext        Use plaintext for body of note (default unless
+                         changed in `notes config`).
+  -e, --edit             Edit note text before adding in default editor.
+  -a, --account ACCOUNT  Add note to account ACCOUNT.
+  -f, --folder FOLDER    Add note to folder FOLDER.
+  --help                 Show this message and exit.
+</code></pre>
+<h2 id="cat">cat</h2>
+<p>Print one or more notes to STDOUT</p>
+<p><strong>Usage:</strong></p>
+<pre><code>notes cat [OPTIONS] NOTE_NAME
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code>  -p, --plaintext  Output note as plain text.
+  -m, --markdown   Output note as Markdown.
+  -h, --html       Output note as HTML.
+  -j, --json       Output note as JSON. The default format for the note body
+                   in JSON is HTML (this is how the note is stored in Notes).
+                   If --plaintext or --markdown is also specified, the note
+                   body in the resulting JSON will be in the specified format.
+  --help           Show this message and exit.
+</code></pre>
+<h2 id="config">config</h2>
+<p>Configure default settings for account, editor, etc.</p>
+<p><strong>Usage:</strong></p>
+<pre><code>notes config [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code>  --help  Show this message and exit.
+</code></pre>
+<h2 id="dump">dump</h2>
+<p>Dump all notes or selection of notes for debugging</p>
+<p><strong>Usage:</strong></p>
+<pre><code>notes dump [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code>  -s, --selected  Dump only selected notes.
+  -B, --no-body   Do not dump note body.
+  --help          Show this message and exit.
+</code></pre>
+<h2 id="help">help</h2>
+<p>Print help; for help on commands: help <command>.</p>
+<p><strong>Usage:</strong></p>
+<pre><code>notes help [OPTIONS] [TOPIC] [SUBTOPIC]
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code>  --help  Show this message and exit.
+</code></pre>
+<h2 id="list">list</h2>
+<p>List notes, optionally filtering by account or text.</p>
+<p><strong>Usage:</strong></p>
+<pre><code>notes list [OPTIONS] TEXT
+</code></pre>
+<p><strong>Options:</strong></p>
+<pre><code>  -a, --account ACCOUNT  Limit results to account ACCOUNT; may be repeated to
+                         include multiple accounts.
+  --help                 Show this message and exit.
+</code></pre></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

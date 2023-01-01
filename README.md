@@ -21,6 +21,10 @@ Once you've installed macnotesapp with pipx, to upgrade to the latest version:
 
 **Note**: Currently tested on MacOS 10.15.7/Catalina and 13.1/Ventura.
 
+## Documentation
+
+Full documentation available at [https://RhetTbull.github.io/macnotesapp/](https://RhetTbull.github.io/macnotesapp/)
+
 ## Command Line Usage
 
 <!-- [[[cog

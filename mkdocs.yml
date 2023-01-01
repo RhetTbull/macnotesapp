@@ -1,0 +1,9 @@
+site_name: MacNotesApp Docs 
+site_url: https://rhettbull.github.io/macnotesapp/
+markdown_extensions:
+    - mkdocs-click
+nav:
+    - Home: index.md
+    - Command Line Reference: cli.md
+hooks:
+    - docs/strip_rich_markup.py

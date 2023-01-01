@@ -10,6 +10,10 @@ rm -rf build
 echo "Updating README.md"
 cog -r README.md
 
+# update docs
+echo "Building docs"
+mkdocs build
+
 # build the package
 echo "Building package"
 python3 -m build
