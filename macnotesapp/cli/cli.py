@@ -16,6 +16,7 @@ from rich.markdown import Markdown
 
 import macnotesapp
 from macnotesapp import __version__
+from macnotesapp import NotesList
 
 from .cli_config import (
     CONFIG_FILE,
@@ -223,27 +224,12 @@ def add_note(
 def list_notes(account_name, text):
     """List notes, optionally filtering by account or text."""
     notesapp = macnotesapp.NotesApp()
-    if not account_name and not text:
-        # list all notes
-        print_notes_list(notesapp)
-        return
-
-    account_name = account_name or notesapp.accounts
-    notes = []
-    for account_ in account_name:
-        try:
-            account = notesapp.account(account_)
-        except ScriptError:
-            click.echo(f"Invalid account: {account_}", err=True)
-            raise click.Abort()
-
-        if text:
-            notes += account.find_notes(name=text)
-            notes += account.find_notes(text=text)
-        else:
-            notes += account.notes
-    notes = list(set(notes))
-    print_notes_list(notes)
+    print_notes_list(
+        notesapp.noteslist(
+            accounts=[account_name] if account_name else None,
+            text=[text] if text else None,
+        )
+    )
 
 
 @click.command(name="cat")
@@ -265,7 +251,7 @@ def list_notes(account_name, text):
 def cat_notes(name, plaintext, markdown, html, json_):
     """Print one or more notes to STDOUT"""
     notesapp = macnotesapp.NotesApp()
-    notes = notesapp.find_notes(name=name)
+    notes = notesapp.notes(name=[name])
     output = (
         "plaintext"
         if plaintext
@@ -322,9 +308,7 @@ def config():
         if not env_or_path.startswith("$"):
             return pathlib.Path(env_or_path).is_file()
         path = os.environ.get(env_or_path[1:])
-        if path and pathlib.Path(path).is_file():
-            return True
-        return False
+        return bool(path and pathlib.Path(path).is_file())
 
     editor = settings.get("editor")
     editor = editor if editor and validate_editor(editor) else DEFAULT_EDITOR
@@ -343,9 +327,13 @@ def config():
 def dump(selected, no_body):
     """Dump all notes or selection of notes for debugging"""
     notesapp = macnotesapp.NotesApp()
-    notes = notesapp.selection if selected else notesapp.notes
-    for note in notes:
-        dump_note(note, no_body)
+    if selected:
+        for note in notesapp.selection:
+            dump_note(note, no_body=no_body)
+    else:
+        for account in notesapp.accounts:
+            noteslist = notesapp.noteslist(accounts=[account])
+            dump_notes_list(noteslist, account)
 
 
 # Click CLI object & context settings
@@ -394,39 +382,34 @@ def get_account_data() -> Dict:
     return account_data
 
 
-def print_notes_list(notes: Iterable[macnotesapp.Note]):
+def print_notes_list(noteslist: NotesList):
     """Print note list to STDOUT"""
-    notesapp = macnotesapp.NotesApp()
-    accounts = notesapp.accounts
-    account_len = max(len(a) for a in accounts)
-    account_len = max(account_len, len("Account"))
-    folder_len = 0
-    for account in accounts:
-        folders = notesapp.account(account).folders
-        folder_len = max(folder_len, max(len(f) for f in folders))
-    folder_len = max(folder_len, len("Folder"))
+    folders = noteslist.folder
+    names = noteslist.name
+    body = noteslist.plaintext
+    folder_len = max([len(f) for f in folders if f is not None] or [10])
     name_len = 30
-    console = Console()
     padding = 2
-    body_len = console.width - name_len - folder_len - account_len - padding * 3
-    body_len = max(body_len, 20)
+    console = Console()
+    body_len = console.width - name_len - folder_len - padding * 3
+    body_len = max(body_len, 30)
     format_str = (" " * padding).join(
-        "{:<" + f"{x}" + "}" for x in [account_len, folder_len, name_len, body_len]
+        "{:<" + f"{x}" + "}" for x in [folder_len, name_len, body_len]
     )
-    print(format_str.format("Account", "Folder", "Name", "Body"))
-    for note in notes:
-        account = note.account
-        folder = note.folder
-        name = note.name
+    print(format_str.format("Folder", "Name", "Body"))
+    for note in zip(folders, names, body):
+        folder, name, body = note
+        folder = folder or "---"
+        name = name or "---"
+        body = body or "---"
         name = (
             f"{name[:name_len-padding]}.." if len(name) > (name_len - padding) else name
         )
-        body = note.plaintext
         body = body.replace("\n", " ")
         body = (
             f"{body[:body_len-padding]}.." if len(body) > (body_len - padding) else body
         )
-        print(format_str.format(account, folder, name, body))
+        print(format_str.format(folder, name, body))
 
 
 def print_note(note: macnotesapp.Note, output: str):
@@ -459,7 +442,10 @@ def print_notes_as_json(notes: Iterable[macnotesapp.Note], plaintext: bool = Fal
 
     json_list = []
     for note in notes:
-        json_data = note.asdict(body="html" if not plaintext else "plaintext")
+        json_data = note.asdict()
+        if plaintext:
+            json_data["body"] = json_data["plaintext"]
+        del json_data["plaintext"]
         json_data["creation_date"] = json_data["creation_date"].isoformat()
         json_data["modification_date"] = json_data["modification_date"].isoformat()
         json_list.append(json_data)
@@ -479,3 +465,21 @@ def dump_note(note: macnotesapp.Note, no_body: bool = False):
     if not no_body:
         print(f"{note.body=}")
         print(f"{note.plaintext=}")
+
+
+def dump_notes_list(
+    noteslist: macnotesapp.NotesList, account: str, no_body: bool = False
+):
+    """Dump NotesList data to STDOUT for debugging purposes"""
+    notesdicts = noteslist.asdict()
+    for notesdict in notesdicts:
+        print(f"note.id={notesdict['id']}")
+        print(f"note.name={notesdict['name']}")
+        print(f"note.folder={notesdict['folder']}")
+        print(f"note.account={account}")
+        print(f"note.creation_date={notesdict['creation_date']}")
+        print(f"note.modification_date={notesdict['modification_date']}")
+        print(f"note.password_protected={notesdict['password_protected']}")
+        if not no_body:
+            print(f"note.body={notesdict['body']}")
+            print(f"note.plaintext={notesdict['plaintext']}")

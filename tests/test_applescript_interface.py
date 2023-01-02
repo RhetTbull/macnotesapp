@@ -54,7 +54,7 @@ def test_notes_len(notes):
 
 def test_notes_notes(notes):
     """Test NotesApp.notes"""
-    assert prompt(f"Are there {len(notes.notes)} notes?")
+    assert prompt(f"Are there {len(notes.notes())} notes?")
 
 
 def test_notes_generator(notes):
@@ -81,9 +81,9 @@ def test_notes_selection_2(notes):
 
 
 def test_notes_find_notes_name(notes):
-    """Test NotesApp.find_notes"""
+    """Test NotesApp.notes() with filter criteria"""
     name = input("\nPlease type a name of a note to search for: ")
-    matches = notes.find_notes(name=name)
+    matches = notes.notes(name=[name])
     assert prompt(
         f"Found {len(matches)} matching note(s) with name matching '{name}':"
         f"\n{chr(10).join([f'- {note.name}' for note in matches])}.\n\nIs this correct?"
@@ -91,19 +91,19 @@ def test_notes_find_notes_name(notes):
 
 
 def test_notes_find_notes_body(notes):
-    """Test NotesApp.find_notes"""
+    """Test NotesApp.notes() with filter criteria"""
     text = input("\nPlease type text of a note to search for in body: ")
-    matches = notes.find_notes(text=text)
+    matches = notes.notes(body=[text])
     assert prompt(
         f"Found {len(matches)} matching note(s) with text '{text}' in body:\n"
         f"{chr(10).join([f'- {note.name}' for note in matches])}.\n\nIs this correct?"
     )
 
 
-def test_notes_find_notes_name_and_body(notes):
-    """Test NotesApp.find_notes"""
+def test_notes_find_notes_text(notes):
+    """Test NotesApp.notes() with filter criteria"""
     text = input("\nPlease type text of a note to search for in name and body: ")
-    matches = notes.find_notes(name=text, text=text)
+    matches = notes.notes(text=[text])
     assert prompt(
         f"Found {len(matches)} matching note(s) with text '{text}' in body:\n"
         f"{chr(10).join([f'- {note.name}' for note in matches])}.\n\nIs this correct?"
@@ -139,28 +139,26 @@ def test_account(notes):
         choices=notes.accounts,
         default=notes.default_account,
     ).ask()
-    account = Account(account_name)
+    account = notes.account(account_name)
     assert prompt(f"Is name of account '{account.name}'?")
     assert prompt(f"Is default folder of account '{account.default_folder}'?")
     assert prompt(f"Does account contain {len(account)} notes?")
-    assert prompt(f"Does account contain {len(account.notes)} notes?")
-    all_notes = list(account.notes)
-    assert prompt(f"Does account contain {len(all_notes)} notes?")
+    assert prompt(f"Does account contain {len(account.notes())} notes?")
     assert prompt(f"Does account contain {account.folders} folders?")
 
     name = input(
         f"\nPlease type a name of a note to search for in account {account_name}: "
     )
-    matches = account.find_notes(name=name)
+    matches = account.notes(name=[name])
     assert prompt(
         f"Found {len(matches)} matching note(s) with text '{name}' in name:\n"
         f"{chr(10).join([f'- {note.name}' for note in matches])}.\n\nIs this correct?"
     )
 
     text = input(
-        f"\nPlease type a text of a note to search for in account {account_name}: "
+        f"\nPlease type a body text of a note to search for in account {account_name}: "
     )
-    matches = account.find_notes(text=text)
+    matches = account.notes(text=[text])
     assert prompt(
         f"Found {len(matches)} matching note(s) with text '{text}' in body:\n"
         f"{chr(10).join([f'- {note.name}' for note in matches])}.\n\nIs this correct?"
@@ -169,7 +167,7 @@ def test_account(notes):
     text = input(
         f"\nPlease type a text of a note to search both name and body for in account {account_name}: "
     )
-    matches = account.find_notes(name=text, text=text)
+    matches = account.notes(name=[text], body=[text])
     assert prompt(
         f"Found {len(matches)} matching note(s) with text '{text}' in body:\n"
         f"{chr(10).join([f'- {note.name}' for note in matches])}.\n\nIs this correct?"
@@ -190,7 +188,7 @@ def test_account_make_note(notes):
         choices=notes.accounts,
         default=notes.default_account,
     ).ask()
-    account = Account(account_name)
+    account = notes.account(account_name)
     name = input("\nPlease type name of note to make: ")
     body = input("\nPlease type body of note to make: ")
     note = account.make_note(name=name, body=body)
@@ -205,7 +203,7 @@ def test_account_make_note_in_folder(notes):
         choices=notes.accounts,
         default=notes.default_account,
     ).ask()
-    account = Account(account_name)
+    account = notes.account(account_name)
     folder = questionary.select(
         "\nPlease select name of folder to use for test: ",
         choices=account.folders,
@@ -233,7 +231,9 @@ def test_note(notes):
     assert prompt(f"Does note.body = '{note.body}'?")
     assert prompt(f"Does note plain text = '{note.plaintext}'?")
     assert prompt(f"Does note creation date = {note.creation_date.isoformat()}?")
-    assert prompt(f"Does note modification date = {note.modification_date.isoformat()}?")
+    assert prompt(
+        f"Does note modification date = {note.modification_date.isoformat()}?"
+    )
     assert prompt(f"Does note folder = '{note.folder}'?")
     assert prompt(f"Does note password protection status = {note.password_protected}?")
 

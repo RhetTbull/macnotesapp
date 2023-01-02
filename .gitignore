@@ -18,3 +18,4 @@ venv/
 .python-version
 cov.xml
 .eggs/
+poetry.toml
