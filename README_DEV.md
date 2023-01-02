@@ -11,6 +11,14 @@ poetry install
 poetry shell
 ```
 
+## Version Management
+
+Versioning is handled with [bump2version](https://github.com/c4urself/bump2version). To bump the version, run the following command:
+
+```bash
+bump2version <major|minor|patch> --verbose
+```
+
 ## Building
 
 The `build.sh` script will build the project and package it for distribution. To build the project, run the following command:
