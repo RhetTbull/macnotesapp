@@ -5,6 +5,10 @@ import questionary
 
 from macnotesapp import Account, Note, NotesApp
 
+from .utils import get_macos_version
+
+ATTACHMENT_PATH = "tests/attachment.txt"
+
 
 @pytest.fixture(scope="session")
 def notes() -> NotesApp:
@@ -117,6 +121,19 @@ def test_notes_make_note(notes):
     body = input("\nPlease type body of note to make: ")
     note = notes.make_note(name=name, body=body)
     assert prompt(f"Was a new note named '{name}' created in default account?")
+
+
+@pytest.mark.skipif(get_macos_version() < (13, 0, 0), reason="Requires macOS 13.0 or higher")
+def test_notes_make_note_with_attachment(notes):
+    """Test NotesApp.make_note"""
+    print("This test will make a new note in the default account.")
+    name = "Note with attachment"
+    body = "This note has an attachment. #macnotesapp<br>"
+    attachment = ATTACHMENT_PATH
+    note = notes.make_note(name=name, body=body, attachments=[attachment])
+    assert prompt(
+        f"Was a new note named '{name}' created in default account with attachment?"
+    )
 
 
 def test_notes_quit(notes):

@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import os
+import pathlib
 import re
 from datetime import datetime
 from functools import cached_property
-from typing import Any, Optional, Generator
+from typing import Any, Generator, Optional
 
 import AppKit
 import ScriptingBridge
@@ -647,9 +648,23 @@ class Note:
         """Return list of attachments for note as Attachment objects"""
         return [Attachment(attachment) for attachment in self._note.attachments()]
 
-    def add_attachment(self, path: str):
-        """Add attachment to note"""
-        attachment_id = self._run_script("noteAddAttachment", path)
+    def add_attachment(self, path: str) -> "Attachment":
+        """Add attachment to note
+
+        Args:
+            path: path to file to attach
+
+        Returns:
+            Attachment object for attached file
+
+        Raises:
+            FileNotFoundError: if file not found
+        """
+        # must pass fully resolved path to AppleScript
+        path = pathlib.Path(path).expanduser().resolve()
+        if not path.exists():
+            raise FileNotFoundError(f"File not found: {path}")
+        attachment_id = self._run_script("noteAddAttachment", str(path))
         return Attachment(self._note.attachments().objectWithID_(attachment_id))
 
     def show(self):
