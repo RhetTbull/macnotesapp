@@ -1,0 +1,1 @@
+This is a sample attachment that will be added to a note during testing.
