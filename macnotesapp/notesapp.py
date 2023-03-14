@@ -646,7 +646,19 @@ class Note:
     @property
     def attachments(self) -> list["Attachment"]:
         """Return list of attachments for note as Attachment objects"""
-        return [Attachment(attachment) for attachment in self._note.attachments()]
+
+        # .attachments() method on note object sometimes returns duplicates, e.g each attachment is returned twice
+        # filter out duplicates by comparing attachment ID
+        # this appears to happen only with attachments added via AppleScript or ScriptingBridge
+        # not with those natively added in Notes.app
+        attachments = [
+            Attachment(attachment) for attachment in self._note.attachments()
+        ]
+        return [
+            attachment
+            for i, attachment in enumerate(attachments)
+            if attachment.id not in [a.id for a in attachments[:i]]
+        ]
 
     def add_attachment(self, path: str) -> "Attachment":
         """Add attachment to note
@@ -660,6 +672,13 @@ class Note:
         Raises:
             FileNotFoundError: if file not found
         """
+
+        # Implementation note:
+        # this is currently done with AppleScript which takes ~300ms on M1 Mac
+        # it's faster with ScriptingBridge (~80ms) but when adding via ScriptingBridge
+        # the attachment sometimes is added twice
+        # See #15 for more details
+
         # must pass fully resolved path to AppleScript
         path = pathlib.Path(path).expanduser().resolve()
         if not path.exists():
