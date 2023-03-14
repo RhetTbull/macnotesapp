@@ -308,6 +308,18 @@ on noteShow(accountName, noteID)
 	end tell
 end noteShow
 
+on noteAddAttachment(accountName, noteID, attachmentPath)
+	tell application "Notes"
+		tell account accountName
+			set theNote to note id (noteID)
+			set theAttachment to make new attachment at theNote with data POSIX file attachmentPath
+			return id of theAttachment
+		end tell
+	end tell
+end noteAddAttachment
+
+(******** Folder Class *********)
+
 on noteGetAttachments(accountName, noteID)
 	(* Get attachments for noteID in accountName *)
 	tell application "Notes"

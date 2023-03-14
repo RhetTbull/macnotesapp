@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import os
+import pathlib
 import re
 from datetime import datetime
 from functools import cached_property
-from typing import Any, Optional, Generator
+from typing import Any, Generator, Optional
 
 import AppKit
 import ScriptingBridge
@@ -152,19 +153,26 @@ class NotesApp:
         """Return version of Notes.app"""
         return str(self.app.version())
 
-    def make_note(self, name: str, body: str) -> "Note":
+    def make_note(
+        self, name: str, body: str, attachments: list[str] | None = None
+    ) -> "Note":
         """Create new note in default folder of default account.
 
         Args:
             name: name of notes
             body: body of note as HTML text
+            attachments: optional list of paths to attachments to add to note
 
         Returns:
             newly created Note object
         """
         # reference: https://developer.apple.com/documentation/scriptingbridge/sbobject/1423973-initwithproperties
         account = Account(self.app.defaultAccount())
-        return account.make_note(name, body)
+        note = account.make_note(name, body)
+        if attachments:
+            for attachment in attachments:
+                note.add_attachment(attachment)
+        return note
 
     def account(self, account: Optional[str] = None) -> "Account":
         """Return Account object for account or default account if account is None.
@@ -324,16 +332,27 @@ class Account:
         """Show account in Notes.app UI"""
         self._run_script("accountShow")
 
-    def make_note(self, name: str, body: str, folder: str | None = None) -> "Note":
+    def make_note(
+        self,
+        name: str,
+        body: str,
+        folder: str | None = None,
+        attachments: list[str] | None = None,
+    ) -> "Note":
         """Create new note in account
 
         Args:
             name: name of note
             body: body of note
-            folder: folder to create note in; if None, uses default folder
+            folder: optional folder to create note in; if None, uses default folder
+            attachments: optional list of file paths to attach to note
 
         Returns:
             Note object for new note
+
+        Raises:
+            ScriptingBridgeError: if note could not be created
+            FileNotFoundError: if attachment file could not be found
         """
 
         # reference: https://developer.apple.com/documentation/scriptingbridge/sbobject/1423973-initwithproperties
@@ -354,10 +373,18 @@ class Account:
         notes.addObject_(note)
         len_after = len(notes)
 
-        if len_after > len_before:
-            return Note(note)
+        if len_after <= len_before:
+            raise ScriptingBridgeError(
+                f"Could not create note '{name}' with body '{body}'"
+            )
 
-        raise ScriptingBridgeError(f"Could not create note '{name}' with body '{body}'")
+        new_note = Note(note)
+        if attachments:
+            for attachment in attachments:
+                if not os.path.exists(attachment):
+                    raise FileNotFoundError(f"File {attachment} does not exist")
+                new_note.add_attachment(attachment)
+        return new_note
 
     def _noteslist(
         self,
@@ -619,7 +646,45 @@ class Note:
     @property
     def attachments(self) -> list["Attachment"]:
         """Return list of attachments for note as Attachment objects"""
-        return [Attachment(attachment) for attachment in self._note.attachments()]
+
+        # .attachments() method on note object sometimes returns duplicates, e.g each attachment is returned twice
+        # filter out duplicates by comparing attachment ID
+        # this appears to happen only with attachments added via AppleScript or ScriptingBridge
+        # not with those natively added in Notes.app
+        attachments = [
+            Attachment(attachment) for attachment in self._note.attachments()
+        ]
+        return [
+            attachment
+            for i, attachment in enumerate(attachments)
+            if attachment.id not in [a.id for a in attachments[:i]]
+        ]
+
+    def add_attachment(self, path: str) -> "Attachment":
+        """Add attachment to note
+
+        Args:
+            path: path to file to attach
+
+        Returns:
+            Attachment object for attached file
+
+        Raises:
+            FileNotFoundError: if file not found
+        """
+
+        # Implementation note:
+        # this is currently done with AppleScript which takes ~300ms on M1 Mac
+        # it's faster with ScriptingBridge (~80ms) but when adding via ScriptingBridge
+        # the attachment sometimes is added twice
+        # See #15 for more details
+
+        # must pass fully resolved path to AppleScript
+        path = pathlib.Path(path).expanduser().resolve()
+        if not path.exists():
+            raise FileNotFoundError(f"File not found: {path}")
+        attachment_id = self._run_script("noteAddAttachment", str(path))
+        return Attachment(self._note.attachments().objectWithID_(attachment_id))
 
     def show(self):
         """Show note in Notes.app UI"""
