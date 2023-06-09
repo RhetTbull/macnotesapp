@@ -1,8 +1,9 @@
 """Simple config loader/writer for macnotesapp CLI"""
 
+from __future__ import annotations
+
 import os
 import pathlib
-from typing import Dict
 
 import toml
 
@@ -20,6 +21,11 @@ DEFAULT_FORMAT = FORMAT_PLAINTEXT
 DEFAULT_EDITOR = "$EDITOR"
 
 
+def fix_unicode(text: str) -> str:
+    """Fix unicode characters in text that on Ventura cause toml.dump to treat str as a list (#26)"""
+    return text.encode("utf-8").decode()
+
+
 class ConfigSettings:
     config_file = CONFIG_FILE
 
@@ -27,13 +33,17 @@ class ConfigSettings:
         if not self.config_file.is_file():
             self._create_config_file()
 
-    def read(self) -> Dict:
+    def read(self) -> dict[str, str]:
         """Read data from config file"""
         data = toml.load(self.config_file)
-        return data.get("defaults", dict())
+        return data.get("defaults", {})
 
-    def write(self, settings: Dict):
+    def write(self, settings: dict[str, str]):
         """Write settings dict to config file"""
+        # on Ventura, unicode encoding can cause toml.dump to treat str as a list (#26)
+        settings = {
+            k: fix_unicode(v) if isinstance(v, str) else v for k, v in settings.items()
+        }
         data = {"defaults": settings}
         if not self.config_file.is_file():
             self._create_config_file()
