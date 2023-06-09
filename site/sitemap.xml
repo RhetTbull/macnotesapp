@@ -2,17 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://rhettbull.github.io/macnotesapp/</loc>
-         <lastmod>2023-03-14</lastmod>
+         <lastmod>2023-06-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://rhettbull.github.io/macnotesapp/cli/</loc>
-         <lastmod>2023-03-14</lastmod>
+         <lastmod>2023-06-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://rhettbull.github.io/macnotesapp/reference/</loc>
-         <lastmod>2023-03-14</lastmod>
+         <lastmod>2023-06-09</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
