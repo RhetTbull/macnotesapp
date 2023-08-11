@@ -1,6 +1,6 @@
 # MacNotesApp
 
-Work with Apple MacOS Notes.app from the command line. Also includes python interface for scripting Notes.app from your own python code. Interactive browsing of notes in a TUI (Terminal User Interface? Textual User Interface?) coming soon!
+Work with Apple MacOS Notes.app from the command line. Also includes python interface for scripting Notes.app from your own python code.
 
 ## Installation
 
@@ -195,8 +195,11 @@ print(note_names)
 ```
 <!-- [[[end]]] -->
 
-## Known Issues
+## Known Issues and Limitations
 
+* Password protected notes are not supported; unlocked password-protected notes can be accessed but locked notes cannot
+* Notes containing tags (#tagname) can be read but the tags will be stripped from the body of the note.
+* Tags cannot be added to notes and will show up as plaintext if added manually with macnotesapp
 * Currently, only notes in top-level folders are accessible to `macnotesapp` (#4)
 * Attachments are not currently handled and will be ignored (#15)
 * The title style is not correctly set (#13)
