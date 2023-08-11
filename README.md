@@ -198,7 +198,7 @@ print(note_names)
 ## Known Issues and Limitations
 
 * Password protected notes are not supported; unlocked password-protected notes can be accessed but locked notes cannot
-* Notes containing tags (#tagname) can be read but the tags will be stripped from the body of the note.
+* Notes containing tags (#tagname) can be read but the tags will be stripped from the body of the note
 * Tags cannot be added to notes and will show up as plaintext if added manually with macnotesapp
 * Currently, only notes in top-level folders are accessible to `macnotesapp` (#4)
 * Attachments are not currently handled and will be ignored (#15)
