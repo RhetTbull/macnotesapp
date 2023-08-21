@@ -19,3 +19,4 @@ venv/
 cov.xml
 .eggs/
 poetry.toml
+.venv/
