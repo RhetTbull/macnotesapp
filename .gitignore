@@ -20,3 +20,4 @@ cov.xml
 .eggs/
 poetry.toml
 .venv/
+pyvenv.cfg
