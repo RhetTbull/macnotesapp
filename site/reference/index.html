@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://rhettbull.github.io/macnotesapp/reference/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-8.5.10">
     
     
       
@@ -1307,13 +1307,7 @@
 
         <details class="quote">
           <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 47</span>
-<span class="normal"> 48</span>
-<span class="normal"> 49</span>
-<span class="normal"> 50</span>
-<span class="normal"> 51</span>
-<span class="normal"> 52</span>
-<span class="normal"> 53</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 53</span>
 <span class="normal"> 54</span>
 <span class="normal"> 55</span>
 <span class="normal"> 56</span>
@@ -1471,28 +1465,34 @@
 <span class="normal">208</span>
 <span class="normal">209</span>
 <span class="normal">210</span>
-<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">NotesApp</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Represents Notes.app instance&quot;&quot;&quot;</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">NotesApp</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents Notes.app instance&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;create new NotesApp object&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;create new NotesApp object&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_app</span> <span class="o">=</span> <span class="n">ScriptingBridge</span><span class="o">.</span><span class="n">SBApplication</span><span class="o">.</span><span class="n">applicationWithBundleIdentifier_</span><span class="p">(</span>
             <span class="s2">&quot;com.apple.Notes&quot;</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return Notes.app SBApplication object&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return Notes.app SBApplication object&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">accounts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return list of accounts&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">accounts</span><span class="p">()]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return list of accounts&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">())</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">accounts</span><span class="p">()]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">default_account</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return name of default account&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return name of default account&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_app</span><span class="o">.</span><span class="n">defaultAccount</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span>
@@ -1504,7 +1504,7 @@
         <span class="nb">id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">accounts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Note&quot;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return Note object for all notes contained in Notes.app or notes filtered by property.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return Note object for all notes contained in Notes.app or notes filtered by property.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name: list of note names to filter by</span>
@@ -1539,7 +1539,7 @@
         <span class="nb">id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">accounts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;NotesList&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return NoteList object for all notes contained in account or notes filtered by property.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return NoteList object for all notes contained in account or notes filtered by property.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name: list of note names to filter by</span>
@@ -1571,19 +1571,19 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">selection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Note&quot;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return lit of Note objects for selected notes&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return lit of Note objects for selected notes&quot;&quot;&quot;</span>
         <span class="n">notes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">selection</span><span class="p">()</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return version of Notes.app&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return version of Notes.app&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">version</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="nf">make_note</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attachments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Note&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create new note in default folder of default account.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create new note in default folder of default account.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name: name of notes</span>
@@ -1602,7 +1602,7 @@
         <span class="k">return</span> <span class="n">note</span>
 
     <span class="k">def</span> <span class="nf">account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Account&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return Account object for account or default account if account is None.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return Account object for account or default account if account is None.</span>
 
 <span class="sd">        Arg:</span>
 <span class="sd">            account: name of account to return. If None, return default account.</span>
@@ -1619,19 +1619,19 @@
         <span class="k">return</span> <span class="n">Account</span><span class="p">(</span><span class="n">account_obj</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Activate Notes.app&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Activate Notes.app&quot;&quot;&quot;</span>
         <span class="n">run_script</span><span class="p">(</span><span class="s2">&quot;notesActivate&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Quit Notes.app&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Quit Notes.app&quot;&quot;&quot;</span>
         <span class="n">run_script</span><span class="p">(</span><span class="s2">&quot;notesQuit&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return count of notes in Notes.app&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return count of notes in Notes.app&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">notes</span><span class="p">())</span> <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">accounts</span><span class="p">())</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Generator to yield Note object for all notes contained in Notes.app&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generator to yield Note object for all notes contained in Notes.app&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">accounts</span><span class="p">():</span>
             <span class="n">notes</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">notes</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
@@ -1717,7 +1717,7 @@
 
 
 <h2 id="macnotesapp.notesapp.NotesApp.selection" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">selection</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Note</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">selection</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Note&#39;</span><span class="p">]</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -1772,12 +1772,12 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;create new NotesApp object&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;create new NotesApp object&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_app</span> <span class="o">=</span> <span class="n">ScriptingBridge</span><span class="o">.</span><span class="n">SBApplication</span><span class="o">.</span><span class="n">applicationWithBundleIdentifier_</span><span class="p">(</span>
         <span class="s2">&quot;com.apple.Notes&quot;</span>
     <span class="p">)</span>
@@ -1803,13 +1803,13 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Generator to yield Note object for all notes contained in Notes.app&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generator to yield Note object for all notes contained in Notes.app&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">accounts</span><span class="p">():</span>
         <span class="n">notes</span> <span class="o">=</span> <span class="n">account</span><span class="o">.</span><span class="n">notes</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
@@ -1836,10 +1836,10 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return count of notes in Notes.app&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return count of notes in Notes.app&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">notes</span><span class="p">())</span> <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">accounts</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -1876,7 +1876,7 @@
     <tbody>
         <tr>
           <td>
-                <code><a class="autorefs autorefs-internal" title="macnotesapp.notesapp.Account" href="#macnotesapp.notesapp.Account">Account</a></code>
+                <code>&#39;Account&#39;</code>
           </td>
           <td><p>Account object</p></td>
         </tr>
@@ -1885,13 +1885,7 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">177</span>
-<span class="normal">178</span>
-<span class="normal">179</span>
-<span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
@@ -1900,8 +1894,14 @@
 <span class="normal">189</span>
 <span class="normal">190</span>
 <span class="normal">191</span>
-<span class="normal">192</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Account&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return Account object for account or default account if account is None.</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Account&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return Account object for account or default account if account is None.</span>
 
 <span class="sd">    Arg:</span>
 <span class="sd">        account: name of account to return. If None, return default account.</span>
@@ -1938,10 +1938,10 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">194</span>
-<span class="normal">195</span>
-<span class="normal">196</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Activate Notes.app&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Activate Notes.app&quot;&quot;&quot;</span>
     <span class="n">run_script</span><span class="p">(</span><span class="s2">&quot;notesActivate&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -2018,7 +2018,7 @@
     <tbody>
         <tr>
           <td>
-                <code><a class="autorefs autorefs-internal" title="macnotesapp.notesapp.Note" href="#macnotesapp.notesapp.Note">Note</a></code>
+                <code>&#39;Note&#39;</code>
           </td>
           <td><p>newly created Note object</p></td>
         </tr>
@@ -2027,13 +2027,7 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span>
@@ -2046,10 +2040,16 @@
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
-<span class="normal">175</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_note</span><span class="p">(</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_note</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">attachments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Note&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create new note in default folder of default account.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create new note in default folder of default account.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name: name of notes</span>
@@ -2171,7 +2171,7 @@
     <tbody>
         <tr>
           <td>
-                <code>list[<a class="autorefs autorefs-internal" title="macnotesapp.notesapp.Note" href="#macnotesapp.notesapp.Note">Note</a>]</code>
+                <code>list[&#39;Note&#39;]</code>
           </td>
           <td><p>list of Note objects</p></td>
         </tr>
@@ -2180,13 +2180,7 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 77</span>
 <span class="normal"> 78</span>
 <span class="normal"> 79</span>
 <span class="normal"> 80</span>
@@ -2213,7 +2207,13 @@
 <span class="normal">101</span>
 <span class="normal">102</span>
 <span class="normal">103</span>
-<span class="normal">104</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">notes</span><span class="p">(</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">notes</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2222,7 +2222,7 @@
     <span class="nb">id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">accounts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Note&quot;</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return Note object for all notes contained in Notes.app or notes filtered by property.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return Note object for all notes contained in Notes.app or notes filtered by property.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name: list of note names to filter by</span>
@@ -2352,7 +2352,7 @@
     <tbody>
         <tr>
           <td>
-                <code><a class="autorefs autorefs-internal" title="macnotesapp.notesapp.NotesList" href="#macnotesapp.notesapp.NotesList">NotesList</a></code>
+                <code>&#39;NotesList&#39;</code>
           </td>
           <td><p>NotesList object</p></td>
         </tr>
@@ -2361,13 +2361,7 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
@@ -2398,7 +2392,13 @@
 <span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">noteslist</span><span class="p">(</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">noteslist</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2407,7 +2407,7 @@
     <span class="nb">id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">accounts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;NotesList&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return NoteList object for all notes contained in account or notes filtered by property.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return NoteList object for all notes contained in account or notes filtered by property.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name: list of note names to filter by</span>
@@ -2458,10 +2458,10 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">198</span>
-<span class="normal">199</span>
-<span class="normal">200</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Quit Notes.app&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Quit Notes.app&quot;&quot;&quot;</span>
     <span class="n">run_script</span><span class="p">(</span><span class="s2">&quot;notesQuit&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -2490,13 +2490,7 @@
 
         <details class="quote">
           <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">214</span>
-<span class="normal">215</span>
-<span class="normal">216</span>
-<span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span>
-<span class="normal">220</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
@@ -2729,38 +2723,44 @@
 <span class="normal">450</span>
 <span class="normal">451</span>
 <span class="normal">452</span>
-<span class="normal">453</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Account</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Notes.app Account object&quot;&quot;&quot;</span>
+<span class="normal">453</span>
+<span class="normal">454</span>
+<span class="normal">455</span>
+<span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Account</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Notes.app Account object&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">ScriptingBridge</span><span class="o">.</span><span class="n">SBObject</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize Account object&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize Account object&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_account</span> <span class="o">=</span> <span class="n">account</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return name of account&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return name of account&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
         <span class="c1"># return str(self._run_script(&quot;accountName&quot;))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">folders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return list of folder names in account&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return list of folder names in account&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">folders</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">folders</span><span class="p">():</span>
             <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">())</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;accountGetFolderNames&quot;</span><span class="p">)]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">default_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return name of default folder for account&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return name of default folder for account&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">default_folder</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">defaultFolder</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">default_folder</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">default_folder</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;accountGetDefaultFolder&quot;</span><span class="p">))</span>
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return ID of account&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ID of account&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">id_</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">id</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">id_</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;accountID&quot;</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">notes</span><span class="p">(</span>
@@ -2771,7 +2771,7 @@
         <span class="n">password_protected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Note&quot;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return Note object for all notes contained in account or notes filtered by property.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return Note object for all notes contained in account or notes filtered by property.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name: list of note names to filter by</span>
@@ -2827,7 +2827,7 @@
         <span class="n">password_protected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;NotesList&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return NoteList object for all notes contained in account or notes filtered by property.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return NoteList object for all notes contained in account or notes filtered by property.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name: list of note names to filter by</span>
@@ -2842,12 +2842,12 @@
         <span class="k">return</span> <span class="n">NotesList</span><span class="p">(</span><span class="n">notes</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Folder&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return Folder object for folder with name folder.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return Folder object for folder with name folder.&quot;&quot;&quot;</span>
         <span class="n">folder_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_folder_for_name</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Folder</span><span class="p">(</span><span class="n">folder_obj</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Show account in Notes.app UI&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Show account in Notes.app UI&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;accountShow&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">make_note</span><span class="p">(</span>
@@ -2857,7 +2857,7 @@
         <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">attachments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Note&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create new note in account</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create new note in account</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name: name of note</span>
@@ -2912,7 +2912,7 @@
         <span class="n">password_protected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScriptingBridge</span><span class="o">.</span><span class="n">SBElementArray</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return SBElementArray for all notes contained in account or notes filtered by property&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return SBElementArray for all notes contained in account or notes filtered by property&quot;&quot;&quot;</span>
         <span class="n">notes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">notes</span><span class="p">()</span>
         <span class="n">format_strings</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">and</span> <span class="n">notes</span><span class="p">:</span>
@@ -2949,7 +2949,7 @@
         <span class="k">return</span> <span class="n">notes</span>
 
     <span class="k">def</span> <span class="nf">_folder_for_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScriptingBridge</span><span class="o">.</span><span class="n">SBObject</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return ScriptingBridge folder object for folder&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ScriptingBridge folder object for folder&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">folder_objs</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">folders</span><span class="p">()</span><span class="o">.</span><span class="n">filteredArrayUsingPredicate_</span><span class="p">(</span>
             <span class="n">AppKit</span><span class="o">.</span><span class="n">NSPredicate</span><span class="o">.</span><span class="n">predicateWithFormat_</span><span class="p">(</span><span class="s2">&quot;name == %@&quot;</span><span class="p">,</span> <span class="n">folder</span><span class="p">)</span>
         <span class="p">):</span>
@@ -2961,12 +2961,12 @@
         <span class="k">return</span> <span class="n">run_script</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return count of notes&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return count of notes&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">notes</span><span class="p">())</span>
         <span class="c1"># return self._run_script(&quot;accountGetCount&quot;)</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Note</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Generator to yield all notes contained in Notes.app&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generator to yield all notes contained in Notes.app&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">notes</span><span class="p">():</span>
             <span class="k">yield</span> <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3085,10 +3085,10 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">217</span>
-<span class="normal">218</span>
-<span class="normal">219</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">ScriptingBridge</span><span class="o">.</span><span class="n">SBObject</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Initialize Account object&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">ScriptingBridge</span><span class="o">.</span><span class="n">SBObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize Account object&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_account</span> <span class="o">=</span> <span class="n">account</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -3112,11 +3112,11 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">450</span>
-<span class="normal">451</span>
-<span class="normal">452</span>
-<span class="normal">453</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Note</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Generator to yield all notes contained in Notes.app&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">456</span>
+<span class="normal">457</span>
+<span class="normal">458</span>
+<span class="normal">459</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Note</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generator to yield all notes contained in Notes.app&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">notes</span><span class="p">():</span>
         <span class="k">yield</span> <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3141,10 +3141,10 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">445</span>
-<span class="normal">446</span>
-<span class="normal">447</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return count of notes&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">451</span>
+<span class="normal">452</span>
+<span class="normal">453</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return count of notes&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">notes</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -3168,11 +3168,11 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">326</span>
-<span class="normal">327</span>
-<span class="normal">328</span>
-<span class="normal">329</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Folder&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return Folder object for folder with name folder.&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Folder&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return Folder object for folder with name folder.&quot;&quot;&quot;</span>
     <span class="n">folder_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_folder_for_name</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Folder</span><span class="p">(</span><span class="n">folder_obj</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -3260,7 +3260,7 @@
     <tbody>
         <tr>
           <td>
-                <code><a class="autorefs autorefs-internal" title="macnotesapp.notesapp.Note" href="#macnotesapp.notesapp.Note">Note</a></code>
+                <code>&#39;Note&#39;</code>
           </td>
           <td><p>Note object for new note</p></td>
         </tr>
@@ -3293,13 +3293,7 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">335</span>
-<span class="normal">336</span>
-<span class="normal">337</span>
-<span class="normal">338</span>
-<span class="normal">339</span>
-<span class="normal">340</span>
-<span class="normal">341</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
 <span class="normal">344</span>
@@ -3345,14 +3339,20 @@
 <span class="normal">384</span>
 <span class="normal">385</span>
 <span class="normal">386</span>
-<span class="normal">387</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_note</span><span class="p">(</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">make_note</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">attachments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Note&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create new note in account</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create new note in account</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name: name of note</span>
@@ -3493,7 +3493,7 @@
     <tbody>
         <tr>
           <td>
-                <code>list[<a class="autorefs autorefs-internal" title="macnotesapp.notesapp.Note" href="#macnotesapp.notesapp.Note">Note</a>]</code>
+                <code>list[&#39;Note&#39;]</code>
           </td>
           <td><p>list of Note objects</p></td>
         </tr>
@@ -3502,13 +3502,7 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">254</span>
 <span class="normal">255</span>
 <span class="normal">256</span>
 <span class="normal">257</span>
@@ -3556,7 +3550,13 @@
 <span class="normal">299</span>
 <span class="normal">300</span>
 <span class="normal">301</span>
-<span class="normal">302</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">notes</span><span class="p">(</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">notes</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3564,7 +3564,7 @@
     <span class="n">password_protected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Note&quot;</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return Note object for all notes contained in account or notes filtered by property.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return Note object for all notes contained in account or notes filtered by property.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name: list of note names to filter by</span>
@@ -3706,7 +3706,7 @@
     <tbody>
         <tr>
           <td>
-                <code><a class="autorefs autorefs-internal" title="macnotesapp.notesapp.NotesList" href="#macnotesapp.notesapp.NotesList">NotesList</a></code>
+                <code>&#39;NotesList&#39;</code>
           </td>
           <td><p>NotesList object</p></td>
         </tr>
@@ -3715,13 +3715,7 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">304</span>
-<span class="normal">305</span>
-<span class="normal">306</span>
-<span class="normal">307</span>
-<span class="normal">308</span>
-<span class="normal">309</span>
-<span class="normal">310</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">310</span>
 <span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span>
@@ -3735,7 +3729,13 @@
 <span class="normal">321</span>
 <span class="normal">322</span>
 <span class="normal">323</span>
-<span class="normal">324</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">noteslist</span><span class="p">(</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">noteslist</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3743,7 +3743,7 @@
     <span class="n">password_protected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="nb">id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;NotesList&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return NoteList object for all notes contained in account or notes filtered by property.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return NoteList object for all notes contained in account or notes filtered by property.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        name: list of note names to filter by</span>
@@ -3778,10 +3778,10 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">331</span>
-<span class="normal">332</span>
-<span class="normal">333</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Show account in Notes.app UI&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Show account in Notes.app UI&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;accountShow&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -3810,14 +3810,7 @@
 
         <details class="quote">
           <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">781</span>
-<span class="normal">782</span>
-<span class="normal">783</span>
-<span class="normal">784</span>
-<span class="normal">785</span>
-<span class="normal">786</span>
-<span class="normal">787</span>
-<span class="normal">788</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">788</span>
 <span class="normal">789</span>
 <span class="normal">790</span>
 <span class="normal">791</span>
@@ -3828,15 +3821,22 @@
 <span class="normal">796</span>
 <span class="normal">797</span>
 <span class="normal">798</span>
-<span class="normal">799</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Folder</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Folder object&quot;&quot;&quot;</span>
+<span class="normal">799</span>
+<span class="normal">800</span>
+<span class="normal">801</span>
+<span class="normal">802</span>
+<span class="normal">803</span>
+<span class="normal">804</span>
+<span class="normal">805</span>
+<span class="normal">806</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Folder</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Folder object&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">:</span> <span class="n">ScriptingBridge</span><span class="o">.</span><span class="n">SBObject</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_folder</span> <span class="o">=</span> <span class="n">folder</span>
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;ID of folder&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ID of folder&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">folder_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">folder_id</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_folder</span><span class="o">.</span><span class="n">id</span><span class="p">())</span>
@@ -3845,7 +3845,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Name of folder&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Name of folder&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_folder</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
         </details>
@@ -3926,13 +3926,7 @@
 
         <details class="quote">
           <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">552</span>
-<span class="normal">553</span>
-<span class="normal">554</span>
-<span class="normal">555</span>
-<span class="normal">556</span>
-<span class="normal">557</span>
-<span class="normal">558</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">558</span>
 <span class="normal">559</span>
 <span class="normal">560</span>
 <span class="normal">561</span>
@@ -4104,22 +4098,29 @@
 <span class="normal">727</span>
 <span class="normal">728</span>
 <span class="normal">729</span>
-<span class="normal">730</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Note</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Note object representing a note in Notes.app&quot;&quot;&quot;</span>
+<span class="normal">730</span>
+<span class="normal">731</span>
+<span class="normal">732</span>
+<span class="normal">733</span>
+<span class="normal">734</span>
+<span class="normal">735</span>
+<span class="normal">736</span>
+<span class="normal">737</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Note</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Note object representing a note in Notes.app&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">note</span><span class="p">:</span> <span class="n">ScriptingBridge</span><span class="o">.</span><span class="n">SBObject</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_note</span> <span class="o">=</span> <span class="n">note</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">account</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return name of account note belongs to.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return name of account note belongs to.&quot;&quot;&quot;</span>
         <span class="c1"># can&#39;t determine this easily from the note object</span>
         <span class="c1"># so may to use AppleScript</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">run_script</span><span class="p">(</span><span class="s2">&quot;noteGetAccount&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return note ID&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return note ID&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">note_id</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">id</span><span class="p">():</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">note_id</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -4129,7 +4130,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return name of note&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return name of note&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">name</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
@@ -4138,14 +4139,14 @@
 
     <span class="nd">@name</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set name of note&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set name of note&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">setValue_forKey_</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">name</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;noteSetName&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return body of note&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return body of note&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">body</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">body</span><span class="p">())</span>
@@ -4154,14 +4155,14 @@
 
     <span class="nd">@body</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set body of note&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set body of note&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">setValue_forKey_</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s2">&quot;body&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span> <span class="o">!=</span> <span class="n">body</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;noteSetBody&quot;</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">plaintext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return plaintext of note&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return plaintext of note&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">plaintext</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">plaintext</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">plaintext</span><span class="p">())</span>
@@ -4170,7 +4171,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">creation_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return creation date of note as datetime&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return creation date of note as datetime&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">date</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">creationDate</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">NSDate_to_datetime</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -4178,7 +4179,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">modification_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return modification date of note as datetime&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return modification date of note as datetime&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">date</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">modificationDate</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">NSDate_to_datetime</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -4186,21 +4187,22 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">password_protected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return password protected status of note&quot;&quot;&quot;</span>
-        <span class="c1"># return self._note.passwordProtected() # returns False even when note is password protected, at least on Catalina</span>
-        <span class="c1"># TODO: appears to work correctly on Ventura so need to check OS version</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return password protected status of note&quot;&quot;&quot;</span>
+        <span class="c1"># return self._note.passwordProtected() # returns False even when note is password protected on some OS versions</span>
+        <span class="k">if</span> <span class="n">MAC_OS_VERSION</span> <span class="o">&gt;=</span> <span class="mi">13</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">passwordProtected</span><span class="p">())</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;noteGetPasswordProtected&quot;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">folder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return name of folder note is contained in&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return name of folder note is contained in&quot;&quot;&quot;</span>
         <span class="c1"># calling container() method on note object returns None</span>
         <span class="c1"># in many cases, so use AppleScript instead</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">container</span><span class="p">()</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;noteGetContainer&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">attachments</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Attachment&quot;</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return list of attachments for note as Attachment objects&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return list of attachments for note as Attachment objects&quot;&quot;&quot;</span>
 
         <span class="c1"># .attachments() method on note object sometimes returns duplicates, e.g each attachment is returned twice</span>
         <span class="c1"># filter out duplicates by comparing attachment ID</span>
@@ -4216,7 +4218,7 @@
         <span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">add_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Attachment&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add attachment to note</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add attachment to note</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            path: path to file to attach</span>
@@ -4242,11 +4244,11 @@
         <span class="k">return</span> <span class="n">Attachment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">attachments</span><span class="p">()</span><span class="o">.</span><span class="n">objectWithID_</span><span class="p">(</span><span class="n">attachment_id</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Show note in Notes.app UI&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Show note in Notes.app UI&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;noteShow&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return dict representation of note&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return dict representation of note&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;account&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
             <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
@@ -4260,11 +4262,11 @@
         <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">_run_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Run AppleScript script&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run AppleScript script&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">run_script</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_parse_id_from_object</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Parse the ID from the object representation when it can&#39;t be determined by ScriptingBridge&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the ID from the object representation when it can&#39;t be determined by ScriptingBridge&quot;&quot;&quot;</span>
 
         <span class="c1"># there are some conditions (e.g. using selection on Catalina or using a predicate)</span>
         <span class="c1"># where the ScriptingBridge sets the object ID to 0</span>
@@ -4322,7 +4324,7 @@
 
 
 <h2 id="macnotesapp.notesapp.Note.attachments" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">attachments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Attachment</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">attachments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Attachment&#39;</span><span class="p">]</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -4346,8 +4348,8 @@
 <code class="highlight language-python"><span class="n">body</span><span class="p">:</span> <span class="nb">str</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h2>
@@ -4453,8 +4455,8 @@
 <code class="highlight language-python"><span class="n">name</span><span class="p">:</span> <span class="nb">str</span></code>
   
   <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-writable"><code>writable</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
 
 </h2>
@@ -4560,7 +4562,7 @@
     <tbody>
         <tr>
           <td>
-                <code><a class="autorefs autorefs-internal" title="macnotesapp.notesapp.Attachment" href="#macnotesapp.notesapp.Attachment">Attachment</a></code>
+                <code>&#39;Attachment&#39;</code>
           </td>
           <td><p>Attachment object for attached file</p></td>
         </tr>
@@ -4587,14 +4589,7 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">663</span>
-<span class="normal">664</span>
-<span class="normal">665</span>
-<span class="normal">666</span>
-<span class="normal">667</span>
-<span class="normal">668</span>
-<span class="normal">669</span>
-<span class="normal">670</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">670</span>
 <span class="normal">671</span>
 <span class="normal">672</span>
 <span class="normal">673</span>
@@ -4611,8 +4606,15 @@
 <span class="normal">684</span>
 <span class="normal">685</span>
 <span class="normal">686</span>
-<span class="normal">687</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Attachment&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Add attachment to note</span>
+<span class="normal">687</span>
+<span class="normal">688</span>
+<span class="normal">689</span>
+<span class="normal">690</span>
+<span class="normal">691</span>
+<span class="normal">692</span>
+<span class="normal">693</span>
+<span class="normal">694</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">add_attachment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Attachment&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add attachment to note</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path: path to file to attach</span>
@@ -4658,20 +4660,20 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">693</span>
-<span class="normal">694</span>
-<span class="normal">695</span>
-<span class="normal">696</span>
-<span class="normal">697</span>
-<span class="normal">698</span>
-<span class="normal">699</span>
-<span class="normal">700</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">700</span>
 <span class="normal">701</span>
 <span class="normal">702</span>
 <span class="normal">703</span>
 <span class="normal">704</span>
-<span class="normal">705</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return dict representation of note&quot;&quot;&quot;</span>
+<span class="normal">705</span>
+<span class="normal">706</span>
+<span class="normal">707</span>
+<span class="normal">708</span>
+<span class="normal">709</span>
+<span class="normal">710</span>
+<span class="normal">711</span>
+<span class="normal">712</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return dict representation of note&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;account&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">,</span>
         <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
@@ -4705,10 +4707,10 @@
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">689</span>
-<span class="normal">690</span>
-<span class="normal">691</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Show note in Notes.app UI&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">696</span>
+<span class="normal">697</span>
+<span class="normal">698</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Show note in Notes.app UI&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;noteShow&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -4738,13 +4740,7 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
         <details class="quote">
           <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">456</span>
-<span class="normal">457</span>
-<span class="normal">458</span>
-<span class="normal">459</span>
-<span class="normal">460</span>
-<span class="normal">461</span>
-<span class="normal">462</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
 <span class="normal">463</span>
 <span class="normal">464</span>
 <span class="normal">465</span>
@@ -4831,8 +4827,14 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 <span class="normal">546</span>
 <span class="normal">547</span>
 <span class="normal">548</span>
-<span class="normal">549</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">NotesList</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;NotesList object for list of notes.</span>
+<span class="normal">549</span>
+<span class="normal">550</span>
+<span class="normal">551</span>
+<span class="normal">552</span>
+<span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">NotesList</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;NotesList object for list of notes.</span>
 <span class="sd">    Represents an SBElementArray of notes as returned by noteslist()</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -4841,51 +4843,51 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return ID of every note in list as list of strings&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ID of every note in list as list of strings&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_selector</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return name of every note in list as list of strings&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return name of every note in list as list of strings&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_selector</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return body of every note in list as list of strings&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return body of every note in list as list of strings&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_selector</span><span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">plaintext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return plaintext of every note in list as list of strings&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return plaintext of every note in list as list of strings&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_selector</span><span class="p">(</span><span class="s2">&quot;plaintext&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">container</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return container of every note in list as list of strings&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return container of every note in list as list of strings&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_selector</span><span class="p">(</span><span class="s2">&quot;container&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">folder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return folder of every note in list as list of strings&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return folder of every note in list as list of strings&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">container</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">creation_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">datetime</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return creation date of every note in list as list of datetimes&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return creation date of every note in list as list of datetimes&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_selector</span><span class="p">(</span><span class="s2">&quot;creationDate&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">modification_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">datetime</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return modification date of every note in list as list of datetimes&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return modification date of every note in list as list of datetimes&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_selector</span><span class="p">(</span><span class="s2">&quot;modificationDate&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">password_protected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return whether every note in list is password protected as list of bools&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return whether every note in list is password protected as list of bools&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_selector</span><span class="p">(</span><span class="s2">&quot;passwordProtected&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Return list of dict representations of note&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return list of dict representations of note&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="p">{</span>
                 <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">note</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -4910,20 +4912,20 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
         <span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">_apply_selector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return note properties in list that pass selector&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return note properties in list that pass selector&quot;&quot;&quot;</span>
         <span class="n">results_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">noteslist</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_noteslist</span><span class="p">:</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">noteslist</span><span class="o">.</span><span class="n">arrayByApplyingSelector_</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">selector</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;creationDate&quot;</span><span class="p">,</span> <span class="s2">&quot;modificationDate&quot;</span><span class="p">]:</span>
                 <span class="n">results_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">NSDate_to_datetime</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">results</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">selector</span> <span class="o">==</span> <span class="s2">&quot;container&quot;</span><span class="p">:</span>
-                <span class="n">results_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">container</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="k">for</span> <span class="n">container</span> <span class="ow">in</span> <span class="n">results</span><span class="p">)</span>
+                <span class="n">results_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">container</span><span class="o">.</span><span class="n">name</span><span class="p">())</span> <span class="k">for</span> <span class="n">container</span> <span class="ow">in</span> <span class="n">results</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">results_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+                <span class="n">results_list</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">results_list</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return count of notes in list&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return count of notes in list&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
         </details>
@@ -5145,10 +5147,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">547</span>
-<span class="normal">548</span>
-<span class="normal">549</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return count of notes in list&quot;&quot;&quot;</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">553</span>
+<span class="normal">554</span>
+<span class="normal">555</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return count of notes in list&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
@@ -5172,13 +5174,7 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">509</span>
-<span class="normal">510</span>
-<span class="normal">511</span>
-<span class="normal">512</span>
-<span class="normal">513</span>
-<span class="normal">514</span>
-<span class="normal">515</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">515</span>
 <span class="normal">516</span>
 <span class="normal">517</span>
 <span class="normal">518</span>
@@ -5195,8 +5191,14 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 <span class="normal">529</span>
 <span class="normal">530</span>
 <span class="normal">531</span>
-<span class="normal">532</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Return list of dict representations of note&quot;&quot;&quot;</span>
+<span class="normal">532</span>
+<span class="normal">533</span>
+<span class="normal">534</span>
+<span class="normal">535</span>
+<span class="normal">536</span>
+<span class="normal">537</span>
+<span class="normal">538</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return list of dict representations of note&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="p">{</span>
             <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">note</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -5246,14 +5248,7 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
         <details class="quote">
           <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">733</span>
-<span class="normal">734</span>
-<span class="normal">735</span>
-<span class="normal">736</span>
-<span class="normal">737</span>
-<span class="normal">738</span>
-<span class="normal">739</span>
-<span class="normal">740</span>
+          <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">740</span>
 <span class="normal">741</span>
 <span class="normal">742</span>
 <span class="normal">743</span>
@@ -5291,44 +5286,51 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 <span class="normal">775</span>
 <span class="normal">776</span>
 <span class="normal">777</span>
-<span class="normal">778</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Attachment</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Notes.app Attachment object&quot;&quot;&quot;</span>
+<span class="normal">778</span>
+<span class="normal">779</span>
+<span class="normal">780</span>
+<span class="normal">781</span>
+<span class="normal">782</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">Attachment</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Notes.app Attachment object&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attachment</span><span class="p">:</span> <span class="n">ScriptingBridge</span><span class="o">.</span><span class="n">SBObject</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attachment</span> <span class="o">=</span> <span class="n">attachment</span>
 
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;ID of attachment&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ID of attachment&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attachment</span><span class="o">.</span><span class="n">id</span><span class="p">())</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Name of attachment&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Name of attachment&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">name</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attachment</span><span class="o">.</span><span class="n">name</span><span class="p">())</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">creation_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Creation date of attachment&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creation date of attachment&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">NSDate_to_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attachment</span><span class="o">.</span><span class="n">creationDate</span><span class="p">())</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">modification_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Modification date of attachment&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modification date of attachment&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">NSDate_to_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_attachment</span><span class="o">.</span><span class="n">modificationDate</span><span class="p">())</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">content_identifier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;The content-id URL in the note&#39;s HTML&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The content-id URL in the note&#39;s HTML&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">ci</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">ci</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attachment</span><span class="o">.</span><span class="n">contentIdentifier</span><span class="p">())</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">URL</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;For URL attachments, the URL the attachment represents&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;For URL attachments, the URL the attachment represents&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">url</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attachment</span><span class="o">.</span><span class="n">URL</span><span class="p">())</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Save attachment to file&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save attachment to file&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Path does not exist: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -5495,17 +5497,17 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
       <details class="quote">
         <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">769</span>
-<span class="normal">770</span>
-<span class="normal">771</span>
-<span class="normal">772</span>
-<span class="normal">773</span>
-<span class="normal">774</span>
-<span class="normal">775</span>
-<span class="normal">776</span>
+        <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">776</span>
 <span class="normal">777</span>
-<span class="normal">778</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Save attachment to file&quot;&quot;&quot;</span>
+<span class="normal">778</span>
+<span class="normal">779</span>
+<span class="normal">780</span>
+<span class="normal">781</span>
+<span class="normal">782</span>
+<span class="normal">783</span>
+<span class="normal">784</span>
+<span class="normal">785</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">PathLike</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save attachment to file&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)):</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Path does not exist: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
