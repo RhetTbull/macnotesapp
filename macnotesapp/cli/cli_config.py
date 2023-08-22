@@ -6,10 +6,19 @@ import os
 import pathlib
 
 import toml
+from xdg import xdg_config_home
 
 from macnotesapp import NotesApp
 
-CONFIG_DIR = pathlib.Path("~/.config/macnotesapp").expanduser()
+
+def get_config_dir() -> pathlib.Path:
+    """Get the directory where config files are stored; create it if necessary."""
+    config_dir = xdg_config_home() / "macnotesapp"
+    if not config_dir.is_dir():
+        config_dir.mkdir(parents=True)
+    return config_dir
+
+CONFIG_DIR = get_config_dir()
 CONFIG_FILE = CONFIG_DIR / "macnotesapp.toml"
 
 # Default config options
