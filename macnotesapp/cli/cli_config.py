@@ -21,11 +21,6 @@ DEFAULT_FORMAT = FORMAT_PLAINTEXT
 DEFAULT_EDITOR = "$EDITOR"
 
 
-def fix_unicode(text: str) -> str:
-    """Fix unicode characters in text that on Ventura cause toml.dump to treat str as a list (#26)"""
-    return text.encode("utf-8").decode()
-
-
 class ConfigSettings:
     config_file = CONFIG_FILE
 
@@ -40,10 +35,6 @@ class ConfigSettings:
 
     def write(self, settings: dict[str, str]):
         """Write settings dict to config file"""
-        # on Ventura, unicode encoding can cause toml.dump to treat str as a list (#26)
-        settings = {
-            k: fix_unicode(v) if isinstance(v, str) else v for k, v in settings.items()
-        }
         data = {"defaults": settings}
         if not self.config_file.is_file():
             self._create_config_file()

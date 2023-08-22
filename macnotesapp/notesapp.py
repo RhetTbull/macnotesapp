@@ -14,8 +14,14 @@ import ScriptingBridge
 
 from ._version import __version__
 from .script_loader import run_script
-from .utils import NSDate_to_datetime, OSType
+from .utils import NSDate_to_datetime, OSType, get_macos_version
 
+# Note: string values returned from ScriptingBridge are PyObjC unicode objects and must
+# be cast to str to ensure they work correctly with other functions
+
+
+
+MAC_OS_VERSION = int(get_macos_version()[0])
 
 class AppleScriptError(Exception):
     """Error raised when AppleScript fails to execute"""
@@ -61,7 +67,7 @@ class NotesApp:
     @property
     def accounts(self) -> list[str]:
         """Return list of accounts"""
-        return [a.name() for a in self._app.accounts()]
+        return [str(a.name()) for a in self._app.accounts()]
 
     @property
     def default_account(self) -> str:
@@ -221,7 +227,7 @@ class Account:
     @property
     def name(self) -> str:
         """Return name of account"""
-        return self._account.name()
+        return str(self._account.name())
         # return str(self._run_script("accountName"))
 
     @property
@@ -235,14 +241,14 @@ class Account:
     def default_folder(self) -> str:
         """Return name of default folder for account"""
         if default_folder := self._account.defaultFolder():
-            return default_folder.name()
+            return str(default_folder.name())
         return str(self._run_script("accountGetDefaultFolder"))
 
     @cached_property
     def id(self) -> str:
         """Return ID of account"""
         if id_ := self._account.id():
-            return id_
+            return str(id_)
         return str(self._run_script("accountID"))
 
     def notes(
@@ -539,9 +545,9 @@ class NotesList:
             if selector in ["creationDate", "modificationDate"]:
                 results_list.extend(NSDate_to_datetime(date) for date in results)
             elif selector == "container":
-                results_list.extend(container.name() for container in results)
+                results_list.extend(str(container.name()) for container in results)
             else:
-                results_list.extend(list(results))
+                results_list.extend([str(r) for r in results])
         return results_list
 
     def __len__(self) -> int:
@@ -632,8 +638,9 @@ class Note:
     @property
     def password_protected(self) -> bool:
         """Return password protected status of note"""
-        # return self._note.passwordProtected() # returns False even when note is password protected, at least on Catalina
-        # TODO: appears to work correctly on Ventura so need to check OS version
+        # return self._note.passwordProtected() # returns False even when note is password protected on some OS versions
+        if MAC_OS_VERSION >= 13:
+            return bool(self._note.passwordProtected())
         return bool(self._run_script("noteGetPasswordProtected"))
 
     @property
