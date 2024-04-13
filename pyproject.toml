@@ -24,6 +24,7 @@ validators = "^0.20.0"
 markdownify = "^0.11.6"
 pyobjc-framework-ScriptingBridge = "^9.0.1"
 xdg = "^6.0.0"
+lxml-html-clean = "^0.1.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.2"
