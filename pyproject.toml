@@ -32,14 +32,13 @@ pytest = "^7.1.2"
 cogapp = "^3.3.0"
 wheel = "^0.37.1"
 build = "^0.8.0"
-pyinstaller = "^5.7"
+pyinstaller = "^6.6.0"
 
 [tool.poetry.scripts]
 notes = "macnotesapp.__main__:cli_main"
 
 [tool.poetry.group.dev.dependencies]
 bump2version = "^1.0.1"
-textual = { extras = ["dev"], version = "^0.8.1" }
 mktestdocs = "^0.2.0"
 mkdocs = "^1.4.2"
 mkdocs-click = "^0.8.0"
