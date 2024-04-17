@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://rhettbull.github.io/macnotesapp/cli/">
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-8.5.10">
     
     
       
@@ -269,19 +269,19 @@
 <h1 id="notes">notes</h1>
 <p>notes: work with Apple Notes on the command line.</p>
 <p><strong>Usage:</strong></p>
-<pre><code>notes [OPTIONS] COMMAND [ARGS]...
+<pre><code class="language-text">notes [OPTIONS] COMMAND [ARGS]...
 </code></pre>
 <p><strong>Options:</strong></p>
-<pre><code>  -v, --version  Show the version and exit.
+<pre><code class="language-text">  -v, --version  Show the version and exit.
   --help         Show this message and exit.
 </code></pre>
 <h2 id="accounts">accounts</h2>
 <p>Print information about Notes accounts.</p>
 <p><strong>Usage:</strong></p>
-<pre><code>notes accounts [OPTIONS]
+<pre><code class="language-text">notes accounts [OPTIONS]
 </code></pre>
 <p><strong>Options:</strong></p>
-<pre><code>  -j, --json  Print output in JSON format.
+<pre><code class="language-text">  -j, --json  Print output in JSON format.
   --help      Show this message and exit.
 </code></pre>
 <h2 id="add">add</h2>
@@ -308,10 +308,10 @@ If --show/-s flag is set, note will be shown in Notes.app after being added.</p>
 <p>Account and top level folder may be specified with --account/-a and --folder/-f, respectively.
 If not provided, default account and folder are used.</p>
 <p><strong>Usage:</strong></p>
-<pre><code>notes add [OPTIONS] NOTE
+<pre><code class="language-text">notes add [OPTIONS] NOTE
 </code></pre>
 <p><strong>Options:</strong></p>
-<pre><code>  -s, --show             Show note in Notes after adding.
+<pre><code class="language-text">  -s, --show             Show note in Notes after adding.
   -F, --file FILENAME
   -u, --url URL
   -h, --html             Use HTML for body of note.
@@ -326,10 +326,10 @@ If not provided, default account and folder are used.</p>
 <h2 id="cat">cat</h2>
 <p>Print one or more notes to STDOUT</p>
 <p><strong>Usage:</strong></p>
-<pre><code>notes cat [OPTIONS] NOTE_NAME
+<pre><code class="language-text">notes cat [OPTIONS] NOTE_NAME
 </code></pre>
 <p><strong>Options:</strong></p>
-<pre><code>  -p, --plaintext  Output note as plain text.
+<pre><code class="language-text">  -p, --plaintext  Output note as plain text.
   -m, --markdown   Output note as Markdown.
   -h, --html       Output note as HTML.
   -j, --json       Output note as JSON. The default format for the note body
@@ -341,36 +341,36 @@ If not provided, default account and folder are used.</p>
 <h2 id="config">config</h2>
 <p>Configure default settings for account, editor, etc.</p>
 <p><strong>Usage:</strong></p>
-<pre><code>notes config [OPTIONS]
+<pre><code class="language-text">notes config [OPTIONS]
 </code></pre>
 <p><strong>Options:</strong></p>
-<pre><code>  --help  Show this message and exit.
+<pre><code class="language-text">  --help  Show this message and exit.
 </code></pre>
 <h2 id="dump">dump</h2>
 <p>Dump all notes or selection of notes for debugging</p>
 <p><strong>Usage:</strong></p>
-<pre><code>notes dump [OPTIONS]
+<pre><code class="language-text">notes dump [OPTIONS]
 </code></pre>
 <p><strong>Options:</strong></p>
-<pre><code>  -s, --selected  Dump only selected notes.
+<pre><code class="language-text">  -s, --selected  Dump only selected notes.
   -B, --no-body   Do not dump note body.
   --help          Show this message and exit.
 </code></pre>
 <h2 id="help">help</h2>
 <p>Print help; for help on commands: help <command>.</p>
 <p><strong>Usage:</strong></p>
-<pre><code>notes help [OPTIONS] [TOPIC] [SUBTOPIC]
+<pre><code class="language-text">notes help [OPTIONS] [TOPIC] [SUBTOPIC]
 </code></pre>
 <p><strong>Options:</strong></p>
-<pre><code>  --help  Show this message and exit.
+<pre><code class="language-text">  --help  Show this message and exit.
 </code></pre>
 <h2 id="list">list</h2>
 <p>List notes, optionally filtering by account or text.</p>
 <p><strong>Usage:</strong></p>
-<pre><code>notes list [OPTIONS] TEXT
+<pre><code class="language-text">notes list [OPTIONS] TEXT
 </code></pre>
 <p><strong>Options:</strong></p>
-<pre><code>  -a, --account ACCOUNT  Limit results to account ACCOUNT; may be repeated to
+<pre><code class="language-text">  -a, --account ACCOUNT  Limit results to account ACCOUNT; may be repeated to
                          include multiple accounts.
   --help                 Show this message and exit.
 </code></pre>

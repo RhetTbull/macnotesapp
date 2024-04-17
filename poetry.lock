@@ -785,22 +785,26 @@ files = [
 
 [[package]]
 name = "mkdocstrings"
-version = "0.19.1"
+version = "0.24.3"
 description = "Automatic documentation from sources, for MkDocs."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "mkdocstrings-0.19.1-py3-none-any.whl", hash = "sha256:32a38d88f67f65b264184ea71290f9332db750d189dea4200cbbe408d304c261"},
-    {file = "mkdocstrings-0.19.1.tar.gz", hash = "sha256:d1037cacb4b522c1e8c164ed5d00d724a82e49dcee0af80db8fb67b384faeef9"},
+    {file = "mkdocstrings-0.24.3-py3-none-any.whl", hash = "sha256:5c9cf2a32958cd161d5428699b79c8b0988856b0d4a8c5baf8395fc1bf4087c3"},
+    {file = "mkdocstrings-0.24.3.tar.gz", hash = "sha256:f327b234eb8d2551a306735436e157d0a22d45f79963c60a8b585d5f7a94c1d2"},
 ]
 
 [package.dependencies]
+click = ">=7.0"
+importlib-metadata = {version = ">=4.6", markers = "python_version < \"3.10\""}
 Jinja2 = ">=2.11.1"
 Markdown = ">=3.3"
 MarkupSafe = ">=1.1"
-mkdocs = ">=1.2"
+mkdocs = ">=1.4"
 mkdocs-autorefs = ">=0.3.1"
+platformdirs = ">=2.2.0"
 pymdown-extensions = ">=6.3"
+typing-extensions = {version = ">=4.1", markers = "python_version < \"3.10\""}
 
 [package.extras]
 crystal = ["mkdocstrings-crystal (>=0.3.4)"]
@@ -809,18 +813,18 @@ python-legacy = ["mkdocstrings-python-legacy (>=0.2.1)"]
 
 [[package]]
 name = "mkdocstrings-python"
-version = "0.8.3"
+version = "1.9.2"
 description = "A Python handler for mkdocstrings."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "mkdocstrings-python-0.8.3.tar.gz", hash = "sha256:9ae473f6dc599339b09eee17e4d2b05d6ac0ec29860f3fc9b7512d940fc61adf"},
-    {file = "mkdocstrings_python-0.8.3-py3-none-any.whl", hash = "sha256:4e6e1cd6f37a785de0946ced6eb846eb2f5d891ac1cc2c7b832943d3529087a7"},
+    {file = "mkdocstrings_python-1.9.2-py3-none-any.whl", hash = "sha256:96d82f6424e08db6245e4a15ca95619f4ecd0ddd254c0aa590d4181814e16ee5"},
+    {file = "mkdocstrings_python-1.9.2.tar.gz", hash = "sha256:8546a103c9b22e1778c72c887696acc39a6635fedde3c912ce00f967518a8847"},
 ]
 
 [package.dependencies]
-griffe = ">=0.24"
-mkdocstrings = ">=0.19"
+griffe = ">=0.37"
+mkdocstrings = ">=0.24.2"
 
 [[package]]
 name = "mktestdocs"
@@ -1365,6 +1369,17 @@ files = [
 ]
 
 [[package]]
+name = "typing-extensions"
+version = "4.11.0"
+description = "Backported and Experimental Type Hints for Python 3.8+"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "typing_extensions-4.11.0-py3-none-any.whl", hash = "sha256:c1f94d72897edaf4ce775bb7558d5b79d8126906a14ea5ed1635921406c0387a"},
+    {file = "typing_extensions-4.11.0.tar.gz", hash = "sha256:83f085bd5ca59c80295fc2a82ab5dac679cbe02b9f33f7d83af68e241bea51b0"},
+]
+
+[[package]]
 name = "urllib3"
 version = "2.2.1"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
@@ -1492,4 +1507,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "7684f44197363db408ec3fca5bdc0d720d8179ddefcbc13daaf75ebb4e56f5a6"
+content-hash = "c1420d47b38587502b129047582449082c1bd4b32a3ad99e0ec1864d583a7698"
