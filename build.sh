@@ -27,5 +27,11 @@ echo "Zipping executable"
 test -f dist/notes.zip && rm dist/notes.zip
 zip dist/notes.zip dist/notes && rm dist/notes
 
+# update homebrew formula
+# this relies on the tag for the release existing on github!
+version=$(python -c 'import pkg_resources; print(pkg_resources.get_distribution("macnotesapp").version)' 2>/dev/null)
+echo $version
+brew update-python-resources HomebrewFormula/macnotesapp.rb
+
 # Done!
 echo "Done"
