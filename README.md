@@ -28,9 +28,9 @@ Once you've installed macnotesapp with pipx, to upgrade to the latest version:
 
 ### Install with [homebrew](brew.sh)
 
-* Open `Terminal` (search for `Terminal` in Spotlight or look in `Applications/Utilities`)
 * Install `homebrew` according to instructions at [https://brew.sh/](https://brew.sh/)
-* Once you have installed `homebrew`, you can install the CLI with:
+
+Once you have installed `homebrew`, you can install the CLI in the terminal with:
 
     brew tap RhetTbull/macnotesapp https://github.com/RhetTbull/macnotesapp
     brew update
