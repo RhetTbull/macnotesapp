@@ -5,7 +5,7 @@ $pkg_group = "RhetTbull"
 $pkg_repo = "macnotesapp"
 
 class Macnotesapp < Formula
-  url "https://github.com/RhetTbull/macnotesapp/releases/download/#{$pkg_version}/notes.zip"
+  url "https://github.com/#{$pkg_group}/#{$pkg_repo}/releases/download/#{$pkg_version}/notes.zip"
   version $pkg_version
   homepage "https://github.com/#{$pkg_group}/#{$pkg_repo}"
   desc "cli tool to interact with MacOS Notes"
