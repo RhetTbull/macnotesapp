@@ -245,6 +245,17 @@ on noteGetContainer(accountName, noteID)
 	end tell
 end noteGetContainer
 
+on noteGetContainerID(accountName, noteID)
+	(* Get container (folder) name of noteID in accountName *)
+	tell application "Notes"
+		tell account accountName
+			set noteContainerID to «class seld» of ((container of note id noteID) as record)
+			set noteFolderID to id of (first folder whose id is noteContainerID)
+			return noteFolderID
+		end tell
+	end tell
+end noteGetContainerID
+
 on noteGetBody(accountName, noteID)
 	(* Get body (as HTML) of noteID in accountName *)
 	tell application "Notes"
@@ -318,8 +329,6 @@ on noteAddAttachment(accountName, noteID, attachmentPath)
 	end tell
 end noteAddAttachment
 
-(******** Folder Class *********)
-
 on noteGetAttachments(accountName, noteID)
 	(* Get attachments for noteID in accountName *)
 	tell application "Notes"
@@ -329,6 +338,8 @@ on noteGetAttachments(accountName, noteID)
 		end tell
 	end tell
 end noteGetAttachments
+
+(******** Folder Class *********)
 
 on folderGetName(accountName, folderID)
 	(* Get name of folder*)
@@ -349,8 +360,6 @@ on folderShow(accountName, folderID)
 	end tell
 end folderShow
 
-(* BAH! Notes is too damn buggy on Catalina
-
 on folderGetAllNotes(accountName, folderID)
 	tell application "Notes"
 		tell account accountName
@@ -368,15 +377,11 @@ on folderGetAllNotes(accountName, folderID)
 	end tell
 end folderGetAllNotes
 
-
 on folderGetCount(accountName, folderID)
 	(* Return count of notes in folder *)
 	set folderNotes to folderGetAllNotes(accountName, folderID)
 	return count of folderNotes
 end folderGetCount
-
-
---Does not appear to work on Catalina if in subfolder so defer to later when I have access to Big Sur+ 
 
 on folderGetContainer(accountName, folderID)
 	(* Get parent folder for folder *)
@@ -388,7 +393,6 @@ on folderGetContainer(accountName, folderID)
 	end tell
 end folderGetContainer
 
-*)
 
 (********** Account Class *********)
 
@@ -538,4 +542,8 @@ on attachmentGetName(accountName, noteID, attachmentID)
 end attachmentGetName
 
 (********** Test **********)
-
+--set theAccount to notesGetDefaultAccount()
+-- set theNote to first item of notesGetSelected()
+-- set theFolder to noteGetContainerID("iCloud", "x-coredata://0FDB693E-69DD-42F2-AEE2-A47496641D96/ICNote/p5628")
+-- "x-coredata://0FDB693E-69DD-42F2-AEE2-A47496641D96/ICFolder/p5627"
+-- folderGetContainer("iCloud", "x-coredata://0FDB693E-69DD-42F2-AEE2-A47496641D96/ICFolder/p5627")
