@@ -27,5 +27,9 @@ echo "Zipping executable"
 test -f dist/notes.zip && rm dist/notes.zip
 zip dist/notes.zip dist/notes && rm dist/notes
 
+# Tidy up the homebrew formula
+sha256=$(openssl dgst -hex -sha256 dist/notes.zip | cut -d ' ' -f 2)
+sed -i '' "s/sha256 \".*\"/sha256 \"$sha256\"/" HomebrewFormula/macnotesapp.rb
+
 # Done!
 echo "Done"

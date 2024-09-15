@@ -7,7 +7,9 @@ Work with Apple MacOS Notes.app from the command line. Also includes python inte
 
 ## Installation
 
-If you just want to use the command line tool, the easiest option is to install via [pipx](https://pypa.github.io/pipx/).
+There are two ways to install the command line tool: `pipx` or `homebrew`.
+
+### Install with [pipx](https://pypa.github.io/pipx/)
 
 If you use `pipx`, you will not need to create a python virtual environment as `pipx` takes care of this. The easiest way to do this on a Mac is to use [homebrew](https://brew.sh/):
 
@@ -23,6 +25,18 @@ Once you've installed macnotesapp with pipx, to upgrade to the latest version:
     pipx upgrade macnotesapp
 
 **Note**: Currently tested on MacOS 10.15.7/Catalina and 13.1/Ventura.
+
+### Install with [homebrew](brew.sh)
+
+* Install `homebrew` according to instructions at [https://brew.sh/](https://brew.sh/)
+
+Once you have installed `homebrew`, you can install the CLI in the terminal with:
+
+    brew tap RhetTbull/macnotesapp https://github.com/RhetTbull/macnotesapp
+    brew update
+    brew install macnotesapp
+
+* Now you should be able to run `notes` by typing: `notes`
 
 ## Documentation
 
