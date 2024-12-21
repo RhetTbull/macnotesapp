@@ -6,7 +6,7 @@ import os
 import pathlib
 
 import toml
-from xdg import xdg_config_home
+from xdg_base_dirs import xdg_config_home
 
 from macnotesapp import NotesApp
 
@@ -17,6 +17,7 @@ def get_config_dir() -> pathlib.Path:
     if not config_dir.is_dir():
         config_dir.mkdir(parents=True)
     return config_dir
+
 
 CONFIG_DIR = get_config_dir()
 CONFIG_FILE = CONFIG_DIR / "macnotesapp.toml"
