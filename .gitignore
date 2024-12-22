@@ -21,3 +21,4 @@ cov.xml
 poetry.toml
 .venv/
 pyvenv.cfg
+site/
