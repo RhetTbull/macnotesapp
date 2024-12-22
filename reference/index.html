@@ -10,8 +10,13 @@
       
         <link rel="canonical" href="https://rhettbull.github.io/macnotesapp/reference/">
       
+      
+        <link rel="prev" href="../cli/">
+      
+      
+      
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-8.5.10">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
@@ -19,15 +24,14 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.975780f9.min.css">
-      
-        
-        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
-        
+      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
       
       
 
+
     
+    
+      
     
     
       
@@ -41,7 +45,7 @@
     
       <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -51,14 +55,8 @@
   </head>
   
   
-    
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="None" data-md-color-accent="None">
+    <body dir="ltr">
   
-    
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -78,16 +76,19 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="MacNotesApp Docs" class="md-header__button md-logo" aria-label="MacNotesApp Docs" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -107,9 +108,13 @@
     </div>
     
     
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
     
       <label class="md-header__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
@@ -117,24 +122,27 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </nav>
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
           </div>
-          <ol class="md-search-result__list"></ol>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
       </div>
     </div>
@@ -164,12 +172,13 @@
                     
 
 
+
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="MacNotesApp Docs" class="md-nav__button md-logo" aria-label="MacNotesApp Docs" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
     MacNotesApp Docs
@@ -179,14 +188,19 @@
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href=".." class="md-nav__link">
-        Home
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
       </a>
     </li>
   
@@ -194,14 +208,19 @@
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="../cli/" class="md-nav__link">
-        Command Line Reference
+        
+  
+  <span class="md-ellipsis">
+    Command Line Reference
+  </span>
+  
+
       </a>
     </li>
   
@@ -209,28 +228,39 @@
     
       
       
-      
-
   
   
     
   
   
+  
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
         
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          API Reference
+          
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        API Reference
+        
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
       </a>
       
         
@@ -250,497 +280,639 @@
       
         <li class="md-nav__item">
   <a href="#notesapp" class="md-nav__link">
-    NotesApp
+    <span class="md-ellipsis">
+      NotesApp
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp" class="md-nav__link">
-    NotesApp
+    <span class="md-ellipsis">
+      NotesApp
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.accounts" class="md-nav__link">
-    accounts
+    <span class="md-ellipsis">
+      accounts
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.app" class="md-nav__link">
-    app
+    <span class="md-ellipsis">
+      app
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.default_account" class="md-nav__link">
-    default_account
+    <span class="md-ellipsis">
+      default_account
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.selection" class="md-nav__link">
-    selection
+    <span class="md-ellipsis">
+      selection
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.version" class="md-nav__link">
-    version
+    <span class="md-ellipsis">
+      version
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.__init__" class="md-nav__link">
-    __init__
+    <span class="md-ellipsis">
+      __init__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.__iter__" class="md-nav__link">
-    __iter__
+    <span class="md-ellipsis">
+      __iter__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.__len__" class="md-nav__link">
-    __len__
+    <span class="md-ellipsis">
+      __len__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.account" class="md-nav__link">
-    account
+    <span class="md-ellipsis">
+      account
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.activate" class="md-nav__link">
-    activate
+    <span class="md-ellipsis">
+      activate
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.make_note" class="md-nav__link">
-    make_note
+    <span class="md-ellipsis">
+      make_note
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.notes" class="md-nav__link">
-    notes
+    <span class="md-ellipsis">
+      notes
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.noteslist" class="md-nav__link">
-    noteslist
+    <span class="md-ellipsis">
+      noteslist
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.quit" class="md-nav__link">
-    quit
+    <span class="md-ellipsis">
+      quit
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#account" class="md-nav__link">
-    Account
+    <span class="md-ellipsis">
+      Account
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account" class="md-nav__link">
-    Account
+    <span class="md-ellipsis">
+      Account
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.default_folder" class="md-nav__link">
-    default_folder
+    <span class="md-ellipsis">
+      default_folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.folders" class="md-nav__link">
-    folders
+    <span class="md-ellipsis">
+      folders
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.id" class="md-nav__link">
-    id
+    <span class="md-ellipsis">
+      id
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.name" class="md-nav__link">
-    name
+    <span class="md-ellipsis">
+      name
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.__init__" class="md-nav__link">
-    __init__
+    <span class="md-ellipsis">
+      __init__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.__iter__" class="md-nav__link">
-    __iter__
+    <span class="md-ellipsis">
+      __iter__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.__len__" class="md-nav__link">
-    __len__
+    <span class="md-ellipsis">
+      __len__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.folder" class="md-nav__link">
-    folder
+    <span class="md-ellipsis">
+      folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.make_note" class="md-nav__link">
-    make_note
+    <span class="md-ellipsis">
+      make_note
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.notes" class="md-nav__link">
-    notes
+    <span class="md-ellipsis">
+      notes
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.noteslist" class="md-nav__link">
-    noteslist
+    <span class="md-ellipsis">
+      noteslist
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.show" class="md-nav__link">
-    show
+    <span class="md-ellipsis">
+      show
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#folder" class="md-nav__link">
-    Folder
+    <span class="md-ellipsis">
+      Folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Folder" class="md-nav__link">
-    Folder
+    <span class="md-ellipsis">
+      Folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Folder.id" class="md-nav__link">
-    id
+    <span class="md-ellipsis">
+      id
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Folder.name" class="md-nav__link">
-    name
+    <span class="md-ellipsis">
+      name
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#note" class="md-nav__link">
-    Note
+    <span class="md-ellipsis">
+      Note
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note" class="md-nav__link">
-    Note
+    <span class="md-ellipsis">
+      Note
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.account" class="md-nav__link">
-    account
+    <span class="md-ellipsis">
+      account
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.attachments" class="md-nav__link">
-    attachments
+    <span class="md-ellipsis">
+      attachments
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.body" class="md-nav__link">
-    body
+    <span class="md-ellipsis">
+      body
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.creation_date" class="md-nav__link">
-    creation_date
+    <span class="md-ellipsis">
+      creation_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.folder" class="md-nav__link">
-    folder
+    <span class="md-ellipsis">
+      folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.id" class="md-nav__link">
-    id
+    <span class="md-ellipsis">
+      id
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.modification_date" class="md-nav__link">
-    modification_date
+    <span class="md-ellipsis">
+      modification_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.name" class="md-nav__link">
-    name
+    <span class="md-ellipsis">
+      name
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.password_protected" class="md-nav__link">
-    password_protected
+    <span class="md-ellipsis">
+      password_protected
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.plaintext" class="md-nav__link">
-    plaintext
+    <span class="md-ellipsis">
+      plaintext
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.add_attachment" class="md-nav__link">
-    add_attachment
+    <span class="md-ellipsis">
+      add_attachment
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.asdict" class="md-nav__link">
-    asdict
+    <span class="md-ellipsis">
+      asdict
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.show" class="md-nav__link">
-    show
+    <span class="md-ellipsis">
+      show
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#noteslist" class="md-nav__link">
-    NotesList
+    <span class="md-ellipsis">
+      NotesList
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList" class="md-nav__link">
-    NotesList
+    <span class="md-ellipsis">
+      NotesList
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.body" class="md-nav__link">
-    body
+    <span class="md-ellipsis">
+      body
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.container" class="md-nav__link">
-    container
+    <span class="md-ellipsis">
+      container
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.creation_date" class="md-nav__link">
-    creation_date
+    <span class="md-ellipsis">
+      creation_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.folder" class="md-nav__link">
-    folder
+    <span class="md-ellipsis">
+      folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.id" class="md-nav__link">
-    id
+    <span class="md-ellipsis">
+      id
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.modification_date" class="md-nav__link">
-    modification_date
+    <span class="md-ellipsis">
+      modification_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.name" class="md-nav__link">
-    name
+    <span class="md-ellipsis">
+      name
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.password_protected" class="md-nav__link">
-    password_protected
+    <span class="md-ellipsis">
+      password_protected
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.plaintext" class="md-nav__link">
-    plaintext
+    <span class="md-ellipsis">
+      plaintext
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.__len__" class="md-nav__link">
-    __len__
+    <span class="md-ellipsis">
+      __len__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.asdict" class="md-nav__link">
-    asdict
+    <span class="md-ellipsis">
+      asdict
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#attachment" class="md-nav__link">
-    Attachment
+    <span class="md-ellipsis">
+      Attachment
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment" class="md-nav__link">
-    Attachment
+    <span class="md-ellipsis">
+      Attachment
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.URL" class="md-nav__link">
-    URL
+    <span class="md-ellipsis">
+      URL
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.content_identifier" class="md-nav__link">
-    content_identifier
+    <span class="md-ellipsis">
+      content_identifier
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.creation_date" class="md-nav__link">
-    creation_date
+    <span class="md-ellipsis">
+      creation_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.id" class="md-nav__link">
-    id
+    <span class="md-ellipsis">
+      id
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.modification_date" class="md-nav__link">
-    modification_date
+    <span class="md-ellipsis">
+      modification_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.name" class="md-nav__link">
-    name
+    <span class="md-ellipsis">
+      name
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.save" class="md-nav__link">
-    save
+    <span class="md-ellipsis">
+      save
+    </span>
   </a>
   
 </li>
@@ -781,497 +953,639 @@
       
         <li class="md-nav__item">
   <a href="#notesapp" class="md-nav__link">
-    NotesApp
+    <span class="md-ellipsis">
+      NotesApp
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp" class="md-nav__link">
-    NotesApp
+    <span class="md-ellipsis">
+      NotesApp
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.accounts" class="md-nav__link">
-    accounts
+    <span class="md-ellipsis">
+      accounts
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.app" class="md-nav__link">
-    app
+    <span class="md-ellipsis">
+      app
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.default_account" class="md-nav__link">
-    default_account
+    <span class="md-ellipsis">
+      default_account
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.selection" class="md-nav__link">
-    selection
+    <span class="md-ellipsis">
+      selection
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.version" class="md-nav__link">
-    version
+    <span class="md-ellipsis">
+      version
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.__init__" class="md-nav__link">
-    __init__
+    <span class="md-ellipsis">
+      __init__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.__iter__" class="md-nav__link">
-    __iter__
+    <span class="md-ellipsis">
+      __iter__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.__len__" class="md-nav__link">
-    __len__
+    <span class="md-ellipsis">
+      __len__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.account" class="md-nav__link">
-    account
+    <span class="md-ellipsis">
+      account
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.activate" class="md-nav__link">
-    activate
+    <span class="md-ellipsis">
+      activate
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.make_note" class="md-nav__link">
-    make_note
+    <span class="md-ellipsis">
+      make_note
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.notes" class="md-nav__link">
-    notes
+    <span class="md-ellipsis">
+      notes
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.noteslist" class="md-nav__link">
-    noteslist
+    <span class="md-ellipsis">
+      noteslist
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesApp.quit" class="md-nav__link">
-    quit
+    <span class="md-ellipsis">
+      quit
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#account" class="md-nav__link">
-    Account
+    <span class="md-ellipsis">
+      Account
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account" class="md-nav__link">
-    Account
+    <span class="md-ellipsis">
+      Account
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.default_folder" class="md-nav__link">
-    default_folder
+    <span class="md-ellipsis">
+      default_folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.folders" class="md-nav__link">
-    folders
+    <span class="md-ellipsis">
+      folders
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.id" class="md-nav__link">
-    id
+    <span class="md-ellipsis">
+      id
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.name" class="md-nav__link">
-    name
+    <span class="md-ellipsis">
+      name
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.__init__" class="md-nav__link">
-    __init__
+    <span class="md-ellipsis">
+      __init__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.__iter__" class="md-nav__link">
-    __iter__
+    <span class="md-ellipsis">
+      __iter__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.__len__" class="md-nav__link">
-    __len__
+    <span class="md-ellipsis">
+      __len__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.folder" class="md-nav__link">
-    folder
+    <span class="md-ellipsis">
+      folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.make_note" class="md-nav__link">
-    make_note
+    <span class="md-ellipsis">
+      make_note
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.notes" class="md-nav__link">
-    notes
+    <span class="md-ellipsis">
+      notes
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.noteslist" class="md-nav__link">
-    noteslist
+    <span class="md-ellipsis">
+      noteslist
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Account.show" class="md-nav__link">
-    show
+    <span class="md-ellipsis">
+      show
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#folder" class="md-nav__link">
-    Folder
+    <span class="md-ellipsis">
+      Folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Folder" class="md-nav__link">
-    Folder
+    <span class="md-ellipsis">
+      Folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Folder.id" class="md-nav__link">
-    id
+    <span class="md-ellipsis">
+      id
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Folder.name" class="md-nav__link">
-    name
+    <span class="md-ellipsis">
+      name
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#note" class="md-nav__link">
-    Note
+    <span class="md-ellipsis">
+      Note
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note" class="md-nav__link">
-    Note
+    <span class="md-ellipsis">
+      Note
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.account" class="md-nav__link">
-    account
+    <span class="md-ellipsis">
+      account
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.attachments" class="md-nav__link">
-    attachments
+    <span class="md-ellipsis">
+      attachments
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.body" class="md-nav__link">
-    body
+    <span class="md-ellipsis">
+      body
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.creation_date" class="md-nav__link">
-    creation_date
+    <span class="md-ellipsis">
+      creation_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.folder" class="md-nav__link">
-    folder
+    <span class="md-ellipsis">
+      folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.id" class="md-nav__link">
-    id
+    <span class="md-ellipsis">
+      id
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.modification_date" class="md-nav__link">
-    modification_date
+    <span class="md-ellipsis">
+      modification_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.name" class="md-nav__link">
-    name
+    <span class="md-ellipsis">
+      name
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.password_protected" class="md-nav__link">
-    password_protected
+    <span class="md-ellipsis">
+      password_protected
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.plaintext" class="md-nav__link">
-    plaintext
+    <span class="md-ellipsis">
+      plaintext
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.add_attachment" class="md-nav__link">
-    add_attachment
+    <span class="md-ellipsis">
+      add_attachment
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.asdict" class="md-nav__link">
-    asdict
+    <span class="md-ellipsis">
+      asdict
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Note.show" class="md-nav__link">
-    show
+    <span class="md-ellipsis">
+      show
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#noteslist" class="md-nav__link">
-    NotesList
+    <span class="md-ellipsis">
+      NotesList
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList" class="md-nav__link">
-    NotesList
+    <span class="md-ellipsis">
+      NotesList
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.body" class="md-nav__link">
-    body
+    <span class="md-ellipsis">
+      body
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.container" class="md-nav__link">
-    container
+    <span class="md-ellipsis">
+      container
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.creation_date" class="md-nav__link">
-    creation_date
+    <span class="md-ellipsis">
+      creation_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.folder" class="md-nav__link">
-    folder
+    <span class="md-ellipsis">
+      folder
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.id" class="md-nav__link">
-    id
+    <span class="md-ellipsis">
+      id
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.modification_date" class="md-nav__link">
-    modification_date
+    <span class="md-ellipsis">
+      modification_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.name" class="md-nav__link">
-    name
+    <span class="md-ellipsis">
+      name
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.password_protected" class="md-nav__link">
-    password_protected
+    <span class="md-ellipsis">
+      password_protected
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.plaintext" class="md-nav__link">
-    plaintext
+    <span class="md-ellipsis">
+      plaintext
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.__len__" class="md-nav__link">
-    __len__
+    <span class="md-ellipsis">
+      __len__
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.NotesList.asdict" class="md-nav__link">
-    asdict
+    <span class="md-ellipsis">
+      asdict
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#attachment" class="md-nav__link">
-    Attachment
+    <span class="md-ellipsis">
+      Attachment
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment" class="md-nav__link">
-    Attachment
+    <span class="md-ellipsis">
+      Attachment
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.URL" class="md-nav__link">
-    URL
+    <span class="md-ellipsis">
+      URL
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.content_identifier" class="md-nav__link">
-    content_identifier
+    <span class="md-ellipsis">
+      content_identifier
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.creation_date" class="md-nav__link">
-    creation_date
+    <span class="md-ellipsis">
+      creation_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.id" class="md-nav__link">
-    id
+    <span class="md-ellipsis">
+      id
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.modification_date" class="md-nav__link">
-    modification_date
+    <span class="md-ellipsis">
+      modification_date
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.name" class="md-nav__link">
-    name
+    <span class="md-ellipsis">
+      name
+    </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#macnotesapp.notesapp.Attachment.save" class="md-nav__link">
-    save
+    <span class="md-ellipsis">
+      save
+    </span>
   </a>
   
 </li>
@@ -1300,14 +1614,19 @@
 
 
 <a id="macnotesapp.notesapp.NotesApp"></a>
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
-      <p>Represents Notes.app instance</p>
 
-            <details class="quote">
-              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 53</span>
+        <p>Represents Notes.app instance</p>
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 53</span>
 <span class="normal"> 54</span>
 <span class="normal"> 55</span>
 <span class="normal"> 56</span>
@@ -1637,9 +1956,9 @@
             <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -1654,8 +1973,8 @@
 
 
 <h2 id="macnotesapp.notesapp.NotesApp.accounts" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">accounts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">accounts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -1663,10 +1982,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return list of accounts</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return list of accounts</p>
+    </div>
 
 </div>
 
@@ -1675,8 +1994,8 @@
 
 
 <h2 id="macnotesapp.notesapp.NotesApp.app" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">app</span></code>
-  
+            <code class="highlight language-python"><span class="n">app</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -1684,10 +2003,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return Notes.app SBApplication object</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return Notes.app SBApplication object</p>
+    </div>
 
 </div>
 
@@ -1696,8 +2015,8 @@
 
 
 <h2 id="macnotesapp.notesapp.NotesApp.default_account" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">default_account</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">default_account</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -1705,10 +2024,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return name of default account</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return name of default account</p>
+    </div>
 
 </div>
 
@@ -1717,8 +2036,8 @@
 
 
 <h2 id="macnotesapp.notesapp.NotesApp.selection" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">selection</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Note&#39;</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">selection</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Note&#39;</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -1726,10 +2045,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return lit of Note objects for selected notes</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return lit of Note objects for selected notes</p>
+    </div>
 
 </div>
 
@@ -1738,8 +2057,8 @@
 
 
 <h2 id="macnotesapp.notesapp.NotesApp.version" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">version</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">version</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -1747,33 +2066,31 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return version of Notes.app</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return version of Notes.app</p>
+    </div>
 
 </div>
-
 
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.NotesApp.__init__" class="doc doc-heading">
-          <code class="highlight language-python"><span class="fm">__init__</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>create new NotesApp object</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
+        <p>create new NotesApp object</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
 <span class="normal">59</span>
@@ -1783,29 +2100,27 @@
         <span class="s2">&quot;com.apple.Notes&quot;</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.NotesApp.__iter__" class="doc doc-heading">
-          <code class="highlight language-python"><span class="fm">__iter__</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="fm">__iter__</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Generator to yield Note object for all notes contained in Notes.app</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">212</span>
+        <p>Generator to yield Note object for all notes contained in Notes.app</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">212</span>
 <span class="normal">213</span>
 <span class="normal">214</span>
 <span class="normal">215</span>
@@ -1817,85 +2132,81 @@
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.NotesApp.__len__" class="doc doc-heading">
-          <code class="highlight language-python"><span class="fm">__len__</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="fm">__len__</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return count of notes in Notes.app</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
+        <p>Return count of notes in Notes.app</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
 <span class="normal">209</span>
 <span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return count of notes in Notes.app&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">account</span><span class="o">.</span><span class="n">notes</span><span class="p">())</span> <span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">accounts</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.NotesApp.account" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">account</span><span class="p">(</span><span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">account</span><span class="p">(</span><span class="n">account</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return Account object for account or default account if account is None.</p>
+    <div class="doc doc-contents ">
+
+        <p>Return Account object for account or default account if account is None.</p>
+
 
 <details class="arg" open>
   <summary>Arg</summary>
   <p>account: name of account to return. If None, return default account.</p>
 </details>
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>&#39;Account&#39;</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Account object</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>&#39;Account&#39;</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Account object</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">183</span>
 <span class="normal">184</span>
 <span class="normal">185</span>
 <span class="normal">186</span>
@@ -1927,139 +2238,139 @@
     <span class="n">account_obj</span> <span class="o">=</span> <span class="n">accounts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">Account</span><span class="p">(</span><span class="n">account_obj</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.NotesApp.activate" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">activate</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">activate</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Activate Notes.app</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
+        <p>Activate Notes.app</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">200</span>
 <span class="normal">201</span>
 <span class="normal">202</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Activate Notes.app&quot;&quot;&quot;</span>
     <span class="n">run_script</span><span class="p">(</span><span class="s2">&quot;notesActivate&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.NotesApp.make_note" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">make_note</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">attachments</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">make_note</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">attachments</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Create new note in default folder of default account.</p>
+    <div class="doc doc-contents ">
+
+        <p>Create new note in default folder of default account.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>name</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>name of notes</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>name of notes</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>body</code>
+            </td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>body of note as HTML text</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>attachments</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>optional list of paths to attachments to add to note</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>body</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>body of note as HTML text</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr>
-          <td><code>attachments</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>optional list of paths to attachments to add to note</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>&#39;Note&#39;</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>newly created Note object</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>&#39;Note&#39;</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>newly created Note object</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span>
@@ -2099,153 +2410,161 @@
             <span class="n">note</span><span class="o">.</span><span class="n">add_attachment</span><span class="p">(</span><span class="n">attachment</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">note</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.NotesApp.notes" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">notes</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password_protected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accounts</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">notes</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password_protected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accounts</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return Note object for all notes contained in Notes.app or notes filtered by property.</p>
+    <div class="doc doc-contents ">
+
+        <p>Return Note object for all notes contained in Notes.app or notes filtered by property.</p>
 
 
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note names to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>body</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note bodies to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>text</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note text to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>password_protected</code>
+            </td>
+            <td>
+                  <code>bool | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>filter by password protected notes</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>id</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note ids to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>accounts</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of account names to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>name</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note names to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>body</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note bodies to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>text</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note text to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>password_protected</code></td>
-          <td>
-                <code>bool | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>filter by password protected notes</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>id</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note ids to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>accounts</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of account names to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>list[&#39;Note&#39;]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of Note objects</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>list[&#39;Note&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of Note objects</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 77</span>
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 77</span>
 <span class="normal"> 78</span>
 <span class="normal"> 79</span>
 <span class="normal"> 80</span>
@@ -2313,153 +2632,161 @@
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">notes</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.NotesApp.noteslist" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">noteslist</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password_protected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accounts</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">noteslist</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password_protected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accounts</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return NoteList object for all notes contained in account or notes filtered by property.</p>
+    <div class="doc doc-contents ">
+
+        <p>Return NoteList object for all notes contained in account or notes filtered by property.</p>
 
 
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note names to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>body</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note bodies to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>text</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note text to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>password_protected</code>
+            </td>
+            <td>
+                  <code>bool | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>filter by password protected notes</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>id</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note ids to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>accounts</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of account names to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>name</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note names to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>body</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note bodies to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>text</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note text to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>password_protected</code></td>
-          <td>
-                <code>bool | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>filter by password protected notes</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>id</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note ids to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>accounts</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of account names to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>&#39;NotesList&#39;</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>NotesList object</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>&#39;NotesList&#39;</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>NotesList object</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">112</span>
 <span class="normal">113</span>
 <span class="normal">114</span>
 <span class="normal">115</span>
@@ -2535,36 +2862,34 @@
     <span class="p">]</span>
     <span class="k">return</span> <span class="n">NotesList</span><span class="p">(</span><span class="o">*</span><span class="n">noteslists</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.NotesApp.quit" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">quit</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">quit</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Quit Notes.app</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
+        <p>Quit Notes.app</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">204</span>
 <span class="normal">205</span>
 <span class="normal">206</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">quit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Quit Notes.app&quot;&quot;&quot;</span>
     <span class="n">run_script</span><span class="p">(</span><span class="s2">&quot;notesQuit&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -2572,8 +2897,7 @@
 
   </div>
 
-  </div>
-
+    </div>
 
 </div><h2 id="account">Account</h2>
 
@@ -2583,14 +2907,19 @@
 
 
 <a id="macnotesapp.notesapp.Account"></a>
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
-      <p>Notes.app Account object</p>
 
-            <details class="quote">
-              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
+        <p>Notes.app Account object</p>
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
 <span class="normal">223</span>
@@ -3070,9 +3399,9 @@
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">notes</span><span class="p">():</span>
             <span class="k">yield</span> <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -3087,8 +3416,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Account.default_folder" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">default_folder</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">default_folder</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -3096,10 +3425,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return name of default folder for account</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return name of default folder for account</p>
+    </div>
 
 </div>
 
@@ -3108,8 +3437,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Account.folders" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">folders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">folders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -3117,10 +3446,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return list of folder names in account</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return list of folder names in account</p>
+    </div>
 
 </div>
 
@@ -3129,8 +3458,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Account.id" class="doc doc-heading">
-          <code class="highlight language-python"><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -3139,10 +3468,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return ID of account</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return ID of account</p>
+    </div>
 
 </div>
 
@@ -3151,8 +3480,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Account.name" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">name</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">name</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -3160,61 +3489,57 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return name of account</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return name of account</p>
+    </div>
 
 </div>
-
 
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Account.__init__" class="doc doc-heading">
-          <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">account</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">account</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Initialize Account object</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
+        <p>Initialize Account object</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">ScriptingBridge</span><span class="o">.</span><span class="n">SBObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize Account object&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_account</span> <span class="o">=</span> <span class="n">account</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Account.__iter__" class="doc doc-heading">
-          <code class="highlight language-python"><span class="fm">__iter__</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="fm">__iter__</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Generator to yield all notes contained in Notes.app</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">456</span>
+        <p>Generator to yield all notes contained in Notes.app</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">456</span>
 <span class="normal">457</span>
 <span class="normal">458</span>
 <span class="normal">459</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Note</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
@@ -3222,57 +3547,53 @@
     <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">notes</span><span class="p">():</span>
         <span class="k">yield</span> <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Account.__len__" class="doc doc-heading">
-          <code class="highlight language-python"><span class="fm">__len__</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="fm">__len__</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return count of notes</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">451</span>
+        <p>Return count of notes</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">451</span>
 <span class="normal">452</span>
 <span class="normal">453</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return count of notes&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_account</span><span class="o">.</span><span class="n">notes</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Account.folder" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">folder</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">folder</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return Folder object for folder with name folder.</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">332</span>
+        <p>Return Folder object for folder with name folder.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">332</span>
 <span class="normal">333</span>
 <span class="normal">334</span>
 <span class="normal">335</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Folder&quot;</span><span class="p">:</span>
@@ -3280,159 +3601,162 @@
     <span class="n">folder_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_folder_for_name</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Folder</span><span class="p">(</span><span class="n">folder_obj</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Account.make_note" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">make_note</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attachments</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">make_note</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">attachments</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Create new note in account</p>
+    <div class="doc doc-contents ">
+
+        <p>Create new note in account</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>name</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>name of note</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>name of note</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>body</code>
+            </td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>body of note</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>folder</code>
+            </td>
+            <td>
+                  <code>str | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>optional folder to create note in; if None, uses default folder</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>attachments</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>optional list of file paths to attach to note</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>body</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>body of note</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>&#39;Note&#39;</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Note object for new note</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>folder</code></td>
-          <td>
-                <code>str | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>optional folder to create note in; if None, uses default folder</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr>
-          <td><code>attachments</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>optional list of file paths to attach to note</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="macnotesapp.notesapp.ScriptingBridgeError">ScriptingBridgeError</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if note could not be created</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                  <code>FileNotFoundError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if attachment file could not be found</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code>&#39;Note&#39;</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Note object for new note</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-
-  <p><strong>Raises:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><span title="macnotesapp.notesapp.ScriptingBridgeError">ScriptingBridgeError</span></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>if note could not be created</p>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-                <code>FileNotFoundError</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>if attachment file could not be found</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">341</span>
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
 <span class="normal">344</span>
@@ -3538,139 +3862,145 @@
             <span class="n">new_note</span><span class="o">.</span><span class="n">add_attachment</span><span class="p">(</span><span class="n">attachment</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">new_note</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Account.notes" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">notes</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password_protected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">notes</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password_protected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return Note object for all notes contained in account or notes filtered by property.</p>
+    <div class="doc doc-contents ">
+
+        <p>Return Note object for all notes contained in account or notes filtered by property.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>name</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note names to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr>
-          <td><code>body</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note bodies to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>text</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note text to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>password_protected</code></td>
-          <td>
-                <code>bool | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>filter by password protected notes</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>id</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note ids to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note names to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>body</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note bodies to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>text</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note text to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>password_protected</code>
+            </td>
+            <td>
+                  <code>bool | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>filter by password protected notes</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>id</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note ids to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>list[&#39;Note&#39;]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of Note objects</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>list[&#39;Note&#39;]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of Note objects</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">254</span>
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">254</span>
 <span class="normal">255</span>
 <span class="normal">256</span>
 <span class="normal">257</span>
@@ -3780,139 +4110,145 @@
         <span class="n">notes</span> <span class="o">=</span> <span class="n">notes</span><span class="o">.</span><span class="n">filteredArrayUsingPredicate_</span><span class="p">(</span><span class="n">predicate</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="o">.</span><span class="n">get</span><span class="p">()]</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Account.noteslist" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">noteslist</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password_protected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">noteslist</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password_protected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return NoteList object for all notes contained in account or notes filtered by property.</p>
+    <div class="doc doc-contents ">
+
+        <p>Return NoteList object for all notes contained in account or notes filtered by property.</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>name</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note names to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-        <tr>
-          <td><code>body</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note bodies to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>text</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note text to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>password_protected</code></td>
-          <td>
-                <code>bool | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>filter by password protected notes</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>id</code></td>
-          <td>
-                <code>list[str] | None</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>list of note ids to filter by</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>name</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note names to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>body</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note bodies to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>text</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note text to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>password_protected</code>
+            </td>
+            <td>
+                  <code>bool | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>filter by password protected notes</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>id</code>
+            </td>
+            <td>
+                  <code>list[str] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>list of note ids to filter by</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>&#39;NotesList&#39;</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>NotesList object</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>&#39;NotesList&#39;</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>NotesList object</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">310</span>
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">310</span>
 <span class="normal">311</span>
 <span class="normal">312</span>
 <span class="normal">313</span>
@@ -3954,36 +4290,34 @@
     <span class="n">notes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_noteslist</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">password_protected</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">NotesList</span><span class="p">(</span><span class="n">notes</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Account.show" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">show</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">show</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Show account in Notes.app UI</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">337</span>
+        <p>Show account in Notes.app UI</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">337</span>
 <span class="normal">338</span>
 <span class="normal">339</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show account in Notes.app UI&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;accountShow&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -3991,8 +4325,7 @@
 
   </div>
 
-  </div>
-
+    </div>
 
 </div><h2 id="folder">Folder</h2>
 
@@ -4002,14 +4335,19 @@
 
 
 <a id="macnotesapp.notesapp.Folder"></a>
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
-      <p>Folder object</p>
 
-            <details class="quote">
-              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">788</span>
+        <p>Folder object</p>
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">788</span>
 <span class="normal">789</span>
 <span class="normal">790</span>
 <span class="normal">791</span>
@@ -4047,9 +4385,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Name of folder&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_folder</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -4064,8 +4402,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Folder.id" class="doc doc-heading">
-          <code class="highlight language-python"><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -4074,10 +4412,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>ID of folder</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>ID of folder</p>
+    </div>
 
 </div>
 
@@ -4086,8 +4424,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Folder.name" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">name</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">name</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -4095,10 +4433,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Name of folder</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Name of folder</p>
+    </div>
 
 </div>
 
@@ -4108,8 +4446,7 @@
 
   </div>
 
-  </div>
-
+    </div>
 
 </div><h2 id="note">Note</h2>
 
@@ -4119,14 +4456,19 @@
 
 
 <a id="macnotesapp.notesapp.Note"></a>
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
-      <p>Note object representing a note in Notes.app</p>
 
-            <details class="quote">
-              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">558</span>
+        <p>Note object representing a note in Notes.app</p>
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">558</span>
 <span class="normal">559</span>
 <span class="normal">560</span>
 <span class="normal">561</span>
@@ -4486,9 +4828,9 @@
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -4503,8 +4845,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Note.account" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">account</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">account</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -4512,10 +4854,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return name of account note belongs to.</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return name of account note belongs to.</p>
+    </div>
 
 </div>
 
@@ -4524,8 +4866,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Note.attachments" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">attachments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Attachment&#39;</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">attachments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s1">&#39;Attachment&#39;</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -4533,10 +4875,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return list of attachments for note as Attachment objects</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return list of attachments for note as Attachment objects</p>
+    </div>
 
 </div>
 
@@ -4545,8 +4887,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Note.body" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">body</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">body</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-writable"><code>writable</code></small>
@@ -4555,10 +4897,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return body of note</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return body of note</p>
+    </div>
 
 </div>
 
@@ -4567,8 +4909,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Note.creation_date" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">creation_date</span><span class="p">:</span> <span class="n">datetime</span></code>
-  
+            <code class="highlight language-python"><span class="n">creation_date</span><span class="p">:</span> <span class="n">datetime</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -4576,10 +4918,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return creation date of note as datetime</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return creation date of note as datetime</p>
+    </div>
 
 </div>
 
@@ -4588,8 +4930,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Note.folder" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">folder</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">folder</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -4597,10 +4939,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return name of folder note is contained in</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return name of folder note is contained in</p>
+    </div>
 
 </div>
 
@@ -4609,8 +4951,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Note.id" class="doc doc-heading">
-          <code class="highlight language-python"><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -4619,10 +4961,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return note ID</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return note ID</p>
+    </div>
 
 </div>
 
@@ -4631,8 +4973,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Note.modification_date" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">modification_date</span><span class="p">:</span> <span class="n">datetime</span></code>
-  
+            <code class="highlight language-python"><span class="n">modification_date</span><span class="p">:</span> <span class="n">datetime</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -4640,10 +4982,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return modification date of note as datetime</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return modification date of note as datetime</p>
+    </div>
 
 </div>
 
@@ -4652,8 +4994,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Note.name" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">name</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">name</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
       <small class="doc doc-label doc-label-writable"><code>writable</code></small>
@@ -4662,10 +5004,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return name of note</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return name of note</p>
+    </div>
 
 </div>
 
@@ -4674,8 +5016,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Note.password_protected" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">password_protected</span><span class="p">:</span> <span class="nb">bool</span></code>
-  
+            <code class="highlight language-python"><span class="n">password_protected</span><span class="p">:</span> <span class="nb">bool</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -4683,10 +5025,10 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return password protected status of note</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return password protected status of note</p>
+    </div>
 
 </div>
 
@@ -4695,8 +5037,8 @@
 
 
 <h2 id="macnotesapp.notesapp.Note.plaintext" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">plaintext</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">plaintext</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -4704,111 +5046,108 @@
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return plaintext of note</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return plaintext of note</p>
+    </div>
 
 </div>
-
 
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Note.add_attachment" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">add_attachment</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">add_attachment</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Add attachment to note</p>
+    <div class="doc doc-contents ">
+
+        <p>Add attachment to note</p>
 
 
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td><code>path</code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>path to file to attach</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>path</code>
+            </td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>path to file to attach</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>&#39;Attachment&#39;</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Attachment object for attached file</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>&#39;Attachment&#39;</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Attachment object for attached file</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><strong>Raises:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
         <tr>
-          <td>
-                <code>FileNotFoundError</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>if file not found</p>
-            </div>
-          </td>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>FileNotFoundError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>if file not found</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">670</span>
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">670</span>
 <span class="normal">671</span>
 <span class="normal">672</span>
 <span class="normal">673</span>
@@ -4858,29 +5197,27 @@
     <span class="n">attachment_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;noteAddAttachment&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">Attachment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="o">.</span><span class="n">attachments</span><span class="p">()</span><span class="o">.</span><span class="n">objectWithID_</span><span class="p">(</span><span class="n">attachment_id</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Note.asdict" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">asdict</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">asdict</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return dict representation of note</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">700</span>
+        <p>Return dict representation of note</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">700</span>
 <span class="normal">701</span>
 <span class="normal">702</span>
 <span class="normal">703</span>
@@ -4906,36 +5243,34 @@
         <span class="s2">&quot;folder&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span>
     <span class="p">}</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Note.show" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">show</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">show</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Show note in Notes.app UI</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">696</span>
+        <p>Show note in Notes.app UI</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">696</span>
 <span class="normal">697</span>
 <span class="normal">698</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Show note in Notes.app UI&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_run_script</span><span class="p">(</span><span class="s2">&quot;noteShow&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -4943,8 +5278,7 @@
 
   </div>
 
-  </div>
-
+    </div>
 
 </div><h2 id="noteslist">NotesList</h2>
 
@@ -4954,15 +5288,20 @@
 
 
 <a id="macnotesapp.notesapp.NotesList"></a>
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
-      <p>NotesList object for list of notes.
+
+        <p>NotesList object for list of notes.
 Represents an SBElementArray of notes as returned by noteslist()</p>
 
-            <details class="quote">
-              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">462</span>
 <span class="normal">463</span>
 <span class="normal">464</span>
 <span class="normal">465</span>
@@ -5150,9 +5489,9 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return count of notes in list&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -5167,8 +5506,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.NotesList.body" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">body</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5176,10 +5515,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return body of every note in list as list of strings</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return body of every note in list as list of strings</p>
+    </div>
 
 </div>
 
@@ -5188,8 +5527,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.NotesList.container" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">container</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">container</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5197,10 +5536,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return container of every note in list as list of strings</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return container of every note in list as list of strings</p>
+    </div>
 
 </div>
 
@@ -5209,8 +5548,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.NotesList.creation_date" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">creation_date</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">creation_date</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5218,10 +5557,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return creation date of every note in list as list of datetimes</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return creation date of every note in list as list of datetimes</p>
+    </div>
 
 </div>
 
@@ -5230,8 +5569,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.NotesList.folder" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">folder</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">folder</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5239,10 +5578,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return folder of every note in list as list of strings</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return folder of every note in list as list of strings</p>
+    </div>
 
 </div>
 
@@ -5251,8 +5590,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.NotesList.id" class="doc doc-heading">
-          <code class="highlight language-python"><span class="nb">id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="nb">id</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5260,10 +5599,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return ID of every note in list as list of strings</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return ID of every note in list as list of strings</p>
+    </div>
 
 </div>
 
@@ -5272,8 +5611,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.NotesList.modification_date" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">modification_date</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">modification_date</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5281,10 +5620,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return modification date of every note in list as list of datetimes</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return modification date of every note in list as list of datetimes</p>
+    </div>
 
 </div>
 
@@ -5293,8 +5632,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.NotesList.name" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">name</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">name</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5302,10 +5641,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return name of every note in list as list of strings</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return name of every note in list as list of strings</p>
+    </div>
 
 </div>
 
@@ -5314,8 +5653,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.NotesList.password_protected" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">password_protected</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">password_protected</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5323,10 +5662,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return whether every note in list is password protected as list of bools</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return whether every note in list is password protected as list of bools</p>
+    </div>
 
 </div>
 
@@ -5335,8 +5674,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.NotesList.plaintext" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">plaintext</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
-  
+            <code class="highlight language-python"><span class="n">plaintext</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5344,61 +5683,57 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return plaintext of every note in list as list of strings</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Return plaintext of every note in list as list of strings</p>
+    </div>
 
 </div>
-
 
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.NotesList.__len__" class="doc doc-heading">
-          <code class="highlight language-python"><span class="fm">__len__</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="fm">__len__</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return count of notes in list</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">553</span>
+        <p>Return count of notes in list</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">553</span>
 <span class="normal">554</span>
 <span class="normal">555</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return count of notes in list&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.NotesList.asdict" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">asdict</span><span class="p">()</span></code>
+            <code class="highlight language-python"><span class="n">asdict</span><span class="p">()</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Return list of dict representations of note</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">515</span>
+        <p>Return list of dict representations of note</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">515</span>
 <span class="normal">516</span>
 <span class="normal">517</span>
 <span class="normal">518</span>
@@ -5446,8 +5781,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
         <span class="p">)</span>
     <span class="p">]</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -5455,8 +5790,7 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div><h2 id="attachment">Attachment</h2>
 
@@ -5466,14 +5800,19 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <a id="macnotesapp.notesapp.Attachment"></a>
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-  
-      <p>Notes.app Attachment object</p>
 
-            <details class="quote">
-              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">740</span>
+        <p>Notes.app Attachment object</p>
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">740</span>
 <span class="normal">741</span>
 <span class="normal">742</span>
 <span class="normal">743</span>
@@ -5565,9 +5904,9 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attachment</span><span class="o">.</span><span class="n">saveIn_as_</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">OSType</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">))</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
-            </details>
+              </details>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -5582,8 +5921,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.Attachment.URL" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">URL</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">URL</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5591,10 +5930,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>For URL attachments, the URL the attachment represents</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>For URL attachments, the URL the attachment represents</p>
+    </div>
 
 </div>
 
@@ -5603,8 +5942,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.Attachment.content_identifier" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">content_identifier</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">content_identifier</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5612,10 +5951,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>The content-id URL in the note's HTML</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>The content-id URL in the note's HTML</p>
+    </div>
 
 </div>
 
@@ -5624,8 +5963,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.Attachment.creation_date" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">creation_date</span><span class="p">:</span> <span class="n">datetime</span></code>
-  
+            <code class="highlight language-python"><span class="n">creation_date</span><span class="p">:</span> <span class="n">datetime</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5633,10 +5972,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Creation date of attachment</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Creation date of attachment</p>
+    </div>
 
 </div>
 
@@ -5645,8 +5984,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.Attachment.id" class="doc doc-heading">
-          <code class="highlight language-python"><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-cached"><code>cached</code></small>
       <small class="doc doc-label doc-label-property"><code>property</code></small>
@@ -5655,10 +5994,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>ID of attachment</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>ID of attachment</p>
+    </div>
 
 </div>
 
@@ -5667,8 +6006,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.Attachment.modification_date" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">modification_date</span><span class="p">:</span> <span class="n">datetime</span></code>
-  
+            <code class="highlight language-python"><span class="n">modification_date</span><span class="p">:</span> <span class="n">datetime</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5676,10 +6015,10 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Modification date of attachment</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Modification date of attachment</p>
+    </div>
 
 </div>
 
@@ -5688,8 +6027,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
 
 <h2 id="macnotesapp.notesapp.Attachment.name" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">name</span><span class="p">:</span> <span class="nb">str</span></code>
-  
+            <code class="highlight language-python"><span class="n">name</span><span class="p">:</span> <span class="nb">str</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-property"><code>property</code></small>
   </span>
@@ -5697,33 +6036,31 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Name of attachment</p>
-  </div>
+    <div class="doc doc-contents ">
+
+        <p>Name of attachment</p>
+    </div>
 
 </div>
-
 
 
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="macnotesapp.notesapp.Attachment.save" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Save attachment to file</p>
+    <div class="doc doc-contents ">
 
-          <details class="quote">
-            <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">776</span>
+        <p>Save attachment to file</p>
+
+            <details class="quote">
+              <summary>Source code in <code>macnotesapp/notesapp.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">776</span>
 <span class="normal">777</span>
 <span class="normal">778</span>
 <span class="normal">779</span>
@@ -5743,8 +6080,8 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_attachment</span><span class="o">.</span><span class="n">saveIn_as_</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">OSType</span><span class="p">(</span><span class="s2">&quot;item&quot;</span><span class="p">))</span>
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">path</span><span class="p">())</span>
 </code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 
@@ -5752,10 +6089,16 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
+
+
+
+
+
+
+
 
 
 
@@ -5766,32 +6109,12 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
             </div>
           
           
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../cli/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Command Line Reference" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Command Line Reference
-            </div>
-          </div>
-        </a>
-      
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -5814,12 +6137,12 @@ Represents an SBElementArray of notes as returned by noteslist()</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.16e2a7d4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.5a2dcb6a.min.js"></script>
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
       
-    
     
   </body>
 </html>
