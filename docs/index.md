@@ -21,4 +21,4 @@ Once you've installed macnotesapp with pipx, to upgrade to the latest version:
 
     pipx upgrade macnotesapp
 
-**Note**: Currently tested on MacOS 10.15.7/Catalina and 13.1/Ventura.
+**Note**: Currently tested on macOS 13.7.1/Ventura.
