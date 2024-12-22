@@ -7,7 +7,7 @@ These notes are to remind me of things I need to do to maintain this project. Th
 MacNotesApp uses poetry for dependency management and virtual environments. To set up a development environment, run the following commands:
 
 ```bash
-poetry install
+poetry install --all-extras
 poetry shell
 ```
 
