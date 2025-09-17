@@ -6,23 +6,42 @@
 Work with Apple MacOS Notes.app from the command line. Also includes python interface for scripting Notes.app from your own python code.
 
 ## Installation
+## Installation
 
-There are two ways to install the command line tool: `pipx` or `homebrew`.
+The recommended way to install `macnotesapp` is via the [uv](https://github.com/astral-sh/uv) python package manager tool.
 
-### Install with [pipx](https://pypa.github.io/pipx/)
-
-If you use `pipx`, you will not need to create a python virtual environment as `pipx` takes care of this. The easiest way to do this on a Mac is to use [homebrew](https://brew.sh/):
+### Installation using `uv`
 
 * Open `Terminal` (search for `Terminal` in Spotlight or look in `Applications/Utilities`)
-* Install `homebrew` according to instructions at [https://brew.sh/](https://brew.sh/)
-* Type the following into Terminal: `brew install pipx`
-* Then type this: `pipx install macnotesapp`
-* `pipx` will install the `macnotesapp` command line interface (CLI) as an executable named `notes`
-* Now you should be able to run `notes` by typing: `notes`
+* Install `uv` by running the following command in Terminal:
 
-Once you've installed macnotesapp with pipx, to upgrade to the latest version:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
-    pipx upgrade macnotesapp
+If you previously installed `uv`, upgrade to the latest version:
+
+```bash
+uv self update
+```
+
+* Type the following into Terminal:
+
+```bash
+uv tool install --python 3.13 macnotesapp
+```
+
+* Now you should be able to run `macnotesapp` by typing: `macnotesapp`
+
+Once you've installed macnotesapp with `uv`, to upgrade to the latest version:
+
+```bash
+uv tool upgrade macnotesapp
+```
+
+If you want to try `macnotesapp` without installing it, you can run `uv tool run --python 3.13 macnotesapp` or `uvx --python 3.13 macnotesapp`.
+
+Note: If installing on an older version of macOS and you encounter issues installing with uv, try installing python 3.13 from [python.org](https://www.python.org/downloads/) then running uv to install macnotesapp.
 
 **Note**: Currently tested on MacOS 10.15.7/Catalina and 13.1/Ventura.
 
@@ -37,6 +56,8 @@ Once you have installed `homebrew`, you can install the CLI in the terminal with
     brew install macnotesapp
 
 * Now you should be able to run `notes` by typing: `notes`
+
+**Note**: This only works for Apple Silicon (M1, etc.) Macs. If you are using an Intel Mac, use the uv instructions above.
 
 ## Documentation
 
