@@ -233,6 +233,11 @@ print(note_names)
 ```
 <!-- [[[end]]] -->
 
+## See Also
+
+* [apple-notes-parser](https://github.com/RhetTbull/apple-notes-parser): Reads data directly from the Apple Notes database. Read-only but is faster than using the AppleScript API. Supports tags and folders.
+* [mcp-apple-notes-py](https://github.com/mcolyer/mcp-apple-notes-py): MCP server that uses macnotesapp and apple-notes-parser; provides LLMs access to your notes.
+
 ## Known Issues and Limitations
 
 * Password protected notes are not supported; unlocked password-protected notes can be accessed but locked notes cannot
