@@ -449,6 +449,26 @@ class Account:
     def _run_script(self, script, *args):
         return run_script(script, self.name, *args)
 
+    def make_folder(self, folder_name: str) -> "Folder":
+        """Create a new folder in this account.
+
+        Args:
+            folder_name: name for the new folder
+
+        Returns:
+            Folder object for the new folder
+        """
+        run_script("folderCreate", self.name, folder_name)
+        return self.folder(folder_name)
+
+    def delete_folder(self, folder_name: str):
+        """Delete a folder from this account.
+
+        Args:
+            folder_name: name of folder to delete
+        """
+        run_script("folderDelete", self.name, folder_name)
+
     def __len__(self) -> int:
         """Return count of notes"""
         return len(self._account.notes())
@@ -722,6 +742,18 @@ class Note:
     def show(self):
         """Show note in Notes.app UI"""
         self._run_script("noteShow")
+
+    def delete(self):
+        """Delete this note from Notes.app"""
+        run_script("noteDelete", self.id)
+
+    def move(self, folder_name: str):
+        """Move this note to a different folder.
+
+        Args:
+            folder_name: name of folder to move note to
+        """
+        run_script("noteMove", self.id, folder_name, self.account)
 
     def asdict(self) -> dict[str, Any]:
         """Return dict representation of note"""

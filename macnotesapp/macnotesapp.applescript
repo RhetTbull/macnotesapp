@@ -79,7 +79,7 @@ on notesGetSelected()
 	tell application "Notes"
 		set theSelection to selection
 		repeat with theNote in theSelection
-			set noteID to Çclass seldÈ of (theNote as record)
+			set noteID to ï¿½class seldï¿½ of (theNote as record)
 			copy noteID to end of selectedIDs
 		end repeat
 	end tell
@@ -167,7 +167,7 @@ on notesMakeNoteWithAccount(accountName, folderName, noteName, noteBody)
 	tell application "Notes"
 		tell account accountName
 			set theNote to make new note at folder folderName with properties {name:noteName, body:noteBody}
-			set noteID to Çclass seldÈ of (theNote as record)
+			set noteID to ï¿½class seldï¿½ of (theNote as record)
 			return noteID
 		end tell
 	end tell
@@ -186,7 +186,7 @@ on notesMakeNote(noteName, noteBody)
 	tell application "Notes"
 		try
 			set theNote to make new note with properties {name:noteName, body:noteBody}
-			set noteID to Çclass seldÈ of (theNote as record)
+			set noteID to ï¿½class seldï¿½ of (theNote as record)
 			return noteID
 		on error
 			return 0
@@ -238,7 +238,7 @@ on noteGetContainer(accountName, noteID)
 	(* Get container (folder) name of noteID in accountName *)
 	tell application "Notes"
 		tell account accountName
-			set noteContainerID to Çclass seldÈ of ((container of note id noteID) as record)
+			set noteContainerID to ï¿½class seldï¿½ of ((container of note id noteID) as record)
 			set noteFolderName to name of (first folder whose id is noteContainerID)
 			return noteFolderName
 		end tell
@@ -359,7 +359,7 @@ on folderGetAllNotes(accountName, folderID)
 				set folderNotes to notes of theFolder
 				set allNotes to {}
 				repeat with theNote in folderNotes
-					set noteID to Çclass seldÈ of (theNote as record)
+					set noteID to ï¿½class seldï¿½ of (theNote as record)
 					copy noteID to end of allNotes
 				end repeat
 				return allNotes
@@ -382,7 +382,7 @@ on folderGetContainer(accountName, folderID)
 	(* Get parent folder for folder *)
 	tell application "Notes"
 		tell account accountName
-			set folderContainerID to Çclass seldÈ of ((container of folder id folderID) as record)
+			set folderContainerID to ï¿½class seldï¿½ of ((container of folder id folderID) as record)
 			return folderContainerID
 		end tell
 	end tell
@@ -512,7 +512,7 @@ on attachmentSaveAttachment(accountName, noteID, attachmentID, thePath)
 	tell application "Notes"
 		tell account accountName
 			repeat with theAttachment in attachments of note id (noteID)
-				set theID to Çclass seldÈ of (theAttachment as record)
+				set theID to ï¿½class seldï¿½ of (theAttachment as record)
 				if theID = attachmentID then
 					tell theAttachment
 						save in POSIX file thePath
@@ -528,7 +528,7 @@ on attachmentGetName(accountName, noteID, attachmentID)
 	tell application "Notes"
 		tell account accountName
 			repeat with theAttachment in attachments of note id (noteID)
-				set theID to Çclass seldÈ of (theAttachment as record)
+				set theID to ï¿½class seldï¿½ of (theAttachment as record)
 				if theID = attachmentID then
 					return name of theAttachment
 				end if
@@ -536,6 +536,45 @@ on attachmentGetName(accountName, noteID, attachmentID)
 		end tell
 	end tell
 end attachmentGetName
+
+(********** Write Operations **********)
+
+on noteDelete(noteID)
+	(* Delete note with noteID *)
+	tell application "Notes"
+		set theNote to first note whose id is noteID
+		delete theNote
+	end tell
+end noteDelete
+
+on noteMove(noteID, folderName, accountName)
+	(* Move note to folder *)
+	tell application "Notes"
+		tell account accountName
+			set theNote to first note whose id is noteID
+			set targetFolder to first folder whose name is folderName
+			move theNote to targetFolder
+		end tell
+	end tell
+end noteMove
+
+on folderCreate(accountName, folderName)
+	(* Create new folder in account *)
+	tell application "Notes"
+		tell account accountName
+			make new folder with properties {name:folderName}
+		end tell
+	end tell
+end folderCreate
+
+on folderDelete(accountName, folderName)
+	(* Delete folder from account *)
+	tell application "Notes"
+		tell account accountName
+			delete folder folderName
+		end tell
+	end tell
+end folderDelete
 
 (********** Test **********)
 

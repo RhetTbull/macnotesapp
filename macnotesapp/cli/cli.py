@@ -336,6 +336,208 @@ def dump(selected, no_body):
             dump_notes_list(noteslist, account)
 
 
+@click.command(name="rename")
+@click.argument("old_name", metavar="OLD_NAME")
+@click.argument("new_name", metavar="NEW_NAME")
+@click.option(
+    "--account",
+    "-a",
+    "account_name",
+    metavar="ACCOUNT",
+    type=str,
+    help="Account to search in.",
+)
+def rename_note(old_name, new_name, account_name):
+    """Rename a note.
+
+    Example: notes rename "Old Title" "New Title"
+    """
+    notes_app = macnotesapp.NotesApp()
+    matching_notes = notes_app.notes(name=[old_name], accounts=[account_name] if account_name else None)
+    if not matching_notes:
+        click.echo(f"Error: Note '{old_name}' not found.", err=True)
+        sys.exit(1)
+    note = matching_notes[0]
+    old = note.name
+    note.name = new_name
+    click.echo(f"Renamed '{old}' -> '{new_name}'")
+
+
+@click.command(name="delete")
+@click.argument("note_name", metavar="NOTE_NAME")
+@click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt.")
+@click.option(
+    "--account",
+    "-a",
+    "account_name",
+    metavar="ACCOUNT",
+    type=str,
+    help="Account to search in.",
+)
+def delete_note(note_name, yes, account_name):
+    """Delete a note.
+
+    Example: notes delete "Old Note"
+    """
+    notes_app = macnotesapp.NotesApp()
+    matching_notes = notes_app.notes(name=[note_name], accounts=[account_name] if account_name else None)
+    if not matching_notes:
+        click.echo(f"Error: Note '{note_name}' not found.", err=True)
+        sys.exit(1)
+    note = matching_notes[0]
+    if not yes:
+        if not click.confirm(f"Delete '{note.name}'?"):
+            click.echo("Aborted.")
+            sys.exit(0)
+    note.delete()
+    click.echo(f"Deleted '{note.name}'")
+
+
+@click.command(name="edit")
+@click.argument("note_name", metavar="NOTE_NAME")
+@click.option("--body", "-b", help="Set body directly without opening editor.")
+@click.option("--html", "-h", "use_html", is_flag=True, help="Treat body as HTML.")
+@click.option("--markdown", "-m", "use_markdown", is_flag=True, help="Treat body as Markdown.")
+@click.option(
+    "--account",
+    "-a",
+    "account_name",
+    metavar="ACCOUNT",
+    type=str,
+    help="Account to search in.",
+)
+def edit_note(note_name, body, use_html, use_markdown, account_name):
+    """Edit an existing note's body.
+
+    Example: notes edit "My Note" --body "New content"
+    """
+    notes_app = macnotesapp.NotesApp()
+    matching_notes = notes_app.notes(name=[note_name], accounts=[account_name] if account_name else None)
+    if not matching_notes:
+        click.echo(f"Error: Note '{note_name}' not found.", err=True)
+        sys.exit(1)
+    note = matching_notes[0]
+    original_name = note.name
+
+    if body:
+        if use_markdown:
+            body = markdown2.markdown(body, extras=MARKDOWN_EXTRAS)
+        elif not use_html:
+            # Plain text - wrap in basic HTML
+            body = f"<div>{body}</div>"
+        note.body = body
+        click.echo(f"Updated '{original_name}'")
+    else:
+        # Open in editor
+        import tempfile
+        config = ConfigSettings()
+        settings = config.read()
+        editor = settings.get("editor", DEFAULT_EDITOR)
+        if editor.startswith("$"):
+            editor = os.environ.get(editor[1:], "vim")
+
+        # Export current content as markdown for editing
+        current_md = html2md(note.body)
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
+            f.write(current_md)
+            temp_path = f.name
+
+        # Open editor
+        result = os.system(f'{editor} "{temp_path}"')
+        if result != 0:
+            click.echo(f"Editor exited with error code {result}", err=True)
+            os.unlink(temp_path)
+            sys.exit(1)
+
+        # Read back and update
+        with open(temp_path, "r") as f:
+            new_content = f.read()
+
+        new_html = markdown2.markdown(new_content, extras=MARKDOWN_EXTRAS)
+        note.body = new_html
+        os.unlink(temp_path)
+        click.echo(f"Updated '{note.name}'")
+
+
+@click.command(name="move")
+@click.argument("note_name", metavar="NOTE_NAME")
+@click.option("--folder", "-f", required=True, help="Destination folder.")
+@click.option(
+    "--account",
+    "-a",
+    "account_name",
+    metavar="ACCOUNT",
+    type=str,
+    help="Account to search in.",
+)
+def move_note(note_name, folder, account_name):
+    """Move a note to a different folder.
+
+    Example: notes move "My Note" --folder "Archive"
+    """
+    notes_app = macnotesapp.NotesApp()
+    matching_notes = notes_app.notes(name=[note_name], accounts=[account_name] if account_name else None)
+    if not matching_notes:
+        click.echo(f"Error: Note '{note_name}' not found.", err=True)
+        sys.exit(1)
+    note = matching_notes[0]
+    old_folder = note.folder
+    note.move(folder)
+    click.echo(f"Moved '{note.name}' from '{old_folder}' to '{folder}'")
+
+
+@click.command(name="mkdir")
+@click.argument("folder_name", metavar="FOLDER_NAME")
+@click.option(
+    "--account",
+    "-a",
+    "account_name",
+    metavar="ACCOUNT",
+    type=str,
+    help="Account to create folder in.",
+)
+def make_folder(folder_name, account_name):
+    """Create a new folder.
+
+    Example: notes mkdir "Archive"
+    """
+    notes_app = macnotesapp.NotesApp()
+    account_name = account_name or notes_app.default_account
+    account = notes_app.account(account_name)
+    account.make_folder(folder_name)
+    click.echo(f"Created folder '{folder_name}' in {account_name}")
+
+
+@click.command(name="rmdir")
+@click.argument("folder_name", metavar="FOLDER_NAME")
+@click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt.")
+@click.option(
+    "--account",
+    "-a",
+    "account_name",
+    metavar="ACCOUNT",
+    type=str,
+    help="Account to delete folder from.",
+)
+def remove_folder(folder_name, yes, account_name):
+    """Delete a folder.
+
+    Example: notes rmdir "Old Folder"
+    """
+    notes_app = macnotesapp.NotesApp()
+    account_name = account_name or notes_app.default_account
+    account = notes_app.account(account_name)
+    if folder_name not in account.folders:
+        click.echo(f"Error: Folder '{folder_name}' not found in {account_name}.", err=True)
+        sys.exit(1)
+    if not yes:
+        if not click.confirm(f"Delete folder '{folder_name}' and all its notes?"):
+            click.echo("Aborted.")
+            sys.exit(0)
+    account.delete_folder(folder_name)
+    click.echo(f"Deleted folder '{folder_name}' from {account_name}")
+
+
 # Click CLI object & context settings
 class CLI_Obj:
     def __init__(self, debug=False, group=None):
@@ -362,7 +564,8 @@ def cli_main(ctx, debug):
 
 
 # add the commands to the main group
-for command in [accounts, add_note, cat_notes, config, list_notes, dump, help]:
+for command in [accounts, add_note, cat_notes, config, list_notes, dump, help,
+                rename_note, delete_note, edit_note, move_note, make_folder, remove_folder]:
     cli_main.add_command(command)
 
 
