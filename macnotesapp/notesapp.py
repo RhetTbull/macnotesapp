@@ -480,12 +480,28 @@ class NotesList:
     @property
     def body(self) -> list[str]:
         """Return body of every note in list as list of strings"""
-        return self._apply_selector("body")
+        result = self._apply_selector("body")
+        # Fallback for macOS versions where bulk body selector doesn't work
+        if not result:
+            result = []
+            for noteslist in self._noteslist:
+                for note in noteslist:
+                    b = note.body()
+                    result.append(str(b) if b else "")
+        return result
 
     @property
     def plaintext(self) -> list[str]:
         """Return plaintext of every note in list as list of strings"""
-        return self._apply_selector("plaintext")
+        result = self._apply_selector("plaintext")
+        # Fallback for macOS versions where bulk plaintext selector doesn't work
+        if not result:
+            result = []
+            for noteslist in self._noteslist:
+                for note in noteslist:
+                    pt = note.plaintext()
+                    result.append(str(pt) if pt else "")
+        return result
 
     @property
     def container(self) -> list[str]:
@@ -542,6 +558,8 @@ class NotesList:
         results_list = []
         for noteslist in self._noteslist:
             results = noteslist.arrayByApplyingSelector_(selector)
+            if results is None:
+                continue
             if selector in ["creationDate", "modificationDate"]:
                 results_list.extend(NSDate_to_datetime(date) for date in results)
             elif selector == "container":
