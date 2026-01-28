@@ -1,6 +1,6 @@
 require "formula"
 
-$pkg_version = "v0.8.0"
+$pkg_version = "v0.8.1"
 $pkg_group = "RhetTbull"
 $pkg_repo = "macnotesapp"
 

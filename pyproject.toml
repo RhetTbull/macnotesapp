@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "macnotesapp"
-version = "0.8.0"
+version = "0.8.1"
 description = "Work with Apple MacOS Notes.app from the command line. Also includes python interface for scripting Notes.app from your own python code."
 authors = ["Rhet Turnbull <rturnbull@gmail.com>"]
 license = "MIT License"
@@ -31,7 +31,7 @@ lxml = ">=5.2.1,<6.0.0"
 pytest = ">=7.1.2,<=8.0.0"
 cogapp = ">=3.3.0"
 wheel = ">=0.37.1"
-build = ">=0.8.0"
+build = ">=0.8.1"
 pyinstaller = ">=6.6.0"
 
 [tool.poetry.scripts]
