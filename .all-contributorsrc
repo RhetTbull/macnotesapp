@@ -33,6 +33,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "andrewfurman",
+      "name": "Andrew Furman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/468007?v=4",
+      "profile": "http://twitter.com/furman",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
