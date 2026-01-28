@@ -8,19 +8,19 @@ rm -rf dist
 rm -rf build
 
 echo "Updating README.md"
-cog -r README.md
+uv run cog -r README.md
 
 # update docs
 echo "Building docs"
-mkdocs build
+uv run mkdocs build
 
 # build the package
 echo "Building package"
-python3 -m build
+uv build
 
 # build CLI executable
 echo "Building CLI executable"
-pyinstaller macnotesapp.spec
+uv run pyinstaller macnotesapp.spec
 
 # package executable as DMG
 echo "Zipping executable"
