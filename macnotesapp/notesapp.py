@@ -10,6 +10,7 @@ from functools import cached_property
 from typing import Any, Generator, Optional
 
 import AppKit
+import applescript
 import ScriptingBridge
 
 from ._version import __version__
@@ -20,8 +21,8 @@ from .utils import NSDate_to_datetime, OSType, get_macos_version
 # be cast to str to ensure they work correctly with other functions
 
 
-
 MAC_OS_VERSION = int(get_macos_version()[0])
+
 
 class AppleScriptError(Exception):
     """Error raised when AppleScript fails to execute"""
@@ -685,7 +686,7 @@ class Note:
             if attachment.id not in [a.id for a in attachments[:i]]
         ]
 
-    def add_attachment(self, path: str) -> "Attachment":
+    def add_attachment(self, path: str | os.PathLike) -> "Attachment":
         """Add attachment to note
 
         Args:
@@ -704,11 +705,18 @@ class Note:
         # the attachment sometimes is added twice
         # See #15 for more details
 
-        # must pass fully resolved path to AppleScript
+        # must pass fully resolved path to attachment
         path = pathlib.Path(path).expanduser().resolve()
         if not path.exists():
             raise FileNotFoundError(f"File not found: {path}")
-        attachment_id = self._run_script("noteAddAttachment", str(path))
+        try:
+            attachment_id = self._run_script("noteAddAttachment", str(path))
+        except applescript.ScriptError as e:
+            attachment_id = parse_id_from_error(str(e))
+        if not attachment_id:
+            raise AppleScriptError(
+                f"Could not get attachment id for attachment at path {path}"
+            )
         return Attachment(self._note.attachments().objectWithID_(attachment_id))
 
     def show(self):
@@ -822,3 +830,12 @@ class Folder:
     def name(self) -> str:
         """Name of folder"""
         return str(self._folder.name())
+
+
+def parse_id_from_error(error: str) -> str | None:
+    """Parse the ID from the object representation from an AppleScript error"""
+    # there are cases where AppleScript returns an error such as:
+    # applescript.ScriptError: Notes got an error: Can’t get attachment id "x-coredata://5A2C18B7-767B-41A9-BF71-E4E966775D32/ICAttachment/p5631". (-1728) app='Notes' range=8198-8200
+    if match := re.search(r'id "(x-coredata://.+?)"', str(error)):
+        return match[1]
+    return None
