@@ -544,6 +544,45 @@ on attachmentGetName(accountName, noteID, attachmentID)
 	end tell
 end attachmentGetName
 
+(********** Write Operations **********)
+
+on noteDelete(noteID)
+	(* Delete note with noteID *)
+	tell application "Notes"
+		set theNote to first note whose id is noteID
+		delete theNote
+	end tell
+end noteDelete
+
+on noteMove(noteID, folderName, accountName)
+	(* Move note to folder *)
+	tell application "Notes"
+		tell account accountName
+			set theNote to first note whose id is noteID
+			set targetFolder to first folder whose name is folderName
+			move theNote to targetFolder
+		end tell
+	end tell
+end noteMove
+
+on folderCreate(accountName, folderName)
+	(* Create new folder in account *)
+	tell application "Notes"
+		tell account accountName
+			make new folder with properties {name:folderName}
+		end tell
+	end tell
+end folderCreate
+
+on folderDelete(accountName, folderName)
+	(* Delete folder from account *)
+	tell application "Notes"
+		tell account accountName
+			delete folder folderName
+		end tell
+	end tell
+end folderDelete
+
 (********** Test **********)
 
 """
