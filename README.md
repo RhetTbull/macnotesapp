@@ -90,9 +90,15 @@ Commands:
   add       Add new note.
   cat       Print one or more notes to STDOUT
   config    Configure default settings for account, editor, etc.
+  delete    Delete a note.
   dump      Dump all notes or selection of notes for debugging
+  edit      Edit an existing note's body.
   help      Print help; for help on commands: help <command>.
   list      List notes, optionally filtering by account or text.
+  mkdir     Create a new folder.
+  move      Move a note to a different folder.
+  rename    Rename a note.
+  rmdir     Delete a folder.
 
 ```
 <!-- [[[end]]] -->
