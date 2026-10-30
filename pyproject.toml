@@ -22,7 +22,7 @@ dependencies = [
     "pyobjc-framework-ScriptingBridge>=9.0.1",
     "xdg-base-dirs>=6.0.0",
     "lxml-html-clean>=0.1.1",
-    "lxml>=5.2.1,<6.0.0",
+    "lxml>=5.2.1,<7",
 ]
 
 [project.urls]
