@@ -9,7 +9,7 @@ class Macnotesapp < Formula
   version $pkg_version
   homepage "https://github.com/#{$pkg_group}/#{$pkg_repo}"
   desc "cli tool to interact with MacOS Notes"
-  sha256 "e7613f2c471ebf49b877524372a28d16c4633ce209e174fbb03f2b8ecd741fbb"
+  sha256 "c8cb7d88cf050ff073400f79706c8378ae11a19c9e93fa157883132d3cb31a68"
 
   depends_on "python@3.12"
 
