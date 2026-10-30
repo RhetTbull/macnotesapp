@@ -40,12 +40,9 @@ uv run bump2version <major|minor|patch> --verbose   # bump version
 
 `NotesList` wraps SB element arrays and fetches properties in bulk. It is much faster than iterating `Note` objects, so prefer it for operations over many notes.
 
-### AppleScript source lives in two places
+### AppleScript source
 
-- `macnotesapp/macnotesapp.applescript` is the reference copy. It is **not UTF-8**: the `«class seld»` guillemets are stored in a legacy Mac encoding.
-- `macnotesapp/macnotesapp_applescript.py` holds the same script pasted into the `NOTES_APPLESCRIPT` string. **This copy is the one that runs.**
-
-When you add or change an AppleScript handler, edit both files and keep them in sync. Handler names follow the pattern `<object><Action>`, for example `noteGetBody(accountName, noteID)`, `folderCreate(accountName, folderName)`, or `notesGetAccounts()`.
+`macnotesapp/macnotesapp.applescript` holds every AppleScript handler. `script_loader.py` reads it as UTF-8 with `importlib.resources`, compiles it on the first `run_script()` call, and caches the result. Keep the file UTF-8: the `«class seld»` guillemets must survive. `tests/unit/test_script_loader.py` checks that the file compiles and that every handler called from Python is defined. Handler names follow the pattern `<object><Action>`, for example `noteGetBody(accountName, noteID)`, `folderCreate(accountName, folderName)`, or `notesGetAccounts()`. The PyInstaller spec bundles the file.
 
 ### CLI (`macnotesapp/cli/`)
 

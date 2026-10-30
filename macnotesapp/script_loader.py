@@ -1,17 +1,30 @@
-"""Load applescript from file"""
+"""Load and run the AppleScript handlers in macnotesapp.applescript"""
 
-import logging
+from __future__ import annotations
+
+import functools
+from importlib.resources import files
 
 from applescript import AppleScript
 
 from .logging import logger
-from .macnotesapp_applescript import NOTES_APPLESCRIPT
 
-SCRIPT_OBJ = AppleScript(NOTES_APPLESCRIPT)
+SCRIPT_FILE = "macnotesapp.applescript"
+
+
+def load_script_source() -> str:
+    """Return the source of the AppleScript handlers"""
+    return files(__package__).joinpath(SCRIPT_FILE).read_text(encoding="utf-8")
+
+
+@functools.cache
+def get_script() -> AppleScript:
+    """Return the compiled AppleScript; compiled on first use and then cached"""
+    logger.debug(f"Compiling {SCRIPT_FILE}")
+    return AppleScript(load_script_source())
 
 
 def run_script(name, *args):
-    """Run function name contained in SCRIPT_OBJ"""
-    # print(f"Running script {name} with args {args}")
+    """Run AppleScript handler name with args"""
     logger.debug(f"Running script {name} with args {args}")
-    return SCRIPT_OBJ.call(name, *args)
+    return get_script().call(name, *args)

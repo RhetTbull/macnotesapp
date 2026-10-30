@@ -295,7 +295,6 @@ class Account:
     def name(self) -> str:
         """Return name of account"""
         return str(self._account.name())
-        # return str(self._run_script("accountName"))
 
     @property
     def folders(self) -> list[str]:
@@ -485,7 +484,6 @@ class Account:
     def __len__(self) -> int:
         """Return count of notes"""
         return len(self._account.notes())
-        # return self._run_script("accountGetCount")
 
     def __iter__(self) -> Generator[Note, None, None]:
         """Generator to yield all notes contained in Notes.app"""
