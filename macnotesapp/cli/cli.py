@@ -7,16 +7,20 @@ import sys
 from typing import Dict, Iterable
 
 import click
-import markdown2
 import questionary
 from applescript import ScriptError
-from markdownify import markdownify as html2md
 from rich.console import Console
 from rich.markdown import Markdown
 
 import macnotesapp
-from macnotesapp import __version__
-from macnotesapp import NotesList
+from macnotesapp import NotesList, __version__
+from macnotesapp.formatting import (
+    html_to_markdown,
+    markdown_lossy_features,
+    markdown_to_html,
+    text_to_html,
+)
+from macnotesapp.notesapp import title_html
 
 from .cli_config import (
     CONFIG_FILE,
@@ -31,9 +35,6 @@ from .cli_config import (
 from .cli_help import RichHelpCommand, help
 from .cli_param_types import URLType
 from .readable import get_readable_html
-
-# extra features to support for Markdown to HTML conversion with markdown2
-MARKDOWN_EXTRAS = ["fenced-code-blocks", "footnotes", "tables"]
 
 
 @click.command(name="accounts")
@@ -56,7 +57,7 @@ def accounts(json_):
 @click.option("--show", "-s", is_flag=True, help="Show note in Notes after adding.")
 @click.option("--file", "-F", required=False, type=click.File())
 @click.option("--url", "-u", required=False, type=URLType())
-@click.option("--html", "-h", is_flag=True, help="Use HTML for body of note.")
+@click.option("--html", "-H", is_flag=True, help="Use HTML for body of note.")
 @click.option("--markdown", "-m", is_flag=True, help="Use Markdown for body of note.")
 @click.option(
     "--plaintext",
@@ -118,7 +119,7 @@ def add_note(
     If NOTE is a single line, adds new note with name NOTE and no body.
     If NOTE is more than one line, adds new note where name is first line of NOTE and body is remainder.
 
-    Body of note must be plain text unless [i]--html/-h[/] or [i]--markdown/-m[/] flag is set
+    Body of note must be plain text unless [i]--html/-H[/] or [i]--markdown/-m[/] flag is set
     in which case body should be HTML or Markdown, respectively.
     If [i]--edit/-e[/] flag is set, note will be opened in default editor before being added.
     If [i]--show/-s[/] flag is set, note will be shown in Notes.app after being added.
@@ -169,9 +170,7 @@ def add_note(
         ext = (
             ".html"
             if format_ == FORMAT_HTML
-            else ".md"
-            if format_ == FORMAT_MARKDOWN
-            else ".txt"
+            else ".md" if format_ == FORMAT_MARKDOWN else ".txt"
         )
         note_text = click.edit(note_text, editor=editor, extension=ext)
 
@@ -184,11 +183,9 @@ def add_note(
     name, body = note_parts[0], note_parts[2]
 
     if format_ == FORMAT_MARKDOWN:
-        # convert Markdown to HTML
-        body = markdown2.markdown(body, extras=MARKDOWN_EXTRAS)
+        body = markdown_to_html(body)
     elif format_ != FORMAT_HTML:
-        # convert plain text to HTML
-        body = "".join(f"<div>{line or '<br>'}</div>\n" for line in body.split("\n"))
+        body = text_to_html(body)
 
     notes = macnotesapp.NotesApp()
     try:
@@ -226,7 +223,7 @@ def list_notes(account_name, text):
     notesapp = macnotesapp.NotesApp()
     print_notes_list(
         notesapp.noteslist(
-            accounts=[account_name] if account_name else None,
+            accounts=list(account_name) if account_name else None,
             text=[text] if text else None,
         )
     )
@@ -235,7 +232,7 @@ def list_notes(account_name, text):
 @click.command(name="cat")
 @click.option("--plaintext", "-p", is_flag=True, help="Output note as plain text.")
 @click.option("--markdown", "-m", is_flag=True, help="Output note as Markdown.")
-@click.option("--html", "-h", is_flag=True, help="Output note as HTML.")
+@click.option("--html", "-H", is_flag=True, help="Output note as HTML.")
 @click.option(
     "--json",
     "-j",
@@ -255,11 +252,7 @@ def cat_notes(name, plaintext, markdown, html, json_):
     output = (
         "plaintext"
         if plaintext
-        else "markdown"
-        if markdown
-        else "html"
-        if html
-        else "rich"
+        else "markdown" if markdown else "html" if html else "rich"
     )
 
     if json_:
@@ -336,154 +329,236 @@ def dump(selected, no_body):
             dump_notes_list(noteslist, account)
 
 
+def note_selection_options(func):
+    """Decorator to add options for selecting a single note to a command"""
+    options = [
+        click.option(
+            "--id",
+            "note_id",
+            metavar="ID",
+            type=str,
+            help="Select note by ID instead of by name (see `notes cat --json`).",
+        ),
+        click.option(
+            "--contains",
+            is_flag=True,
+            help="Match notes whose name contains NOTE_NAME instead of matching the name exactly.",
+        ),
+        click.option(
+            "--account",
+            "-a",
+            "account_name",
+            metavar="ACCOUNT",
+            type=str,
+            help="Account to search in.",
+        ),
+    ]
+    for option in reversed(options):
+        func = option(func)
+    return func
+
+
+def resolve_note(
+    notes_app: macnotesapp.NotesApp,
+    note_name: str | None,
+    note_id: str | None,
+    account_name: str | None,
+    contains: bool = False,
+) -> macnotesapp.Note:
+    """Return the single note selected by name or ID.
+
+    By default NOTE_NAME must match the note's name exactly (case-insensitive).
+    Prints an error and exits if no note matches or if more than one note matches.
+    """
+    accounts = [account_name] if account_name else None
+    if note_id and note_name:
+        click.echo("Error: Specify NOTE_NAME or --id, not both.", err=True)
+        sys.exit(1)
+    if note_id:
+        matches = notes_app.notes(id=[note_id], accounts=accounts)
+        description = f"with ID '{note_id}'"
+    elif note_name:
+        matches = notes_app.notes(
+            name=[note_name], accounts=accounts, exact_name=not contains
+        )
+        description = (
+            f"with name containing '{note_name}'" if contains else f"'{note_name}'"
+        )
+    else:
+        click.echo("Error: Specify NOTE_NAME or --id.", err=True)
+        sys.exit(1)
+
+    if not matches:
+        hint = "" if contains or note_id else " (use --contains for a partial match)"
+        click.echo(f"Error: Note {description} not found{hint}.", err=True)
+        sys.exit(1)
+    if len(matches) > 1:
+        click.echo(
+            f"Error: {len(matches)} notes match {description}; "
+            "select one with --id:",
+            err=True,
+        )
+        for note in matches:
+            click.echo(
+                f"  {note.account}/{note.folder}: {note.name} "
+                f"(modified {note.modification_date:%Y-%m-%d %H:%M}) --id {note.id}",
+                err=True,
+            )
+        sys.exit(1)
+    return matches[0]
+
+
 @click.command(name="rename")
-@click.argument("old_name", metavar="OLD_NAME")
-@click.argument("new_name", metavar="NEW_NAME")
-@click.option(
-    "--account",
-    "-a",
-    "account_name",
-    metavar="ACCOUNT",
-    type=str,
-    help="Account to search in.",
-)
-def rename_note(old_name, new_name, account_name):
+@click.argument("names", metavar="[OLD_NAME] NEW_NAME", nargs=-1, required=True)
+@note_selection_options
+def rename_note(names, note_id, contains, account_name):
     """Rename a note.
+
+    OLD_NAME must match the note's name exactly (case-insensitive) unless --contains is given.
+    If --id is given, only NEW_NAME is required.
 
     Example: notes rename "Old Title" "New Title"
     """
-    notes_app = macnotesapp.NotesApp()
-    matching_notes = notes_app.notes(name=[old_name], accounts=[account_name] if account_name else None)
-    if not matching_notes:
-        click.echo(f"Error: Note '{old_name}' not found.", err=True)
+    expected = 1 if note_id else 2
+    if len(names) != expected:
+        usage = "--id ID NEW_NAME" if note_id else "OLD_NAME NEW_NAME"
+        click.echo(f"Error: Usage: notes rename {usage}", err=True)
         sys.exit(1)
-    note = matching_notes[0]
+    old_name = None if note_id else names[0]
+    new_name = names[-1]
+    notes_app = macnotesapp.NotesApp()
+    note = resolve_note(notes_app, old_name, note_id, account_name, contains)
     old = note.name
     note.name = new_name
     click.echo(f"Renamed '{old}' -> '{new_name}'")
 
 
 @click.command(name="delete")
-@click.argument("note_name", metavar="NOTE_NAME")
+@click.argument("note_name", metavar="NOTE_NAME", required=False)
 @click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt.")
-@click.option(
-    "--account",
-    "-a",
-    "account_name",
-    metavar="ACCOUNT",
-    type=str,
-    help="Account to search in.",
-)
-def delete_note(note_name, yes, account_name):
+@note_selection_options
+def delete_note(note_name, yes, note_id, contains, account_name):
     """Delete a note.
+
+    NOTE_NAME must match the note's name exactly (case-insensitive) unless --contains is given.
 
     Example: notes delete "Old Note"
     """
     notes_app = macnotesapp.NotesApp()
-    matching_notes = notes_app.notes(name=[note_name], accounts=[account_name] if account_name else None)
-    if not matching_notes:
-        click.echo(f"Error: Note '{note_name}' not found.", err=True)
-        sys.exit(1)
-    note = matching_notes[0]
+    note = resolve_note(notes_app, note_name, note_id, account_name, contains)
+    name = note.name
     if not yes:
-        if not click.confirm(f"Delete '{note.name}'?"):
+        if not click.confirm(f"Delete '{name}'?"):
             click.echo("Aborted.")
             sys.exit(0)
     note.delete()
-    click.echo(f"Deleted '{note.name}'")
+    click.echo(f"Deleted '{name}'")
 
 
 @click.command(name="edit")
-@click.argument("note_name", metavar="NOTE_NAME")
-@click.option("--body", "-b", help="Set body directly without opening editor.")
-@click.option("--html", "-h", "use_html", is_flag=True, help="Treat body as HTML.")
-@click.option("--markdown", "-m", "use_markdown", is_flag=True, help="Treat body as Markdown.")
+@click.argument("note_name", metavar="NOTE_NAME", required=False)
 @click.option(
-    "--account",
-    "-a",
-    "account_name",
-    metavar="ACCOUNT",
-    type=str,
-    help="Account to search in.",
+    "--body",
+    "-b",
+    help="Replace the body of the note (keeping its title) without opening the editor.",
 )
-def edit_note(note_name, body, use_html, use_markdown, account_name):
+@click.option(
+    "--html",
+    "-H",
+    "use_html",
+    is_flag=True,
+    help="Treat --body as HTML, or edit the note's HTML in the editor.",
+)
+@click.option(
+    "--markdown", "-m", "use_markdown", is_flag=True, help="Treat --body as Markdown."
+)
+@click.option(
+    "--force",
+    is_flag=True,
+    help="Edit even if content such as attachments or formatting would be lost.",
+)
+@note_selection_options
+def edit_note(
+    note_name, body, use_html, use_markdown, force, note_id, contains, account_name
+):
     """Edit an existing note's body.
+
+    NOTE_NAME must match the note's name exactly (case-insensitive) unless --contains is given.
+
+    Without --body, the note is opened in the default editor as Markdown
+    (or as HTML with --html). Converting to Markdown and back loses
+    tables, images, and styling, and writing the body loses attachments,
+    so edit refuses to modify notes containing these unless --force is given.
+    Checklists cannot be detected yet and will be converted to bulleted lists.
 
     Example: notes edit "My Note" --body "New content"
     """
-    notes_app = macnotesapp.NotesApp()
-    matching_notes = notes_app.notes(name=[note_name], accounts=[account_name] if account_name else None)
-    if not matching_notes:
-        click.echo(f"Error: Note '{note_name}' not found.", err=True)
+    if use_html and use_markdown:
+        click.echo(
+            "Error: Only one of --html and --markdown can be specified.", err=True
+        )
         sys.exit(1)
-    note = matching_notes[0]
+    notes_app = macnotesapp.NotesApp()
+    note = resolve_note(notes_app, note_name, note_id, account_name, contains)
     original_name = note.name
 
-    if body:
+    # check for content that would be lost by replacing the body
+    lost = []
+    if attachment_count := len(note.attachments):
+        lost.append(f"{attachment_count} attachment(s)")
+    if body is None and not use_html:
+        lost.extend(markdown_lossy_features(note.body))
+    if lost and not force:
+        alternative = (
+            "" if body is not None or use_html else "--html to edit the HTML, or "
+        )
+        click.echo(
+            f"Error: Editing '{original_name}' would lose content: {', '.join(lost)}. "
+            f"Use {alternative}--force to edit anyway.",
+            err=True,
+        )
+        sys.exit(1)
+
+    if body is not None:
         if use_markdown:
-            body = markdown2.markdown(body, extras=MARKDOWN_EXTRAS)
+            body = markdown_to_html(body)
         elif not use_html:
-            # Plain text - wrap in basic HTML
-            body = f"<div>{body}</div>"
-        note.body = body
+            body = text_to_html(body)
+        note.body = title_html(original_name) + body
         click.echo(f"Updated '{original_name}'")
-    else:
-        # Open in editor
-        import tempfile
-        config = ConfigSettings()
-        settings = config.read()
-        editor = settings.get("editor", DEFAULT_EDITOR)
-        if editor.startswith("$"):
-            editor = os.environ.get(editor[1:], "vim")
+        return
 
-        # Export current content as markdown for editing
-        current_md = html2md(note.body)
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
-            f.write(current_md)
-            temp_path = f.name
-
-        # Open editor
-        result = os.system(f'{editor} "{temp_path}"')
-        if result != 0:
-            click.echo(f"Editor exited with error code {result}", err=True)
-            os.unlink(temp_path)
-            sys.exit(1)
-
-        # Read back and update
-        with open(temp_path, "r") as f:
-            new_content = f.read()
-
-        new_html = markdown2.markdown(new_content, extras=MARKDOWN_EXTRAS)
-        note.body = new_html
-        os.unlink(temp_path)
-        click.echo(f"Updated '{note.name}'")
+    current_body = note.body
+    text = current_body if use_html else html_to_markdown(current_body)
+    new_text = click.edit(
+        text,
+        editor=ConfigSettings().editor,
+        extension=".html" if use_html else ".md",
+    )
+    if new_text is None:
+        click.echo(f"No changes made to '{original_name}'")
+        return
+    note.body = new_text if use_html else markdown_to_html(new_text)
+    click.echo(f"Updated '{original_name}'")
 
 
 @click.command(name="move")
-@click.argument("note_name", metavar="NOTE_NAME")
+@click.argument("note_name", metavar="NOTE_NAME", required=False)
 @click.option("--folder", "-f", required=True, help="Destination folder.")
-@click.option(
-    "--account",
-    "-a",
-    "account_name",
-    metavar="ACCOUNT",
-    type=str,
-    help="Account to search in.",
-)
-def move_note(note_name, folder, account_name):
+@note_selection_options
+def move_note(note_name, folder, note_id, contains, account_name):
     """Move a note to a different folder.
+
+    NOTE_NAME must match the note's name exactly (case-insensitive) unless --contains is given.
 
     Example: notes move "My Note" --folder "Archive"
     """
     notes_app = macnotesapp.NotesApp()
-    matching_notes = notes_app.notes(name=[note_name], accounts=[account_name] if account_name else None)
-    if not matching_notes:
-        click.echo(f"Error: Note '{note_name}' not found.", err=True)
-        sys.exit(1)
-    note = matching_notes[0]
+    note = resolve_note(notes_app, note_name, note_id, account_name, contains)
+    name = note.name
     old_folder = note.folder
     note.move(folder)
-    click.echo(f"Moved '{note.name}' from '{old_folder}' to '{folder}'")
+    click.echo(f"Moved '{name}' from '{old_folder}' to '{folder}'")
 
 
 @click.command(name="mkdir")
@@ -528,7 +603,9 @@ def remove_folder(folder_name, yes, account_name):
     account_name = account_name or notes_app.default_account
     account = notes_app.account(account_name)
     if folder_name not in account.folders:
-        click.echo(f"Error: Folder '{folder_name}' not found in {account_name}.", err=True)
+        click.echo(
+            f"Error: Folder '{folder_name}' not found in {account_name}.", err=True
+        )
         sys.exit(1)
     if not yes:
         if not click.confirm(f"Delete folder '{folder_name}' and all its notes?"):
@@ -564,8 +641,21 @@ def cli_main(ctx, debug):
 
 
 # add the commands to the main group
-for command in [accounts, add_note, cat_notes, config, list_notes, dump, help,
-                rename_note, delete_note, edit_note, move_note, make_folder, remove_folder]:
+for command in [
+    accounts,
+    add_note,
+    cat_notes,
+    config,
+    list_notes,
+    dump,
+    help,
+    rename_note,
+    delete_note,
+    edit_note,
+    move_note,
+    make_folder,
+    remove_folder,
+]:
     cli_main.add_command(command)
 
 
@@ -628,9 +718,9 @@ def print_note(note: macnotesapp.Note, output: str):
     if output == "plaintext":
         console.print(note.plaintext)
     elif output == "rich":
-        console.print(Markdown(html2md(note.body)))
+        console.print(Markdown(html_to_markdown(note.body)))
     elif output == "markdown":
-        console.print(html2md(note.body))
+        console.print(html_to_markdown(note.body))
     elif output == "html":
         console.print(note.body)
 

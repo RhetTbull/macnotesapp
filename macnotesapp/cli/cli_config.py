@@ -73,13 +73,13 @@ class ConfigSettings:
         return data.get("format", DEFAULT_FORMAT)
 
     @property
-    def editor(self):
-        """Return default editor"""
+    def editor(self) -> str | None:
+        """Return default editor or None if not set (click.edit() will then choose one)"""
         data = self.read()
         editor = data.get("editor", DEFAULT_EDITOR)
         if editor.startswith("$"):
             # environment variable
-            return os.environ.get(editor[1:], DEFAULT_EDITOR)
+            return os.environ.get(editor[1:])
         return editor
 
     def _create_config_file(self):
