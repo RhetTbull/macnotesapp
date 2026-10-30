@@ -42,6 +42,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "bwagner",
+      "name": "Bernhard Wagner",
+      "avatar_url": "https://avatars.githubusercontent.com/u/447049?v=4",
+      "profile": "https://github.com/bwagner",
+      "contributions": [
+        "bug",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
