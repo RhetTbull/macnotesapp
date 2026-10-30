@@ -1,5 +1,6 @@
 """Get a cleaned/readable version of a webpage"""
 
+import html
 import re
 from datetime import datetime
 from typing import Tuple
@@ -21,12 +22,11 @@ def get_readable_html(url: str) -> Tuple[str, str]:
     response = requests.get(url)
     doc = Document(response.text)
 
-    re_body_endtag = re.compile("</body>")
-    html_text = re.sub(
-        re_body_endtag,
-        f"Original URL: <a href={url}>{url}</a><br>"
+    footer = (
+        f'Original URL: <a href="{html.escape(url)}">{html.escape(url)}</a><br>'
         f"Accessed on: {datetime.now().isoformat()}"
-        "</body>",
-        doc.summary(),
+        "</body>"
     )
+    # use a function for the replacement so backslashes in the URL aren't treated as escapes
+    html_text = re.sub("</body>", lambda _: footer, doc.summary())
     return doc.title(), html_text

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import html
 import os
 import pathlib
 import re
@@ -11,6 +12,7 @@ from typing import Any, Generator, Optional
 
 import AppKit
 import applescript
+import Foundation
 import ScriptingBridge
 
 from ._version import __version__
@@ -51,6 +53,70 @@ def parse_id_from_object(obj: ScriptingBridge.SBObject) -> str:
     return None
 
 
+def notes_predicate(
+    name: list[str] | None = None,
+    body: list[str] | None = None,
+    text: list[str] | None = None,
+    password_protected: bool | None = None,
+    id: list[str] | None = None,
+    exact_name: bool = False,
+) -> AppKit.NSPredicate | None:
+    """Build an NSPredicate to filter notes by property; returns None if no filters given.
+
+    Values within a property are OR'd together; properties are AND'd together.
+    If exact_name is True, name must match exactly (case-insensitive) instead of
+    containing the search string.
+    """
+    format_strings = []
+    args = []
+    if name:
+        op = "==[c]" if exact_name else "contains[cd]"
+        format_strings.append([f"(name {op} %@)"] * len(name))
+        args.extend(name)
+    if body:
+        format_strings.append(["(plaintext contains[cd] %@)"] * len(body))
+        args.extend(body)
+    if text:
+        format_strings.append(
+            ["(name contains[cd] %@)"] * len(text)
+            + ["(plaintext contains[cd] %@)"] * len(text)
+        )
+        args.extend(text * 2)
+    if password_protected is not None:
+        format_strings.append(
+            ["(passwordProtected == TRUE)"]
+            if password_protected
+            else ["(passwordProtected == FALSE)"]
+        )
+    if id:
+        format_strings.append(["(id == %@)"] * len(id))
+        args.extend(id)
+    if not format_strings:
+        return None
+    or_strings = [" OR ".join(strings) for strings in format_strings]
+    format_str = "(" + ") AND (".join(or_strings) + ")"
+    return AppKit.NSPredicate.predicateWithFormat_argumentArray_(format_str, args)
+
+
+def filter_accounts(
+    account_list: ScriptingBridge.SBElementArray, accounts: list[str] | None
+) -> ScriptingBridge.SBElementArray:
+    """Filter SBElementArray of accounts to those whose name is in accounts"""
+    if not accounts:
+        return account_list
+    # ScriptingBridge doesn't support "name IN %@" (silently matches nothing) so use OR
+    format_str = " OR ".join(["name == %@"] * len(accounts))
+    predicate = AppKit.NSPredicate.predicateWithFormat_argumentArray_(
+        format_str, list(accounts)
+    )
+    return account_list.filteredArrayUsingPredicate_(predicate)
+
+
+def title_html(name: str) -> str:
+    """Return HTML for the title line of a note"""
+    return f"<div><h1>{html.escape(name, quote=False)}</h1></div>\n"
+
+
 class NotesApp:
     """Represents Notes.app instance"""
 
@@ -83,6 +149,7 @@ class NotesApp:
         password_protected: bool | None = None,
         id: list[str] | None = None,
         accounts: list[str] | None = None,
+        exact_name: bool = False,
     ) -> list["Note"]:
         """Return Note object for all notes contained in Notes.app or notes filtered by property.
 
@@ -93,20 +160,19 @@ class NotesApp:
             password_protected: filter by password protected notes
             id: list of note ids to filter by
             accounts: list of account names to filter by
+            exact_name: if True, name must match exactly (case-insensitive) instead of containing the search string
 
         Returns:
             list of Note objects
         """
         # TODO: should this be a generator?
-        account_list = self.app.accounts()
-        if accounts:
-            format_str = "name == %@" + " OR name == %@ " * (len(accounts) - 1)
-            predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, accounts)
-            account_list = account_list.filteredArrayUsingPredicate_(predicate)
+        account_list = filter_accounts(self.app.accounts(), accounts)
         notes = []
         for account in account_list:
             notes.extend(
-                Account(account).notes(name, body, text, password_protected, id)
+                Account(account).notes(
+                    name, body, text, password_protected, id, exact_name=exact_name
+                )
             )
         return notes
 
@@ -118,6 +184,7 @@ class NotesApp:
         password_protected: bool | None = None,
         id: list[str] | None = None,
         accounts: list[str] | None = None,
+        exact_name: bool = False,
     ) -> "NotesList":
         """Return NoteList object for all notes contained in account or notes filtered by property.
 
@@ -128,15 +195,12 @@ class NotesApp:
             password_protected: filter by password protected notes
             id: list of note ids to filter by
             accounts: list of account names to filter by
+            exact_name: if True, name must match exactly (case-insensitive) instead of containing the search string
 
         Returns:
             NotesList object
         """
-        account_list = self.app.accounts()
-        if accounts:
-            format_str = "name == %@" + " OR name == %@ " * (len(accounts) - 1)
-            predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, accounts)
-            account_list = account_list.filteredArrayUsingPredicate_(predicate)
+        account_list = filter_accounts(self.app.accounts(), accounts)
         noteslists = [
             Account(account)._noteslist(
                 name=name,
@@ -144,6 +208,7 @@ class NotesApp:
                 text=text,
                 password_protected=password_protected,
                 id=id,
+                exact_name=exact_name,
             )
             for account in account_list
         ]
@@ -161,25 +226,26 @@ class NotesApp:
         return str(self.app.version())
 
     def make_note(
-        self, name: str, body: str, attachments: list[str] | None = None
+        self,
+        name: str,
+        body: str,
+        attachments: list[str] | None = None,
+        *,
+        folder: str | None = None,
     ) -> "Note":
-        """Create new note in default folder of default account.
+        """Create new note in default account.
 
         Args:
-            name: name of notes
+            name: name of note; will be escaped for HTML
             body: body of note as HTML text
             attachments: optional list of paths to attachments to add to note
+            folder: optional folder to create note in; if None, uses default folder
 
         Returns:
             newly created Note object
         """
-        # reference: https://developer.apple.com/documentation/scriptingbridge/sbobject/1423973-initwithproperties
         account = Account(self.app.defaultAccount())
-        note = account.make_note(name, body)
-        if attachments:
-            for attachment in attachments:
-                note.add_attachment(attachment)
-        return note
+        return account.make_note(name, body, folder=folder, attachments=attachments)
 
     def account(self, account: Optional[str] = None) -> "Account":
         """Return Account object for account or default account if account is None.
@@ -213,9 +279,9 @@ class NotesApp:
     def __iter__(self) -> Generator["Note", None, None]:
         """Generator to yield Note object for all notes contained in Notes.app"""
         for account in self.app.accounts():
-            notes = account.notes()
-            for note in notes:
-                yield Note(note)
+            account_name = str(account.name())
+            for note in account.notes():
+                yield Note(note, account=account_name)
 
 
 class Account:
@@ -259,6 +325,7 @@ class Account:
         text: list[str] | None = None,
         password_protected: bool | None = None,
         id: list[str] | None = None,
+        exact_name: bool = False,
     ) -> list["Note"]:
         """Return Note object for all notes contained in account or notes filtered by property.
 
@@ -268,45 +335,15 @@ class Account:
             text: list of note text to filter by
             password_protected: filter by password protected notes
             id: list of note ids to filter by
+            exact_name: if True, name must match exactly (case-insensitive) instead of containing the search string
 
         Returns:
             list of Note objects
         """
         # TODO: should this be a generator?
-        notes = self._account.notes()
-        format_strings = []
-        if name and notes:
-            name_strings = ["(name contains[cd] %@)"] * len(name)
-            format_strings.append(name_strings)
-        if body and notes:
-            body_strings = ["(plaintext contains[cd] %@)"] * len(body)
-            format_strings.append(body_strings)
-        if text and notes:
-            text_strings = ["(name contains[cd] %@)"] * len(text)
-            text_strings.extend(["(plaintext contains[cd] %@)"] * len(text))
-            format_strings.append(text_strings)
-        if password_protected is not None and notes:
-            password_string = (
-                ["(passwordProtected == TRUE)"]
-                if password_protected
-                else ["(passwordProtected == FALSE)"]
-            )
-            format_strings.append(password_string)
-        if id and notes:
-            id_string = ["(id == %@)"] * len(id)
-            format_strings.append(id_string)
-        if format_strings:
-            # have one or more search predicates; filter notes
-            args = name or []
-            args += body or []
-            if text:
-                args += text * 2
-            args += id or []
-            or_strings = [" OR ".join(strings) for strings in format_strings]
-            format_str = "(" + ") AND (".join(or_strings) + ")"
-            predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, *args)
-            notes = notes.filteredArrayUsingPredicate_(predicate)
-        return [Note(note) for note in notes.get()]
+        notes = self._noteslist(name, body, text, password_protected, id, exact_name)
+        account_name = self.name
+        return [Note(note, account=account_name) for note in notes.get()]
 
     def noteslist(
         self,
@@ -315,6 +352,7 @@ class Account:
         text: list[str] | None = None,
         password_protected: bool | None = None,
         id: list[str] | None = None,
+        exact_name: bool = False,
     ) -> "NotesList":
         """Return NoteList object for all notes contained in account or notes filtered by property.
 
@@ -324,10 +362,11 @@ class Account:
             text: list of note text to filter by
             password_protected: filter by password protected notes
             id: list of note ids to filter by
+            exact_name: if True, name must match exactly (case-insensitive) instead of containing the search string
 
         Returns:
             NotesList object"""
-        notes = self._noteslist(name, body, text, password_protected, id)
+        notes = self._noteslist(name, body, text, password_protected, id, exact_name)
         return NotesList(notes)
 
     def folder(self, folder: str) -> "Folder":
@@ -349,8 +388,8 @@ class Account:
         """Create new note in account
 
         Args:
-            name: name of note
-            body: body of note
+            name: name of note; will be escaped for HTML
+            body: body of note as HTML text
             folder: optional folder to create note in; if None, uses default folder
             attachments: optional list of file paths to attach to note
 
@@ -368,7 +407,7 @@ class Account:
             self._folder_for_name(folder) if folder else self._account.defaultFolder()
         )
         properties = {
-            "body": f"<div><h1>{name}</h1></div>\n{body}",
+            "body": f"{title_html(name)}{body}",
         }
         note = (
             notes_app.app.classForScriptingClass_("note")
@@ -385,7 +424,7 @@ class Account:
                 f"Could not create note '{name}' with body '{body}'"
             )
 
-        new_note = Note(note)
+        new_note = Note(note, account=self.name)
         if attachments:
             for attachment in attachments:
                 if not os.path.exists(attachment):
@@ -400,40 +439,14 @@ class Account:
         text: list[str] | None = None,
         password_protected: bool | None = None,
         id: list[str] | None = None,
+        exact_name: bool = False,
     ) -> ScriptingBridge.SBElementArray:
         """Return SBElementArray for all notes contained in account or notes filtered by property"""
         notes = self._account.notes()
-        format_strings = []
-        if name and notes:
-            name_strings = ["(name contains[cd] %@)"] * len(name)
-            format_strings.append(name_strings)
-        if body and notes:
-            body_strings = ["(plaintext contains[cd] %@)"] * len(body)
-            format_strings.append(body_strings)
-        if text and notes:
-            text_strings = ["(name contains[cd] %@)"] * len(text)
-            text_strings.extend(["(plaintext contains[cd] %@)"] * len(text))
-            format_strings.append(text_strings)
-        if password_protected is not None and notes:
-            password_string = (
-                ["(passwordProtected == TRUE)"]
-                if password_protected
-                else ["(passwordProtected == FALSE)"]
-            )
-            format_strings.append(password_string)
-        if id and notes:
-            id_string = ["(id == %@)"] * len(id)
-            format_strings.append(id_string)
-        if format_strings:
-            # have one or more search predicates; filter notes
-            args = name or []
-            args += body or []
-            if text:
-                args += text * 2
-            args += id or []
-            or_strings = [" OR ".join(strings) for strings in format_strings]
-            format_str = "(" + ") AND (".join(or_strings) + ")"
-            predicate = AppKit.NSPredicate.predicateWithFormat_(format_str, *args)
+        predicate = notes_predicate(
+            name, body, text, password_protected, id, exact_name=exact_name
+        )
+        if predicate is not None and notes:
             notes = notes.filteredArrayUsingPredicate_(predicate)
         return notes
 
@@ -476,8 +489,9 @@ class Account:
 
     def __iter__(self) -> Generator[Note, None, None]:
         """Generator to yield all notes contained in Notes.app"""
+        account_name = self.name
         for note in self._account.notes():
-            yield Note(note)
+            yield Note(note, account=account_name)
 
 
 class NotesList:
@@ -501,28 +515,12 @@ class NotesList:
     @property
     def body(self) -> list[str]:
         """Return body of every note in list as list of strings"""
-        result = self._apply_selector("body")
-        # Fallback for macOS versions where bulk body selector doesn't work
-        if not result:
-            result = []
-            for noteslist in self._noteslist:
-                for note in noteslist:
-                    b = note.body()
-                    result.append(str(b) if b else "")
-        return result
+        return self._apply_selector("body")
 
     @property
     def plaintext(self) -> list[str]:
         """Return plaintext of every note in list as list of strings"""
-        result = self._apply_selector("plaintext")
-        # Fallback for macOS versions where bulk plaintext selector doesn't work
-        if not result:
-            result = []
-            for noteslist in self._noteslist:
-                for note in noteslist:
-                    pt = note.plaintext()
-                    result.append(str(pt) if pt else "")
-        return result
+        return self._apply_selector("plaintext")
 
     @property
     def container(self) -> list[str]:
@@ -574,20 +572,36 @@ class NotesList:
             )
         ]
 
-    def _apply_selector(self, selector) -> list[str]:
-        """Return note properties in list that pass selector"""
+    def _apply_selector(self, selector) -> list[Any]:
+        """Return note property for every note in list by applying selector
+
+        Results are always aligned with the notes in the list: one value per note.
+        """
         results_list = []
         for noteslist in self._noteslist:
             results = noteslist.arrayByApplyingSelector_(selector)
-            if results is None:
-                continue
-            if selector in ["creationDate", "modificationDate"]:
-                results_list.extend(NSDate_to_datetime(date) for date in results)
-            elif selector == "container":
-                results_list.extend(str(container.name()) for container in results)
-            else:
-                results_list.extend([str(r) for r in results])
+            count = len(noteslist)
+            if results is None or len(results) != count:
+                # bulk fetch failed or is incomplete (seen with body/plaintext on some
+                # macOS versions); fall back to fetching from each note so values stay
+                # aligned with the notes
+                results = [getattr(note, selector)() for note in noteslist]
+            results_list.extend(self._convert_value(selector, r) for r in results)
         return results_list
+
+    @staticmethod
+    def _convert_value(selector: str, value: Any) -> Any:
+        """Convert a value returned by ScriptingBridge to a Python value"""
+        # bulk results use NSNull for missing values
+        if value is None or isinstance(value, Foundation.NSNull):
+            return "" if selector in ["name", "body", "plaintext"] else None
+        if selector in ["creationDate", "modificationDate"]:
+            return NSDate_to_datetime(value)
+        if selector == "container":
+            return str(name) if (name := value.name()) else None
+        if selector == "passwordProtected":
+            return bool(value)
+        return str(value)
 
     def __len__(self) -> int:
         """Return count of notes in list"""
@@ -597,14 +611,24 @@ class NotesList:
 class Note:
     """Note object representing a note in Notes.app"""
 
-    def __init__(self, note: ScriptingBridge.SBObject):
-        self._note = note
+    def __init__(self, note: ScriptingBridge.SBObject, account: str | None = None):
+        """Initialize Note object
 
-    @property
+        Args:
+            note: ScriptingBridge note object
+            account: name of account the note belongs to, if known;
+                if None, it will be looked up (slowly) via AppleScript when needed
+        """
+        self._note = note
+        self._account_name = account
+
+    @cached_property
     def account(self) -> str:
         """Return name of account note belongs to."""
+        if self._account_name:
+            return self._account_name
         # can't determine this easily from the note object
-        # so may to use AppleScript
+        # so use AppleScript
         return str(run_script("noteGetAccount", self.id))
 
     @cached_property
@@ -612,10 +636,11 @@ class Note:
         """Return note ID"""
         if note_id := self._note.id():
             return str(note_id)
-        else:
-            # if note object created from selection or predicate it may show ID of 0
-            # but the ID is in the string representation of the object so parse it
-            return parse_id_from_object(self._note) or 0
+        # if note object created from selection or predicate it may show ID of 0
+        # but the ID is in the string representation of the object so parse it
+        if note_id := parse_id_from_object(self._note):
+            return note_id
+        raise ScriptingBridgeError(f"Could not determine ID for note {self._note}")
 
     @property
     def name(self) -> str:
@@ -686,8 +711,10 @@ class Note:
     def folder(self) -> str:
         """Return name of folder note is contained in"""
         # calling container() method on note object returns None
-        # in many cases, so use AppleScript instead
-        return self._note.container().name() or self._run_script("noteGetContainer")
+        # in many cases, so fall back to AppleScript
+        if (container := self._note.container()) and (name := container.name()):
+            return str(name)
+        return str(self._run_script("noteGetContainer"))
 
     @property
     def attachments(self) -> list["Attachment"]:
@@ -773,23 +800,14 @@ class Note:
         """Run AppleScript script"""
         return run_script(script, self.account, self.id, *args)
 
-    def _parse_id_from_object(self) -> str:
-        """Parse the ID from the object representation when it can't be determined by ScriptingBridge"""
-
-        # there are some conditions (e.g. using selection on Catalina or using a predicate)
-        # where the ScriptingBridge sets the object ID to 0
-        # I haven't been able to figure out why but in this case, the id can be determined
-        # by examining the string representation of the object which looks like this:
-        # <SBObject @0x7fd721544690: <class ''> id "x-coredata://19B82A76-B3FE-4427-9C5E-5107C1E3CA57/IMAPNote/p87" of application "Notes" (55036)>
-        if match := re.search(r'id "(x-coredata://.+?)"', str(self._note)):
-            return match[1]
-        return None
-
     def __repr__(self) -> str:
         return f"Note({self.id})"
 
-    def __eq__(self, other: "Note"):
-        return (self.id, self.account) == (other.id, other.account)
+    def __eq__(self, other: object) -> bool:
+        # note IDs are globally unique so no need to compare account
+        if not isinstance(other, Note):
+            return NotImplemented
+        return self.id == other.id
 
     def __hash__(self) -> int:
         return hash(repr(self))
@@ -836,8 +854,10 @@ class Attachment:
         if not os.path.exists(str(path)):
             raise FileNotFoundError(f"Path does not exist: {path}")
 
+        # name may be None for some attachments so fall back to last part of the ID
+        filename = self.name or self.id.rsplit("/", 1)[-1]
         url = AppKit.NSURL.alloc().initFileURLWithPath_(
-            os.path.join(str(path), self.name)
+            os.path.join(str(path), filename)
         )
         self._attachment.saveIn_as_(url, OSType("item"))
         return str(url.path())

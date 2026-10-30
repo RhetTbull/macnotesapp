@@ -13,6 +13,7 @@ Dependencies are managed with [uv](https://docs.astral.sh/uv/). Run everything t
 ```bash
 uv sync                          # create .venv and install deps (including dev)
 uv run notes --help              # run the CLI from source
+uv run pytest tests/unit         # unit tests: no Notes.app access, safe to run anytime
 uv run pytest -v -s tests/       # run tests (-s is REQUIRED: tests are interactive)
 uv run pytest -v -s tests/test_applescript_interface.py::test_notes_len   # run a single test
 uv run cog -r README.md          # regenerate the cog-generated sections of README.md
@@ -25,7 +26,8 @@ uv run bump2version <major|minor|patch> --verbose   # bump version
 
 - Tests run against the user's **real Notes.app data**. Many tests prompt `y/n` on stdin to confirm what they print, and some create, modify, or delete notes and folders. Don't run the test suite without the user's go-ahead, and never run it non-interactively expecting it to pass.
 - `tests/test_docs.py` uses `mktestdocs` to execute the Python code blocks in `README.md`. Those blocks also touch Notes.app and create notes.
-- No mocks exist for Notes.app. To verify a change, run the relevant CLI command or library call against Notes.app, with the user's consent if it writes data.
+- `tests/unit/` uses fakes from `tests/unit/fakes.py` instead of Notes.app. Everything else in `tests/` drives the real app.
+- Beyond those fakes, no mocks exist for Notes.app. To verify a change, run the relevant CLI command or library call against Notes.app, with the user's consent if it writes data.
 
 ## Architecture
 

@@ -153,7 +153,7 @@ Usage: notes add [OPTIONS] NOTE
   more than one line, adds new note where name is first line of NOTE and body is
   remainder.
 
-  Body of note must be plain text unless --html/-h or --markdown/-m
+  Body of note must be plain text unless --html/-H or --markdown/-m
   flag is set in which case body should be HTML or Markdown, respectively. If
   --edit/-e flag is set, note will be opened in default editor before
   being added. If --show/-s flag is set, note will be shown in Notes.app
@@ -167,14 +167,14 @@ Options:
   -s, --show             Show note in Notes after adding.
   -F, --file FILENAME
   -u, --url URL
-  -h, --html             Use HTML for body of note.
+  -H, --html             Use HTML for body of note.
   -m, --markdown         Use Markdown for body of note.
   -p, --plaintext        Use plaintext for body of note (default unless changed
                          in `notes config`).
   -e, --edit             Edit note text before adding in default editor.
   -a, --account ACCOUNT  Add note to account ACCOUNT.
   -f, --folder FOLDER    Add note to folder FOLDER.
-  --help                 Show this message and exit.
+  -h, --help             Show this message and exit.
 
 ```
 <!-- [[[end]]] -->
