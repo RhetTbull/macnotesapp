@@ -44,7 +44,7 @@ def test_note_account_cached(monkeypatch):
 def test_note_id_missing_raises():
     """#77: Note.id raises instead of returning 0"""
     with pytest.raises(ScriptingBridgeError):
-        Note(FakeSBNote(id=0)).id
+        _ = Note(FakeSBNote(id=0)).id
 
 
 def test_note_folder_container_none(monkeypatch):

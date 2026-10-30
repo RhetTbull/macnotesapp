@@ -6,8 +6,8 @@ import json
 import os
 import pathlib
 import sys
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Iterable
 
 import click
 from rich.console import Console
@@ -196,7 +196,9 @@ def add_note(
         ext = (
             ".html"
             if format_ == FORMAT_HTML
-            else ".md" if format_ == FORMAT_MARKDOWN else ".txt"
+            else ".md"
+            if format_ == FORMAT_MARKDOWN
+            else ".txt"
         )
         note_text = click.edit(note_text, editor=editor, extension=ext)
 
@@ -281,7 +283,11 @@ def cat_notes(name, plaintext, markdown, html, json_):
     output = (
         "plaintext"
         if plaintext
-        else "markdown" if markdown else "html" if html else "rich"
+        else "markdown"
+        if markdown
+        else "html"
+        if html
+        else "rich"
     )
 
     if json_:
@@ -732,17 +738,21 @@ def print_notes_list(noteslist: NotesList):
         "{:<" + f"{x}" + "}" for x in [folder_len, name_len, body_len]
     )
     click.echo(format_str.format("Folder", "Name", "Body"))
-    for note in zip(folders, names, body):
+    for note in zip(folders, names, body, strict=True):
         folder, name, body = note
         folder = folder or "---"
         name = name or "---"
         body = body or "---"
         name = (
-            f"{name[:name_len-padding]}.." if len(name) > (name_len - padding) else name
+            f"{name[: name_len - padding]}.."
+            if len(name) > (name_len - padding)
+            else name
         )
         body = body.replace("\n", " ")
         body = (
-            f"{body[:body_len-padding]}.." if len(body) > (body_len - padding) else body
+            f"{body[: body_len - padding]}.."
+            if len(body) > (body_len - padding)
+            else body
         )
         click.echo(format_str.format(folder, name, body))
 
@@ -766,9 +776,7 @@ def print_note(note: macnotesapp.Note, output: str):
         click.echo(note.body)
 
 
-def print_notes_as_json(
-    notes: Iterable[macnotesapp.Note], body_format: str = "html"
-):
+def print_notes_as_json(notes: Iterable[macnotesapp.Note], body_format: str = "html"):
     """Print notes as JSON to STDOUT
 
     Args:

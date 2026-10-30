@@ -1,21 +1,19 @@
-"""Help text helper class for macnotesapp CLI """
+"""Help text helper class for macnotesapp CLI"""
 
 import inspect
 import re
-import typing as t
 
 import click
 from rich.console import Console
 from rich.markdown import Markdown
 
-from .click_rich_echo import rich_echo_via_pager, set_rich_console
+from .click_rich_echo import rich_echo_via_pager
 
 HELP_WIDTH = 110
 HIGHLIGHT_COLOR = "yellow"
 
 __all__ = [
-    "ExportCommand",
-    "template_help",
+    "RichHelpCommand",
     "rich_text",
     "strip_md_header_and_links",
     "strip_md_links",
@@ -158,7 +156,7 @@ def get_subtopic_help(cmd: click.Command, ctx: click.Context, subtopic: str):
 
 def get_matching_options(
     command: click.Command, ctx: click.Context, topic: str
-) -> t.List:
+) -> list:
     """Get matching options for a command that contain a topic
 
     Args:
@@ -180,7 +178,7 @@ def get_matching_options(
 
 
 def format_options_help(
-    options: t.List[click.Option], ctx: click.Context, highlight: t.Optional[str] = None
+    options: list[click.Option], ctx: click.Context, highlight: str | None = None
 ) -> str:
     """Format options help for display
 
@@ -203,14 +201,14 @@ def format_options_help(
                 f"({highlight})",
                 "[highlight]\\1[/highlight]",
                 record[0],
-                re.IGNORECASE,
+                flags=re.IGNORECASE,
             )
 
             record[1] = re.sub(
                 f"({highlight})",
                 "[highlight]\\1[/highlight]",
                 record[1],
-                re.IGNORECASE,
+                flags=re.IGNORECASE,
             )
 
         # convert back to list of tuples as that's what write_dl expects

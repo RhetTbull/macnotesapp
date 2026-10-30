@@ -16,7 +16,7 @@ To run commands within the virtual environment, use `uv run`:
 
 ```bash
 uv run notes --help
-uv run pytest -v -s tests/
+uv run pytest
 ```
 
 Or activate the virtual environment manually:
@@ -52,11 +52,28 @@ uv publish
 
 ## Testing
 
-The tests are run with [pytest](https://docs.pytest.org/en/stable/). The test suite is interactive and will operate on your actual Notes.app data. Because the tests require user input, they must be run with `pytest -s`. To run the tests, run the following command:
+The tests are run with [pytest](https://docs.pytest.org/en/stable/) and are split into three tiers:
 
 ```bash
-uv run pytest -v -s tests/
+# unit tests: no Notes.app access; run by default and in CI
+uv run pytest
+
+# also run integration tests against Notes.app; these only touch temporary
+# macnotesapp-test-* folders in the default account, which are deleted afterwards
+uv run pytest --integration
+
+# manual tests: prompt for input and change notes you select; require -s
+uv run pytest --manual -s tests/manual
 ```
+
+Lint and format with [ruff](https://docs.astral.sh/ruff/):
+
+```bash
+uv run ruff check
+uv run ruff format
+```
+
+CI runs ruff, `cog --check README.md`, the unit tests on Python 3.10–3.14, and a package and docs build.
 
 ## Documentation
 

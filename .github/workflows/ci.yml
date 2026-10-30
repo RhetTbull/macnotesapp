@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# macOS runners are required: PyObjC only installs on macOS.
+# Only unit tests run here; integration tests need a logged-in Notes.app.
+
+jobs:
+  lint:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Lint
+        run: uv run ruff check --output-format=github
+      - name: Check formatting
+        run: uv run ruff format --check
+      - name: Check README is up to date with `cog -r README.md`
+        run: uv run cog --check --diff README.md
+
+  test:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+      - run: uv sync --locked
+      - name: Unit tests
+        run: uv run pytest tests/unit --cov --cov-report=term-missing
+
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Build package
+        run: uv build
+      - name: Check wheel contents
+        run: |
+          unzip -l dist/*.whl | grep -q "macnotesapp/macnotesapp.applescript"
+          unzip -l dist/*.whl | grep -q "macnotesapp/py.typed"
+      - name: Build docs
+        run: uv run mkdocs build

@@ -3,7 +3,6 @@
 import html
 import re
 from datetime import datetime
-from typing import Tuple
 
 import requests
 from readability import Document
@@ -14,7 +13,7 @@ from macnotesapp import __version__
 TIMEOUT = 30
 
 
-def get_readable_html(url: str) -> Tuple[str, str]:
+def get_readable_html(url: str) -> tuple[str, str]:
     """Downloads HTML from url and returns a 'readable' version suitable for storing in a Note
 
     Args:

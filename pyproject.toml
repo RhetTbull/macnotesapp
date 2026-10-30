@@ -58,7 +58,29 @@ dev = [
     "mkdocstrings>=0.27.0",
     "mkdocstrings-python>=1.12.2",
     "mkdocs-material>=9.5.49",
+    "ruff>=0.14.0",
+    "pytest-cov>=6.0.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: runs against Notes.app inside temporary folders (enable with --integration)",
+    "manual: prompts for input or changes notes outside a temporary folder (enable with --manual -s)",
+]
+
+[tool.coverage.run]
+source = ["macnotesapp"]
+
+[tool.ruff]
+target-version = "py310"
+extend-exclude = ["build", "dist", "site", "working", "macnotesapp.spec", "*.md"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["macnotesapp"]
 
 [build-system]
 requires = ["hatchling"]

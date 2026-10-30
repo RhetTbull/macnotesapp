@@ -11,6 +11,7 @@ from .notesapp import Account, Folder, Note, NotesApp, NotesList
 from .script_loader import check_automation_permission
 
 __all__ = [
+    "__version__",
     "Account",
     "AppleScriptError",
     "Folder",
