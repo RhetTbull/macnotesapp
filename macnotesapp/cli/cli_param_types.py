@@ -1,7 +1,6 @@
 """Custom param types for CLI"""
 
 import click
-import validators
 
 
 class URLType(click.ParamType):
@@ -10,6 +9,8 @@ class URLType(click.ParamType):
     name = "URL"
 
     def convert(self, value, param, ctx):
+        import validators
+
         if validators.url(value):
             return value
         else:

@@ -7,7 +7,6 @@ import sys
 from typing import Dict, Iterable
 
 import click
-import questionary
 from applescript import ScriptError
 from rich.console import Console
 from rich.markdown import Markdown
@@ -34,7 +33,6 @@ from .cli_config import (
 )
 from .cli_help import RichHelpCommand, help
 from .cli_param_types import URLType
-from .readable import get_readable_html
 
 
 @click.command(name="accounts")
@@ -148,14 +146,20 @@ def add_note(
     elif plaintext:
         format_ = FORMAT_PLAINTEXT
 
-    folder_name = folder_name or config.folder
+    # use the configured folder only for the configured account;
+    # for any other account, make_note uses that account's default folder
     account_name = account_name or config.account
+    if not folder_name and account_name == config.account:
+        folder_name = config.folder
     editor = config.editor
 
     if file:
         note_text = file.read()
     elif url:
         try:
+            # imported here so library and other commands don't pay for loading lxml
+            from .readable import get_readable_html
+
             name, body = get_readable_html(url)
             note_text = f"{name}\n{body}"
         except Exception as e:
@@ -265,6 +269,8 @@ def cat_notes(name, plaintext, markdown, html, json_):
 @click.command(name="config")
 def config():
     """Configure default settings for account, editor, etc."""
+    import questionary
+
     notes = macnotesapp.NotesApp()
     config = ConfigSettings()
     settings = config.read()
