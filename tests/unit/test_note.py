@@ -116,3 +116,16 @@ def test_noteslist_missing_values():
     assert noteslist.body == [""]
     assert noteslist.plaintext == [""]
     assert noteslist.container == [None]
+
+
+def test_noteslist_account_and_asdict_without_body():
+    noteslist = NotesList(
+        FakeSBNotesArray([_sbnote(1), _sbnote(2)]),
+        FakeSBNotesArray([_sbnote(3)]),
+        accounts=["iCloud", "On My Mac"],
+    )
+    assert noteslist.account == ["iCloud", "iCloud", "On My Mac"]
+    records = noteslist.asdict(body=False)
+    assert [r["account"] for r in records] == ["iCloud", "iCloud", "On My Mac"]
+    assert "body" not in records[0] and "plaintext" not in records[0]
+    assert NotesList(FakeSBNotesArray([_sbnote(1)])).account == [None]

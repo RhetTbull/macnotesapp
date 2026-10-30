@@ -16,6 +16,7 @@ import Foundation
 import ScriptingBridge
 
 from ._version import __version__
+from .errors import AppleScriptError, ScriptingBridgeError
 from .script_loader import run_script
 from .utils import NSDate_to_datetime, OSType, get_macos_version
 
@@ -24,20 +25,6 @@ from .utils import NSDate_to_datetime, OSType, get_macos_version
 
 
 MAC_OS_VERSION = int(get_macos_version()[0])
-
-
-class AppleScriptError(Exception):
-    """Error raised when AppleScript fails to execute"""
-
-    def __init__(self, *message):
-        super().__init__(*message)
-
-
-class ScriptingBridgeError(Exception):
-    """ "Errors raised when ScriptingBridge fails to execute"""
-
-    def __init__(self, *message):
-        super().__init__(*message)
 
 
 def parse_id_from_object(obj: ScriptingBridge.SBObject) -> str:
@@ -200,9 +187,12 @@ class NotesApp:
         Returns:
             NotesList object
         """
-        account_list = filter_accounts(self.app.accounts(), accounts)
+        account_list = [
+            Account(account)
+            for account in filter_accounts(self.app.accounts(), accounts)
+        ]
         noteslists = [
-            Account(account)._noteslist(
+            account._noteslist(
                 name=name,
                 body=body,
                 text=text,
@@ -212,7 +202,7 @@ class NotesApp:
             )
             for account in account_list
         ]
-        return NotesList(*noteslists)
+        return NotesList(*noteslists, accounts=[a.name for a in account_list])
 
     @property
     def selection(self) -> list["Note"]:
@@ -366,7 +356,7 @@ class Account:
         Returns:
             NotesList object"""
         notes = self._noteslist(name, body, text, password_protected, id, exact_name)
-        return NotesList(notes)
+        return NotesList(notes, accounts=[self.name])
 
     def folder(self, folder: str) -> "Folder":
         """Return Folder object for folder with name folder."""
@@ -497,8 +487,28 @@ class NotesList:
     Represents an SBElementArray of notes as returned by noteslist()
     """
 
-    def __init__(self, *noteslist: ScriptingBridge.SBElementArray):
+    def __init__(
+        self,
+        *noteslist: ScriptingBridge.SBElementArray,
+        accounts: list[str] | None = None,
+    ):
+        """Create NotesList
+
+        Args:
+            *noteslist: one SBElementArray of notes per account
+            accounts: optional name of the account for each SBElementArray
+        """
         self._noteslist = noteslist
+        self._accounts = accounts or [None] * len(noteslist)
+
+    @property
+    def account(self) -> list[str | None]:
+        """Return account name of every note in list (None if not known)"""
+        return [
+            account
+            for noteslist, account in zip(self._noteslist, self._accounts)
+            for _ in range(len(noteslist))
+        ]
 
     @property
     def id(self) -> list[str]:
@@ -545,30 +555,27 @@ class NotesList:
         """Return whether every note in list is password protected as list of bools"""
         return self._apply_selector("passwordProtected")
 
-    def asdict(self) -> list[dict[str, str]]:
-        """Return list of dict representations of note"""
-        return [
-            {
-                "id": note[0],
-                "name": note[1],
-                "body": note[2],
-                "plaintext": note[3],
-                "creation_date": note[4],
-                "modification_date": note[5],
-                "password_protected": note[6],
-                "folder": note[7],
-            }
-            for note in zip(
-                self.id,
-                self.name,
-                self.body,
-                self.plaintext,
-                self.creation_date,
-                self.modification_date,
-                self.password_protected,
-                self.container,
-            )
-        ]
+    def asdict(self, body: bool = True) -> list[dict[str, Any]]:
+        """Return list of dict representations of notes
+
+        Args:
+            body: if False, don't include body and plaintext (faster for large lists)
+        """
+        fields = {
+            "account": self.account,
+            "id": self.id,
+            "name": self.name,
+        }
+        if body:
+            fields["body"] = self.body
+            fields["plaintext"] = self.plaintext
+        fields |= {
+            "creation_date": self.creation_date,
+            "modification_date": self.modification_date,
+            "password_protected": self.password_protected,
+            "folder": self.container,
+        }
+        return [dict(zip(fields, values)) for values in zip(*fields.values())]
 
     def _apply_selector(self, selector) -> list[Any]:
         """Return note property for every note in list by applying selector

@@ -67,6 +67,33 @@ class FakeNote:
     def delete(self):
         self.deleted = True
 
+    def asdict(self):
+        return {
+            "account": self.account,
+            "id": self.id,
+            "name": self.name,
+            "body": self.body,
+            "plaintext": self.body,
+            "creation_date": self.modification_date,
+            "modification_date": self.modification_date,
+            "password_protected": False,
+            "folder": self.folder,
+        }
+
+
+class FakeNotesList:
+    """Stand-in for macnotesapp.NotesList used by CLI tests"""
+
+    def __init__(self, notes):
+        self._notes = notes
+
+    def asdict(self, body=True):
+        records = [note.asdict() for note in self._notes]
+        if not body:
+            for record in records:
+                del record["body"], record["plaintext"]
+        return records
+
 
 class FakeNotesApp:
     """Stand-in for macnotesapp.NotesApp that records how notes() was called"""
@@ -74,6 +101,10 @@ class FakeNotesApp:
     def __init__(self, notes):
         self._notes = notes
         self.calls = []
+
+    def noteslist(self, **kwargs):
+        self.calls.append(kwargs)
+        return FakeNotesList(self._notes)
 
     def notes(self, **kwargs):
         self.calls.append(kwargs)

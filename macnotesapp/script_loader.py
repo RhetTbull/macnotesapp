@@ -5,11 +5,17 @@ from __future__ import annotations
 import functools
 from importlib.resources import files
 
-from applescript import AppleScript
+from applescript import AppleScript, ScriptError
 
+from .errors import PERMISSION_ERRORS, NotesPermissionError
 from .logging import logger
 
 SCRIPT_FILE = "macnotesapp.applescript"
+
+# sends an Apple Event to Notes so fails if the process isn't allowed to automate Notes
+PERMISSION_CHECK_SCRIPT = 'tell application id "com.apple.Notes" to count accounts'
+
+_permission_granted = False
 
 
 def load_script_source() -> str:
@@ -25,6 +31,38 @@ def get_script() -> AppleScript:
 
 
 def run_script(name, *args):
-    """Run AppleScript handler name with args"""
+    """Run AppleScript handler name with args
+
+    Raises:
+        NotesPermissionError: if the process is not allowed to automate Notes.app
+        applescript.ScriptError: for any other AppleScript error
+    """
     logger.debug(f"Running script {name} with args {args}")
-    return get_script().call(name, *args)
+    try:
+        return get_script().call(name, *args)
+    except ScriptError as e:
+        if e.number in PERMISSION_ERRORS:
+            raise NotesPermissionError(e._errorinfo) from e
+        raise
+
+
+def check_automation_permission() -> None:
+    """Check that this process may automate Notes.app.
+
+    macOS asks the user the first time; once permission is confirmed the check isn't repeated.
+    ScriptingBridge calls fail silently (returning None) without permission,
+    so call this before using NotesApp when a clear error is needed.
+
+    Raises:
+        NotesPermissionError: if permission is denied
+    """
+    global _permission_granted
+    if _permission_granted:
+        return
+    try:
+        AppleScript(PERMISSION_CHECK_SCRIPT).run()
+    except ScriptError as e:
+        if e.number in PERMISSION_ERRORS:
+            raise NotesPermissionError(e._errorinfo) from e
+        raise
+    _permission_granted = True

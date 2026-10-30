@@ -8,6 +8,11 @@ from typing import Tuple
 import requests
 from readability import Document
 
+from macnotesapp import __version__
+
+# seconds to wait for the server to respond
+TIMEOUT = 30
+
 
 def get_readable_html(url: str) -> Tuple[str, str]:
     """Downloads HTML from url and returns a 'readable' version suitable for storing in a Note
@@ -17,9 +22,17 @@ def get_readable_html(url: str) -> Tuple[str, str]:
 
     Returns:
         tuple of title, HTML
+
+    Raises:
+        requests.RequestException: if the URL can't be downloaded
     """
 
-    response = requests.get(url)
+    response = requests.get(
+        url,
+        timeout=TIMEOUT,
+        headers={"User-Agent": f"macnotesapp/{__version__}"},
+    )
+    response.raise_for_status()
     doc = Document(response.text)
 
     footer = (

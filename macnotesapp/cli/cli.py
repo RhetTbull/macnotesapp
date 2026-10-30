@@ -1,25 +1,30 @@
 """Entry point for macnotesapp CLI"""
 
+from __future__ import annotations
+
 import json
 import os
 import pathlib
 import sys
-from typing import Dict, Iterable
+from datetime import datetime
+from typing import Iterable
 
 import click
-from applescript import ScriptError
 from rich.console import Console
 from rich.markdown import Markdown
 
 import macnotesapp
 from macnotesapp import NotesList, __version__
+from macnotesapp.errors import NotesPermissionError
 from macnotesapp.formatting import (
     html_to_markdown,
     markdown_lossy_features,
     markdown_to_html,
     text_to_html,
 )
+from macnotesapp.logging import get_debug, set_debug
 from macnotesapp.notesapp import title_html
+from macnotesapp.script_loader import check_automation_permission
 
 from .cli_config import (
     CONFIG_FILE,
@@ -34,6 +39,26 @@ from .cli_config import (
 from .cli_help import RichHelpCommand, help
 from .cli_param_types import URLType
 
+# exit codes; click uses 1 for ClickException and 2 for UsageError
+EXIT_NOT_FOUND = 3
+
+
+class NotFoundError(click.ClickException):
+    """A note, folder, or account was not found"""
+
+    exit_code = EXIT_NOT_FOUND
+
+
+def get_notes_app() -> macnotesapp.NotesApp:
+    """Return NotesApp after checking that this process may automate Notes.app"""
+    check_automation_permission()
+    return macnotesapp.NotesApp()
+
+
+def isoformat(dt: datetime | None) -> str | None:
+    """Return datetime as ISO 8601 string including the local UTC offset"""
+    return dt.astimezone().isoformat() if dt else None
+
 
 @click.command(name="accounts")
 @click.option(
@@ -43,12 +68,12 @@ def accounts(json_):
     """Print information about Notes accounts."""
     account_data = get_account_data()
     if json_:
-        print(json.dumps(account_data))
+        click.echo(json.dumps(account_data))
     else:
         for account in account_data:
-            print(f"{account}:")
+            click.echo(f"{account}:")
             for k, v in account_data[account].items():
-                print(f"  {k}: {v}")
+                click.echo(f"  {k}: {v}")
 
 
 @click.command(name="add", cls=RichHelpCommand)
@@ -127,16 +152,14 @@ def add_note(
     """
 
     if sum([html, markdown, plaintext]) > 1:
-        click.echo(
-            "Only one of --html, --markdown, and --plaintext can be specified.",
-            err=True,
+        raise click.UsageError(
+            "Only one of --html, --markdown, and --plaintext can be specified."
         )
-        raise click.Abort()
 
     if file and url:
-        click.echo("Only one of --file, --url can be specified.", err=True)
-        raise click.Abort()
+        raise click.UsageError("Only one of --file, --url can be specified.")
 
+    notes = get_notes_app()
     config = ConfigSettings()
     format_ = config.format
     if html:
@@ -163,8 +186,7 @@ def add_note(
             name, body = get_readable_html(url)
             note_text = f"{name}\n{body}"
         except Exception as e:
-            click.echo(f"Error downloading url '{url}': {e}.", err=True)
-            raise click.Abort() from e
+            raise click.ClickException(f"Could not download '{url}': {e}") from e
     elif note == "-" or (not note and not edit):
         note_text = sys.stdin.read()
     else:
@@ -179,8 +201,7 @@ def add_note(
         note_text = click.edit(note_text, editor=editor, extension=ext)
 
     if not note_text:
-        click.echo("No note text.", err=True)
-        raise click.Abort()
+        raise click.ClickException("No note text.")
 
     note_text = note_text.strip()
     note_parts = note_text.partition("\n")
@@ -191,15 +212,10 @@ def add_note(
     elif format_ != FORMAT_HTML:
         body = text_to_html(body)
 
-    notes = macnotesapp.NotesApp()
-    try:
-        account = notes.account(account_name)
-        new_note = account.make_note(name, body, folder_name)
-        if show:
-            new_note.show()
-    except ScriptError as e:
-        click.echo(f"Error adding note: {e}", err=True)
-        raise click.Abort() from e
+    account = notes.account(account_name)
+    new_note = account.make_note(name, body, folder_name)
+    if show:
+        new_note.show()
 
 
 @click.command(name="list")
@@ -212,25 +228,29 @@ def add_note(
     type=str,
     help="Limit results to account ACCOUNT; may be repeated to include multiple accounts.",
 )
-# @click.option(
-#     "--folder",
-#     "-f",
-#     "folder_name",
-#     metavar="FOLDER",
-#     multiple=True,
-#     type=str,
-#     help="Limit results to folder FOLDER; may be repeated to include multiple folders.",
-# )
+@click.option(
+    "--json",
+    "-j",
+    "json_",
+    is_flag=True,
+    help="Output as JSON. Includes note metadata but not the body; "
+    "use `notes cat --json` for the body.",
+)
 @click.argument("text", metavar="TEXT", required=False)
-def list_notes(account_name, text):
+def list_notes(account_name, json_, text):
     """List notes, optionally filtering by account or text."""
-    notesapp = macnotesapp.NotesApp()
-    print_notes_list(
-        notesapp.noteslist(
-            accounts=list(account_name) if account_name else None,
-            text=[text] if text else None,
-        )
+    noteslist = get_notes_app().noteslist(
+        accounts=list(account_name) if account_name else None,
+        text=[text] if text else None,
     )
+    if json_:
+        records = noteslist.asdict(body=False)
+        for record in records:
+            record["creation_date"] = isoformat(record["creation_date"])
+            record["modification_date"] = isoformat(record["modification_date"])
+        click.echo(json.dumps(records, indent=4))
+    else:
+        print_notes_list(noteslist)
 
 
 @click.command(name="cat")
@@ -250,9 +270,14 @@ def list_notes(account_name, text):
 )
 @click.argument("name", metavar="NOTE_NAME", required=True)
 def cat_notes(name, plaintext, markdown, html, json_):
-    """Print one or more notes to STDOUT"""
-    notesapp = macnotesapp.NotesApp()
-    notes = notesapp.notes(name=[name])
+    """Print notes whose name contains NOTE_NAME to STDOUT"""
+    if sum([plaintext, markdown, html]) > 1:
+        raise click.UsageError(
+            "Only one of --plaintext, --markdown, and --html can be specified."
+        )
+    notes = get_notes_app().notes(name=[name])
+    if not notes:
+        raise NotFoundError(f"No notes found with name containing '{name}'.")
     output = (
         "plaintext"
         if plaintext
@@ -260,7 +285,7 @@ def cat_notes(name, plaintext, markdown, html, json_):
     )
 
     if json_:
-        print_notes_as_json(notes, plaintext=plaintext)
+        print_notes_as_json(notes, body_format="html" if output == "rich" else output)
     else:
         for note in notes:
             print_note(note, output=output)
@@ -271,7 +296,7 @@ def config():
     """Configure default settings for account, editor, etc."""
     import questionary
 
-    notes = macnotesapp.NotesApp()
+    notes = get_notes_app()
     config = ConfigSettings()
     settings = config.read()
 
@@ -325,14 +350,14 @@ def config():
 @click.option("--no-body", "-B", is_flag=True, help="Do not dump note body.")
 def dump(selected, no_body):
     """Dump all notes or selection of notes for debugging"""
-    notesapp = macnotesapp.NotesApp()
+    notesapp = get_notes_app()
     if selected:
         for note in notesapp.selection:
             dump_note(note, no_body=no_body)
     else:
         for account in notesapp.accounts:
             noteslist = notesapp.noteslist(accounts=[account])
-            dump_notes_list(noteslist, account)
+            dump_notes_list(noteslist, account, no_body=no_body)
 
 
 def note_selection_options(func):
@@ -374,12 +399,15 @@ def resolve_note(
     """Return the single note selected by name or ID.
 
     By default NOTE_NAME must match the note's name exactly (case-insensitive).
-    Prints an error and exits if no note matches or if more than one note matches.
+
+    Raises:
+        click.UsageError: if neither or both of note_name and note_id are given
+        NotFoundError: if no note matches
+        click.ClickException: if more than one note matches
     """
     accounts = [account_name] if account_name else None
     if note_id and note_name:
-        click.echo("Error: Specify NOTE_NAME or --id, not both.", err=True)
-        sys.exit(1)
+        raise click.UsageError("Specify NOTE_NAME or --id, not both.")
     if note_id:
         matches = notes_app.notes(id=[note_id], accounts=accounts)
         description = f"with ID '{note_id}'"
@@ -391,26 +419,21 @@ def resolve_note(
             f"with name containing '{note_name}'" if contains else f"'{note_name}'"
         )
     else:
-        click.echo("Error: Specify NOTE_NAME or --id.", err=True)
-        sys.exit(1)
+        raise click.UsageError("Specify NOTE_NAME or --id.")
 
     if not matches:
         hint = "" if contains or note_id else " (use --contains for a partial match)"
-        click.echo(f"Error: Note {description} not found{hint}.", err=True)
-        sys.exit(1)
+        raise NotFoundError(f"Note {description} not found{hint}.")
     if len(matches) > 1:
-        click.echo(
-            f"Error: {len(matches)} notes match {description}; "
-            "select one with --id:",
-            err=True,
+        candidates = "\n".join(
+            f"  {note.account}/{note.folder}: {note.name} "
+            f"(modified {note.modification_date:%Y-%m-%d %H:%M}) --id {note.id}"
+            for note in matches
         )
-        for note in matches:
-            click.echo(
-                f"  {note.account}/{note.folder}: {note.name} "
-                f"(modified {note.modification_date:%Y-%m-%d %H:%M}) --id {note.id}",
-                err=True,
-            )
-        sys.exit(1)
+        raise click.ClickException(
+            f"{len(matches)} notes match {description}; select one with --id:\n"
+            f"{candidates}"
+        )
     return matches[0]
 
 
@@ -428,11 +451,10 @@ def rename_note(names, note_id, contains, account_name):
     expected = 1 if note_id else 2
     if len(names) != expected:
         usage = "--id ID NEW_NAME" if note_id else "OLD_NAME NEW_NAME"
-        click.echo(f"Error: Usage: notes rename {usage}", err=True)
-        sys.exit(1)
+        raise click.UsageError(f"Expected: notes rename {usage}")
     old_name = None if note_id else names[0]
     new_name = names[-1]
-    notes_app = macnotesapp.NotesApp()
+    notes_app = get_notes_app()
     note = resolve_note(notes_app, old_name, note_id, account_name, contains)
     old = note.name
     note.name = new_name
@@ -450,7 +472,7 @@ def delete_note(note_name, yes, note_id, contains, account_name):
 
     Example: notes delete "Old Note"
     """
-    notes_app = macnotesapp.NotesApp()
+    notes_app = get_notes_app()
     note = resolve_note(notes_app, note_name, note_id, account_name, contains)
     name = note.name
     if not yes:
@@ -500,11 +522,8 @@ def edit_note(
     Example: notes edit "My Note" --body "New content"
     """
     if use_html and use_markdown:
-        click.echo(
-            "Error: Only one of --html and --markdown can be specified.", err=True
-        )
-        sys.exit(1)
-    notes_app = macnotesapp.NotesApp()
+        raise click.UsageError("Only one of --html and --markdown can be specified.")
+    notes_app = get_notes_app()
     note = resolve_note(notes_app, note_name, note_id, account_name, contains)
     original_name = note.name
 
@@ -518,12 +537,10 @@ def edit_note(
         alternative = (
             "" if body is not None or use_html else "--html to edit the HTML, or "
         )
-        click.echo(
-            f"Error: Editing '{original_name}' would lose content: {', '.join(lost)}. "
-            f"Use {alternative}--force to edit anyway.",
-            err=True,
+        raise click.ClickException(
+            f"Editing '{original_name}' would lose content: {', '.join(lost)}. "
+            f"Use {alternative}--force to edit anyway."
         )
-        sys.exit(1)
 
     if body is not None:
         if use_markdown:
@@ -559,7 +576,7 @@ def move_note(note_name, folder, note_id, contains, account_name):
 
     Example: notes move "My Note" --folder "Archive"
     """
-    notes_app = macnotesapp.NotesApp()
+    notes_app = get_notes_app()
     note = resolve_note(notes_app, note_name, note_id, account_name, contains)
     name = note.name
     old_folder = note.folder
@@ -582,7 +599,7 @@ def make_folder(folder_name, account_name):
 
     Example: notes mkdir "Archive"
     """
-    notes_app = macnotesapp.NotesApp()
+    notes_app = get_notes_app()
     account_name = account_name or notes_app.default_account
     account = notes_app.account(account_name)
     account.make_folder(folder_name)
@@ -605,14 +622,11 @@ def remove_folder(folder_name, yes, account_name):
 
     Example: notes rmdir "Old Folder"
     """
-    notes_app = macnotesapp.NotesApp()
+    notes_app = get_notes_app()
     account_name = account_name or notes_app.default_account
     account = notes_app.account(account_name)
     if folder_name not in account.folders:
-        click.echo(
-            f"Error: Folder '{folder_name}' not found in {account_name}.", err=True
-        )
-        sys.exit(1)
+        raise NotFoundError(f"Folder '{folder_name}' not found in {account_name}.")
     if not yes:
         if not click.confirm(f"Delete folder '{folder_name}' and all its notes?"):
             click.echo("Aborted.")
@@ -631,19 +645,41 @@ class CLI_Obj:
 CTX_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
-@click.group(context_settings=CTX_SETTINGS)
+class NotesGroup(click.Group):
+    """Click group that reports errors as messages with an exit code instead of tracebacks"""
+
+    def invoke(self, ctx):
+        try:
+            return super().invoke(ctx)
+        except (click.ClickException, click.exceptions.Exit, click.Abort):
+            raise
+        except NotesPermissionError as e:
+            raise click.ClickException(str(e)) from e
+        except Exception as e:
+            if get_debug():
+                raise
+            message = str(e) or type(e).__name__
+            raise click.ClickException(
+                f"{message}\nRun `notes --debug ...` to see the full error."
+            ) from e
+
+
+@click.group(cls=NotesGroup, context_settings=CTX_SETTINGS)
 @click.option(
     "--debug",
     required=False,
     is_flag=True,
-    help="Enable debug output",
-    hidden=True,
+    help="Show debug output and full tracebacks for errors.",
 )
 @click.version_option(__version__, "--version", "-v")
 @click.pass_context
 def cli_main(ctx, debug):
-    """notes: work with Apple Notes on the command line."""
-    ctx.obj = CLI_Obj(group=cli_main)
+    """notes: work with Apple Notes on the command line.
+
+    Exit codes: 0 success, 1 error, 2 usage error, 3 note or folder not found.
+    """
+    set_debug(debug)
+    ctx.obj = CLI_Obj(debug=debug, group=cli_main)
 
 
 # add the commands to the main group
@@ -665,9 +701,9 @@ for command in [
     cli_main.add_command(command)
 
 
-def get_account_data() -> Dict:
+def get_account_data() -> dict:
     """Get dict of account data for Notes accounts"""
-    notes = macnotesapp.NotesApp()
+    notes = get_notes_app()
     accounts = notes.accounts
     account_data = {}
     for account_name in accounts:
@@ -695,7 +731,7 @@ def print_notes_list(noteslist: NotesList):
     format_str = (" " * padding).join(
         "{:<" + f"{x}" + "}" for x in [folder_len, name_len, body_len]
     )
-    print(format_str.format("Folder", "Name", "Body"))
+    click.echo(format_str.format("Folder", "Name", "Body"))
     for note in zip(folders, names, body):
         folder, name, body = note
         folder = folder or "---"
@@ -708,7 +744,7 @@ def print_notes_list(noteslist: NotesList):
         body = (
             f"{body[:body_len-padding]}.." if len(body) > (body_len - padding) else body
         )
-        print(format_str.format(folder, name, body))
+        click.echo(format_str.format(folder, name, body))
 
 
 def print_note(note: macnotesapp.Note, output: str):
@@ -719,51 +755,53 @@ def print_note(note: macnotesapp.Note, output: str):
         output: Output format (plaintext, markdown, html, rich)
     """
 
-    console = Console()
-    # print note, not JSON
+    # click.echo for raw output: Console.print would interpret [text] as Rich markup
     if output == "plaintext":
-        console.print(note.plaintext)
+        click.echo(note.plaintext)
     elif output == "rich":
-        console.print(Markdown(html_to_markdown(note.body)))
+        Console().print(Markdown(html_to_markdown(note.body)))
     elif output == "markdown":
-        console.print(html_to_markdown(note.body))
+        click.echo(html_to_markdown(note.body))
     elif output == "html":
-        console.print(note.body)
+        click.echo(note.body)
 
 
-def print_notes_as_json(notes: Iterable[macnotesapp.Note], plaintext: bool = False):
+def print_notes_as_json(
+    notes: Iterable[macnotesapp.Note], body_format: str = "html"
+):
     """Print notes as JSON to STDOUT
 
     Args:
         notes: Notes to print
-        plaintext: If True, print plaintext of note body instead of HTML
+        body_format: format of note body: "html", "plaintext", or "markdown"
     """
 
     json_list = []
     for note in notes:
         json_data = note.asdict()
-        if plaintext:
+        if body_format == "plaintext":
             json_data["body"] = json_data["plaintext"]
+        elif body_format == "markdown":
+            json_data["body"] = html_to_markdown(json_data["body"])
         del json_data["plaintext"]
-        json_data["creation_date"] = json_data["creation_date"].isoformat()
-        json_data["modification_date"] = json_data["modification_date"].isoformat()
+        json_data["creation_date"] = isoformat(json_data["creation_date"])
+        json_data["modification_date"] = isoformat(json_data["modification_date"])
         json_list.append(json_data)
-    console = Console()
-    console.print(json.dumps(json_list, indent=4))
+    click.echo(json.dumps(json_list, indent=4))
 
 
 def dump_note(note: macnotesapp.Note, no_body: bool = False):
     """Dump note data to STDOUT for debugging purposes"""
-    print(f"{note.id=}")
-    print(f"{note.name=}")
-    print(f"{note.account=}")
-    print(f"{note.folder=}")
-    print(f"{note.creation_date=}")
-    print(f"{note.modification_date=}")
-    print(f"{note.password_protected=}")
+    click.echo(f"{note.id=}")
+    click.echo(f"{note.name=}")
+    click.echo(f"{note.account=}")
+    click.echo(f"{note.folder=}")
+    click.echo(f"{note.creation_date=}")
+    click.echo(f"{note.modification_date=}")
+    click.echo(f"{note.password_protected=}")
     if not no_body:
-        print(f"{note.body=}")
-        print(f"{note.plaintext=}")
+        click.echo(f"{note.body=}")
+        click.echo(f"{note.plaintext=}")
 
 
 def dump_notes_list(
@@ -772,13 +810,13 @@ def dump_notes_list(
     """Dump NotesList data to STDOUT for debugging purposes"""
     notesdicts = noteslist.asdict()
     for notesdict in notesdicts:
-        print(f"note.id={notesdict['id']}")
-        print(f"note.name={notesdict['name']}")
-        print(f"note.folder={notesdict['folder']}")
-        print(f"note.account={account}")
-        print(f"note.creation_date={notesdict['creation_date']}")
-        print(f"note.modification_date={notesdict['modification_date']}")
-        print(f"note.password_protected={notesdict['password_protected']}")
+        click.echo(f"note.id={notesdict['id']}")
+        click.echo(f"note.name={notesdict['name']}")
+        click.echo(f"note.folder={notesdict['folder']}")
+        click.echo(f"note.account={account}")
+        click.echo(f"note.creation_date={notesdict['creation_date']}")
+        click.echo(f"note.modification_date={notesdict['modification_date']}")
+        click.echo(f"note.password_protected={notesdict['password_protected']}")
         if not no_body:
-            print(f"note.body={notesdict['body']}")
-            print(f"note.plaintext={notesdict['plaintext']}")
+            click.echo(f"note.body={notesdict['body']}")
+            click.echo(f"note.plaintext={notesdict['plaintext']}")

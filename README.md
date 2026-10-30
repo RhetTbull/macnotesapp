@@ -81,14 +81,17 @@ Usage: notes [OPTIONS] COMMAND [ARGS]...
 
   notes: work with Apple Notes on the command line.
 
+  Exit codes: 0 success, 1 error, 2 usage error, 3 note or folder not found.
+
 Options:
+  --debug        Show debug output and full tracebacks for errors.
   -v, --version  Show the version and exit.
   -h, --help     Show this message and exit.
 
 Commands:
   accounts  Print information about Notes accounts.
   add       Add new note.
-  cat       Print one or more notes to STDOUT
+  cat       Print notes whose name contains NOTE_NAME to STDOUT
   config    Configure default settings for account, editor, etc.
   delete    Delete a note.
   dump      Dump all notes or selection of notes for debugging
