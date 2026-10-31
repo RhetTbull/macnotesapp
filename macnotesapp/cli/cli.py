@@ -12,18 +12,21 @@ from datetime import datetime
 import click
 from rich.console import Console
 from rich.markdown import Markdown
+from xdg_base_dirs import xdg_state_home
 
 import macnotesapp
 from macnotesapp import NotesList, __version__
-from macnotesapp.errors import NotesPermissionError
+from macnotesapp.database import NotesDatabase
+from macnotesapp.errors import DatabaseUnavailableError, NotesPermissionError
 from macnotesapp.formatting import (
+    features_lost,
     html_to_markdown,
     markdown_lossy_features,
     markdown_to_html,
     text_to_html,
 )
-from macnotesapp.logging import get_debug, set_debug
-from macnotesapp.notesapp import title_html
+from macnotesapp.logging import get_debug, logger, set_debug
+from macnotesapp.notesapp import BACKENDS, title_html
 from macnotesapp.script_loader import check_automation_permission
 
 from .cli_config import (
@@ -49,10 +52,53 @@ class NotFoundError(click.ClickException):
     exit_code = EXIT_NOT_FOUND
 
 
+# changes to notes that Notes.app hadn't saved to its database when a command ended;
+# the next command reads those notes from Notes.app instead of the database
+UNSAVED_CHANGES_FILE = xdg_state_home() / "macnotesapp" / "unsaved_changes.json"
+
+
+def load_unsaved_changes(database: NotesDatabase):
+    """Tell database about changes earlier commands made that Notes.app hasn't saved"""
+    try:
+        changes = json.loads(UNSAVED_CHANGES_FILE.read_text())
+        for note_id, change, before, changed_at in changes:
+            database.notify_write(
+                note_id,
+                change,
+                None if before is None else tuple(before),
+                changed_at,
+            )
+    except FileNotFoundError:
+        pass
+    except (OSError, ValueError, TypeError) as e:
+        logger.debug(f"Ignoring {UNSAVED_CHANGES_FILE}: {e}")
+
+
+def save_unsaved_changes(database: NotesDatabase):
+    """Save changes Notes.app hasn't saved yet for the next command"""
+    try:
+        if changes := database.unsaved_changes():
+            UNSAVED_CHANGES_FILE.parent.mkdir(parents=True, exist_ok=True)
+            UNSAVED_CHANGES_FILE.write_text(json.dumps(changes))
+        else:
+            UNSAVED_CHANGES_FILE.unlink(missing_ok=True)
+    except OSError as e:
+        logger.debug(f"Could not save {UNSAVED_CHANGES_FILE}: {e}")
+
+
 def get_notes_app() -> macnotesapp.NotesApp:
     """Return NotesApp after checking that this process may automate Notes.app"""
     check_automation_permission()
-    return macnotesapp.NotesApp()
+    ctx = click.get_current_context(silent=True)
+    root = ctx.find_root() if ctx else None
+    notes_app = macnotesapp.NotesApp(
+        backend=(root.params.get("backend") if root else None) or "auto"
+    )
+    if root and isinstance(root.obj, CLI_Obj):
+        root.obj.notes_app = notes_app
+    if notes_app.database is not None:
+        load_unsaved_changes(notes_app.database)
+    return notes_app
 
 
 def isoformat(dt: datetime | None) -> str | None:
@@ -238,12 +284,22 @@ def add_note(
     help="Output as JSON. Includes note metadata but not the body; "
     "use `notes cat --json` for the body.",
 )
+@click.option(
+    "--tag",
+    "-t",
+    metavar="TAG",
+    multiple=True,
+    help="Limit results to notes tagged TAG (with or without the #); "
+    "may be repeated to include notes with any of the tags. "
+    "Requires access to the Notes database.",
+)
 @click.argument("text", metavar="TEXT", required=False)
-def list_notes(account_name, json_, text):
-    """List notes, optionally filtering by account or text."""
+def list_notes(account_name, json_, tag, text):
+    """List notes, optionally filtering by account, tag, or text."""
     noteslist = get_notes_app().noteslist(
         accounts=list(account_name) if account_name else None,
         text=[text] if text else None,
+        tag=list(tag) if tag else None,
     )
     if json_:
         records = noteslist.asdict(body=False)
@@ -521,9 +577,10 @@ def edit_note(
 
     Without --body, the note is opened in the default editor as Markdown
     (or as HTML with --html). Converting to Markdown and back loses
-    tables, images, and styling, and writing the body loses attachments,
-    so edit refuses to modify notes containing these unless --force is given.
-    Checklists cannot be detected yet and will be converted to bulleted lists.
+    tables, checklists, and styling such as fonts and colors, and writing the
+    body loses attachments and tags, so edit refuses to modify notes containing
+    these unless --force is given. Checklists and tags can only be detected
+    when the Notes database is readable.
 
     Example: notes edit "My Note" --body "New content"
     """
@@ -534,11 +591,16 @@ def edit_note(
     original_name = note.name
 
     # check for content that would be lost by replacing the body
-    lost = []
-    if attachment_count := len(note.attachments):
-        lost.append(f"{attachment_count} attachment(s)")
-    if body is None and not use_html:
-        lost.extend(markdown_lossy_features(note.body))
+    edit = "replace" if body is not None else "html" if use_html else "markdown"
+    try:
+        lost = features_lost(note.content_features(), edit)
+    except DatabaseUnavailableError:
+        # without the database, check what ScriptingBridge and the HTML show
+        lost = []
+        if attachment_count := len(note.attachments):
+            lost.append(f"{attachment_count} attachment(s)")
+        if edit == "markdown":
+            lost.extend(markdown_lossy_features(note.body))
     if lost and not force:
         alternative = (
             "" if body is not None or use_html else "--html to edit the HTML, or "
@@ -646,6 +708,15 @@ class CLI_Obj:
     def __init__(self, debug=False, group=None):
         self.debug = debug
         self.group = group
+        # NotesApp used by the command, set by get_notes_app()
+        self.notes_app = None
+
+    def finish(self):
+        """Wait for Notes.app to save changes to folders, and save the changes to notes
+        it hasn't saved yet, so that the next command sees them"""
+        if self.notes_app is not None and self.notes_app.database is not None:
+            self.notes_app.database.wait_for_writes()
+            save_unsaved_changes(self.notes_app.database)
 
 
 CTX_SETTINGS = dict(help_option_names=["-h", "--help"])
@@ -656,7 +727,10 @@ class NotesGroup(click.Group):
 
     def invoke(self, ctx):
         try:
-            return super().invoke(ctx)
+            result = super().invoke(ctx)
+            if isinstance(ctx.obj, CLI_Obj):
+                ctx.obj.finish()
+            return result
         except (click.ClickException, click.exceptions.Exit, click.Abort):
             raise
         except NotesPermissionError as e:
@@ -677,9 +751,18 @@ class NotesGroup(click.Group):
     is_flag=True,
     help="Show debug output and full tracebacks for errors.",
 )
+@click.option(
+    "--backend",
+    type=click.Choice(BACKENDS),
+    default="auto",
+    show_default=True,
+    help="Where to read notes from: the Notes database (fast; needs Full Disk Access) "
+    "or Notes.app via ScriptingBridge. 'auto' uses the database when it is readable. "
+    "Changes always go through Notes.app.",
+)
 @click.version_option(__version__, "--version", "-v")
 @click.pass_context
-def cli_main(ctx, debug):
+def cli_main(ctx, debug, backend):
     """notes: work with Apple Notes on the command line.
 
     Exit codes: 0 success, 1 error, 2 usage error, 3 note or folder not found.

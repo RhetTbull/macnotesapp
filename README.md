@@ -63,6 +63,16 @@ Once you have installed `homebrew`, you can install the CLI in the terminal with
 
 Full documentation available at [https://RhetTbull.github.io/macnotesapp/](https://RhetTbull.github.io/macnotesapp/)
 
+## Reading notes from the Notes database
+
+When it can, macnotesapp reads notes directly from the Notes database (`NoteStore.sqlite`) using [apple-notes-parser](https://github.com/RhetTbull/apple-notes-parser) instead of asking Notes.app for each one. This is much faster (listing a couple of thousand notes takes seconds instead of a minute) and adds tags, the full folder path of notes in subfolders, and detection of content that `notes edit` would lose, such as checklists.
+
+Reading the database requires Full Disk Access for your terminal app (System Settings > Privacy & Security > Full Disk Access), or allowing access to data from other apps when macOS asks. Without it, macnotesapp reads notes through Notes.app as before. Notes in IMAP accounts such as Google aren't stored in the database and are always read through Notes.app. Creating and changing notes always goes through Notes.app.
+
+Notes.app writes changes to its database on its own schedule, sometimes 20 seconds or more after they are made (#86). macnotesapp keeps track of the changes it makes and reads those notes from Notes.app until they are saved, but changes made in Notes.app itself may take a moment to appear.
+
+To choose explicitly, use `notes --backend scriptingbridge ...` (never read the database) or `notes --backend database ...` (fail if it can't be read), or `NotesApp(backend=...)` in Python.
+
 ## Command Line Usage
 
 <!-- [[[cog
@@ -84,9 +94,16 @@ Usage: notes [OPTIONS] COMMAND [ARGS]...
   Exit codes: 0 success, 1 error, 2 usage error, 3 note or folder not found.
 
 Options:
-  --debug        Show debug output and full tracebacks for errors.
-  -v, --version  Show the version and exit.
-  -h, --help     Show this message and exit.
+  --debug                         Show debug output and full tracebacks for
+                                  errors.
+  --backend [auto|database|scriptingbridge]
+                                  Where to read notes from: the Notes database
+                                  (fast; needs Full Disk Access) or Notes.app
+                                  via ScriptingBridge. 'auto' uses the database
+                                  when it is readable. Changes always go through
+                                  Notes.app.  [default: auto]
+  -v, --version                   Show the version and exit.
+  -h, --help                      Show this message and exit.
 
 Commands:
   accounts  Print information about Notes accounts.
@@ -97,7 +114,7 @@ Commands:
   dump      Dump all notes or selection of notes for debugging
   edit      Edit an existing note's body.
   help      Print help; for help on commands: help <command>.
-  list      List notes, optionally filtering by account or text.
+  list      List notes, optionally filtering by account, tag, or text.
   mkdir     Create a new folder.
   move      Move a note to a different folder.
   rename    Rename a note.
@@ -239,6 +256,11 @@ print(f"There are {len(noteslist)} notes with #macnotesapp in the body")
 note_names = noteslist.name
 print(note_names)
 
+# When the Notes database is readable, notes also have tags and a full folder path
+if notesapp.database:
+    for note in notesapp.notes(tag=["recipes"]):
+        print(note.folder_path, note.name, note.tags)
+
 ```
 <!-- [[[end]]] -->
 
@@ -249,10 +271,10 @@ print(note_names)
 
 ## Known Issues and Limitations
 
-* Password protected notes are not supported; unlocked password-protected notes can be accessed but locked notes cannot
-* Notes containing tags (#tagname) can be read but the tags will be stripped from the body of the note
+* Locked password-protected notes can be listed but not read; their text is empty
+* Tags can be read (`note.tags`, `notes list --tag`) only when the Notes database is readable, and are stripped from the note's body
 * Tags cannot be added to notes and will show up as plaintext if added manually with macnotesapp
-* Currently, only notes in top-level folders are accessible to `macnotesapp` (#4)
+* Notes in subfolders can be read (`note.folder_path` gives the full path when the database is readable), but notes can only be created in or moved to top-level folders (#4)
 * Attachments are not currently handled and will be ignored (#15)
 * The title style is not correctly set (#13)
 

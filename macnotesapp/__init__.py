@@ -3,6 +3,7 @@
 from ._version import __version__
 from .errors import (
     AppleScriptError,
+    DatabaseUnavailableError,
     MacNotesAppError,
     NotesPermissionError,
     ScriptingBridgeError,
@@ -14,6 +15,7 @@ __all__ = [
     "__version__",
     "Account",
     "AppleScriptError",
+    "DatabaseUnavailableError",
     "Folder",
     "MacNotesAppError",
     "Note",

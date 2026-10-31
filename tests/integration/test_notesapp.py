@@ -1,9 +1,12 @@
 """Integration tests for the library API against Notes.app"""
 
 import pathlib
+import time
 
 import pytest
 
+from macnotesapp.database import NotesDatabase
+from macnotesapp.errors import DatabaseUnavailableError
 from macnotesapp.formatting import text_to_html
 from macnotesapp.notesapp import title_html
 
@@ -59,7 +62,7 @@ def test_find_notes(notesapp, account, sandbox, note_name):
     assert "findable body" in records[0]["plaintext"]
 
 
-def test_set_name_and_body(account, sandbox, note_name):
+def test_set_name_and_body(notesapp, account, sandbox, note_name):
     note = account.make_note(note_name, text_to_html("old body"), sandbox)
     new_name = f"{note_name} renamed"
     note.name = new_name
@@ -69,12 +72,53 @@ def test_set_name_and_body(account, sandbox, note_name):
     assert note.name == new_name
     assert "new body" in note.plaintext
     assert "old body" not in note.plaintext
+    # a new query sees the change
+    [found] = notesapp.notes(name=[new_name], exact_name=True)
+    assert found == note and found.name == new_name
+    assert "new body" in found.plaintext
 
 
-def test_move(account, sandbox, sandbox2, note_name):
+@pytest.mark.xfail(reason="Notes.app can take more than 5 s to save a rename (#86)")
+def test_rename_is_saved(account, sandbox, note_name):
+    try:
+        database = NotesDatabase()
+    except DatabaseUnavailableError as e:
+        pytest.skip(f"Notes database not readable: {e}")
+    note = account.make_note(note_name, text_to_html("body"), sandbox)
+    new_name = f"{note_name} renamed"
+    note.name = new_name
+    deadline = time.monotonic() + 5
+    while (saved := database.note(note.id)) is None or saved.name != new_name:
+        if time.monotonic() > deadline:
+            break
+        time.sleep(0.2)
+    database.close()
+    assert saved and saved.name == new_name
+
+
+def test_move(notesapp, account, sandbox, sandbox2, note_name):
     note = account.make_note(note_name, text_to_html("move me"), sandbox)
     note.move(sandbox2)
     assert note.folder == sandbox2
+    [found] = notesapp.notes(id=[note.id])
+    assert found.folder == sandbox2
+
+
+def test_database_properties(notesapp, account, sandbox, note_name):
+    """Properties only the Notes database has"""
+    if notesapp.database is None:
+        pytest.skip("Notes database not used")
+    plain = account.make_note(note_name, text_to_html("plain"), sandbox)
+    assert plain.content_features() == []
+    assert plain.tags == []
+    assert plain.folder_path == sandbox
+    bold = account.make_note(
+        f"{note_name} bold", "<div><b>bold</b> and <i>italic</i></div>", sandbox
+    )
+    assert bold.content_features() == ["bold or italic"]
+    [record] = notesapp.noteslist(name=[note_name], exact_name=True).asdict(body=False)
+    assert record["folder_path"] == sandbox
+    assert record["tags"] == []
 
 
 @pytest.mark.skipif(

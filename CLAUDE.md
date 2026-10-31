@@ -4,7 +4,7 @@ This file guides Claude Code (claude.ai/code) when working in this repository.
 
 ## Project overview
 
-`macnotesapp` is a Python library and CLI (`notes`) for automating Apple Notes.app on macOS. It runs only on macOS: it drives Notes.app through ScriptingBridge (PyObjC) and AppleScript (`py-applescript`). Supported Python is 3.10–3.14.
+`macnotesapp` is a Python library and CLI (`notes`) for automating Apple Notes.app on macOS. It runs only on macOS: it reads the Notes database with apple-notes-parser when it can, and drives Notes.app through ScriptingBridge (PyObjC) and AppleScript (`py-applescript`). Supported Python is 3.11–3.14.
 
 ## Commands
 
@@ -34,6 +34,21 @@ Tests are split into three tiers (see `tests/conftest.py`):
 Beyond the fakes, no mocks exist for Notes.app. Read-only checks against Notes.app are fine, but print counts or booleans, not note contents.
 
 ## Architecture
+
+### Reading the Notes database
+
+`macnotesapp/database.py` (`NotesDatabase`) reads `NoteStore.sqlite` read-only through apple-notes-parser and returns `NoteRecord`s. `NotesApp(backend=...)` picks the read path: `"auto"` (default) uses the database when it opens and falls back to ScriptingBridge, `"database"` requires it, and `"scriptingbridge"` never uses it. The CLI's `--backend` option sets it.
+
+- Accounts are matched by ID (`x-coredata://<Z_UUID>/ICAccount/p<Z_PK>`). Only accounts in the database (iCloud, On My Mac) use it; IMAP accounts (`.../IMAPNote/...` IDs) always use ScriptingBridge.
+- `Account._noteslist()` returns a `DatabaseNotes` (records plus the account's SB notes, for bodies) instead of an SBElementArray. `Note` objects built from records use the record's values until the note is changed (`Note._changed()`).
+- The body (HTML) isn't in the database and is always fetched from Notes.app.
+- Never write to the database. It's opened with `mode=ro`, or `immutable=1` only when there's no `-shm` file and the `-wal` file is empty; otherwise SQLite would create files in Notes' container or return stale data.
+- The database reloads when `PRAGMA data_version` changes.
+- Notes.app saves changes to the database late, sometimes after 20+ s, and sometimes not at all (#86). Every write to a note goes through `Note._changing(kind)`, which records the database column that change updates (`CHANGE_COLUMNS`) with `notify_write()`. Until that column changes, `unsaved_note_ids()` includes the note, and `Account._noteslist()` reads it from Notes.app (`_record_from_notes_app()`) instead of the database. Folder changes make the next read wait briefly (`wait_for_writes()`).
+- The CLI saves unsaved changes to `$XDG_STATE_HOME/macnotesapp/unsaved_changes.json` after each command and loads them in `get_notes_app()`, so the next command sees them. Tests redirect this file.
+- Filtering must match ScriptingBridge: `contains[cd]` ignores case and diacritics; exact names (`==[c]`) ignore case only. Locked notes have empty text and no tags.
+- Tags, `folder_path`, and `content_features()` (formatting and objects that edits would lose) exist only for notes in the database.
+- `tests/unit/test_database.py` uses fixture databases in `tests/unit/data` from apple-notes-parser's tests.
 
 ### Two automation backends
 
@@ -67,8 +82,8 @@ Beyond the fakes, no mocks exist for Notes.app. Read-only checks against Notes.a
 
 - **README.md is partly generated.** Blocks between `<!-- [[[cog` and `<!-- [[[end]]] -->` come from CLI `--help` output and `examples/example.py`. Don't hand-edit them. After changing CLI help or the example, run `uv run cog -r README.md`.
 - **Versions live in three files** that `bump2version` keeps in sync (`.bumpversion.cfg`): `macnotesapp/_version.py`, `pyproject.toml`, and `HomebrewFormula/macnotesapp.rb`. Don't bump versions by hand.
-- Lint and format with ruff (config in `pyproject.toml`). CI (`.github/workflows/ci.yml`) runs ruff, `cog --check`, unit tests on Python 3.10–3.14, and a package and docs build on macOS.
+- Lint and format with ruff (config in `pyproject.toml`). CI (`.github/workflows/ci.yml`) runs ruff, `cog --check`, unit tests on Python 3.11–3.14, and a package and docs build on macOS.
 - Keep imports of heavy optional dependencies (requests, readability-lxml, validators, questionary, markdown libraries) inside the functions that use them, so importing the library or running unrelated commands stays fast.
 - Exceptions live in `macnotesapp/errors.py` (`MacNotesAppError` base). `run_script` raises `NotesPermissionError` when Automation permission is denied.
 - Logging goes through `macnotesapp.logging.logger`. Use `set_debug(True)` to enable debug output; the CLI's `--debug` flag does this.
-- Known Notes.app limitations: locked password-protected notes are unsupported, tags are stripped, only top-level folders are accessible, and attachment handling is partial. See the README's "Known Issues". Notes.app's AppleScript dictionary is buggy on some macOS versions, which explains several workarounds in the script.
+- Known Notes.app limitations: locked password-protected notes can't be read, tags are stripped from bodies (but readable from the database), notes can only be created in or moved to top-level folders, and attachment handling is partial. See the README's "Known Issues". Notes.app's AppleScript dictionary is buggy on some macOS versions, which explains several workarounds in the script.

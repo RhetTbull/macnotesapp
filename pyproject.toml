@@ -11,20 +11,18 @@ classifiers = [
     "Environment :: MacOS X",
     "Operating System :: MacOS :: MacOS X",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "Typing :: Typed",
 ]
-requires-python = ">=3.10,<3.15"
+requires-python = ">=3.11,<3.15"
 dependencies = [
     "py-applescript>=1.0.3,<2.0.0",
     "click>=8.1.2,<9.0.0",
     "rich>=12.4.4",
     "markdown2>=2.4.3,<3.0.0",
-    "tomli>=1.1.0; python_version < '3.11'",
     "tomli-w>=1.0.0",
     "questionary>=1.10.0",
     "readability-lxml>=0.8.3,<0.9.0",
@@ -35,6 +33,7 @@ dependencies = [
     "xdg-base-dirs>=6.0.0",
     "lxml-html-clean>=0.4.5",
     "lxml>=6.1.1,<7.0.0",
+    "apple-notes-parser>=0.2.0,<0.3.0",
 ]
 
 [project.urls]
@@ -73,7 +72,7 @@ markers = [
 source = ["macnotesapp"]
 
 [tool.ruff]
-target-version = "py310"
+target-version = "py311"
 extend-exclude = ["build", "dist", "site", "working", "macnotesapp.spec", "*.md"]
 
 [tool.ruff.lint]

@@ -29,3 +29,13 @@
 
 ::: macnotesapp.notesapp.Attachment
     handler: python
+
+## NotesDatabase
+
+::: macnotesapp.database.NotesDatabase
+    handler: python
+
+## NoteRecord
+
+::: macnotesapp.database.NoteRecord
+    handler: python

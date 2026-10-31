@@ -31,6 +31,10 @@ class ScriptingBridgeError(MacNotesAppError):
         super().__init__(*message)
 
 
+class DatabaseUnavailableError(MacNotesAppError):
+    """The Notes database can't be read, for example because Full Disk Access isn't granted"""
+
+
 class NotesPermissionError(MacNotesAppError, ScriptError):
     """The process is not allowed to automate Notes.app.
 
