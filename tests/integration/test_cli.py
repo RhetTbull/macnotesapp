@@ -9,12 +9,12 @@ from macnotesapp.cli.cli import cli_main
 
 
 @pytest.fixture
-def notes(account):
+def notes(account, backend):
     """Run a `notes` command and return the result"""
     runner = CliRunner()
 
     def run(*args, exit_code=0):
-        result = runner.invoke(cli_main, list(args))
+        result = runner.invoke(cli_main, ["--backend", backend, *args])
         assert result.exit_code == exit_code, result.output
         return result
 
@@ -44,21 +44,21 @@ def test_note_lifecycle(notes, account, sandbox, sandbox2, note_name):
     assert cat["id"] == note_id
     assert "first line\na < b" in cat["body"]
 
-    new_name = f"{note_name} renamed"
-    notes("rename", *a, note_name, new_name)
-    assert find(notes, account, new_name)
-
-    notes("move", *a, new_name, "-f", sandbox2)
-    [record] = find(notes, account, new_name)
+    notes("move", *a, note_name, "-f", sandbox2)
+    [record] = find(notes, account, note_name)
     assert record["folder"] == sandbox2
 
-    notes("edit", *a, new_name, "--body", "replaced")
-    [cat] = json.loads(notes("cat", "--json", "--plaintext", new_name).output)
-    assert cat["name"] == new_name
+    notes("edit", *a, note_name, "--body", "replaced")
+    [cat] = json.loads(notes("cat", "--json", "--plaintext", note_name).output)
+    assert cat["name"] == note_name
     assert "replaced" in cat["body"]
 
+    # Notes.app may not save the rename for a while (#86): see test_rename_is_saved
+    result = notes("rename", "--id", note_id, f"{note_name} renamed")
+    assert "renamed" in result.output
+
     notes("delete", "-y", "--id", note_id)
-    assert all(r["folder"] != sandbox2 for r in find(notes, account, new_name))
+    assert all(r["folder"] != sandbox2 for r in find(notes, account, note_name))
 
 
 def test_ambiguous_name_refused(notes, account, sandbox, note_name):

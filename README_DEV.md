@@ -73,7 +73,7 @@ uv run ruff check
 uv run ruff format
 ```
 
-CI runs ruff, `cog --check README.md`, the unit tests on Python 3.10–3.14, and a package and docs build.
+CI runs ruff, `cog --check README.md`, the unit tests on Python 3.11–3.14, and a package and docs build.
 
 ## Documentation
 

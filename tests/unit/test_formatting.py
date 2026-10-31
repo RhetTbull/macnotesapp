@@ -1,6 +1,7 @@
 """Test conversion between text, Markdown, and Notes HTML"""
 
 from macnotesapp.formatting import (
+    features_lost,
     markdown_lossy_features,
     markdown_to_html,
     text_to_html,
@@ -38,6 +39,7 @@ def test_markdown_lossy_features_plain():
 
 def test_markdown_lossy_features_rich():
     body = (
+        "<div><h1>Title</h1></div>\n"
         '<div><table><tr><td>x</td></tr></table><img src="data:,">'
         '<u>underline</u><span style="color: red">red</span></div>'
     )
@@ -47,3 +49,30 @@ def test_markdown_lossy_features_rich():
         "underline or strikethrough",
         "fonts, colors, or highlights",
     ]
+
+
+def test_markdown_lossy_features_ignores_title():
+    """Notes stores a title created from HTML as a bold, large font"""
+    title = (
+        '<div><b><font face=".AppleSystemUIFontBold">'
+        '<span style="font-size: 24px">Title</span></font></b></div>'
+    )
+    assert markdown_lossy_features(f"{title}\n<div>plain</div>\n") == []
+    assert markdown_lossy_features(title) == []
+    assert markdown_lossy_features(f"{title}\n<div><u>x</u></div>") == [
+        "underline or strikethrough"
+    ]
+
+
+def test_features_lost():
+    """#75: what each kind of edit loses, from Note.content_features()"""
+    features = ["bold or italic", "checklists", "colors", "links", "tables", "tags"]
+    assert features_lost(features, "replace") == ["tables", "tags"]
+    assert features_lost(features, "html") == ["checklists", "tables", "tags"]
+    assert features_lost(features, "markdown") == [
+        "checklists",
+        "colors",
+        "tables",
+        "tags",
+    ]
+    assert features_lost(["headings", "lists", "links"], "markdown") == []

@@ -43,3 +43,8 @@ print(f"There are {len(noteslist)} notes with #macnotesapp in the body")
 # List of names of notes in noteslist
 note_names = noteslist.name
 print(note_names)
+
+# When the Notes database is readable, notes also have tags and a full folder path
+if notesapp.database:
+    for note in notesapp.notes(tag=["recipes"]):
+        print(note.folder_path, note.name, note.tags)

@@ -4,15 +4,10 @@ from __future__ import annotations
 
 import os
 import pathlib
-import sys
+import tomllib
 
 import tomli_w
 from xdg_base_dirs import xdg_config_home
-
-if sys.version_info >= (3, 11):
-    import tomllib
-else:
-    import tomli as tomllib
 
 
 def get_config_dir() -> pathlib.Path:

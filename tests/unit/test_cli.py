@@ -1,6 +1,7 @@
 """Test CLI argument handling and note selection without using Notes.app"""
 
 import json
+import pathlib
 from datetime import datetime
 
 import click
@@ -32,12 +33,17 @@ def fake_app(monkeypatch):
             FakeNote(
                 "Rich",
                 "x-coredata://A/ICNote/p6",
-                body="<div><h1>Rich</h1></div><table></table>",
+                body="<div><h1>Rich</h1></div>\n<table></table>",
             ),
             FakeNote("Attached", "x-coredata://A/ICNote/p7", attachments=["a"]),
         ]
     )
-    monkeypatch.setattr(macnotesapp, "NotesApp", lambda: app)
+
+    def notes_app(**kwargs):
+        app.kwargs = kwargs
+        return app
+
+    monkeypatch.setattr(macnotesapp, "NotesApp", notes_app)
     return app
 
 
@@ -165,7 +171,7 @@ def test_edit_refuses_lossy_markdown(runner, fake_app, monkeypatch):
 
     result = runner.invoke(cli_main, ["edit", "Rich", "--html"])
     assert result.exit_code == 0, result.output
-    assert edited == ["<div><h1>Rich</h1></div><table></table>"]
+    assert edited == ["<div><h1>Rich</h1></div>\n<table></table>"]
     assert "No changes made" in result.output
 
 
@@ -217,10 +223,50 @@ def test_list_json(runner, fake_app):
     }
 
 
+def test_list_tag(runner, fake_app):
+    result = runner.invoke(cli_main, ["list", "--json", "--tag", "work", "-t", "#home"])
+    assert result.exit_code == 0, result.output
+    assert fake_app.calls[-1]["tag"] == ["work", "#home"]
+
+
+@pytest.mark.parametrize("backend", ["auto", "database", "scriptingbridge"])
+def test_backend_option(runner, fake_app, backend):
+    args = ["--backend", backend] if backend != "auto" else []
+    result = runner.invoke(cli_main, [*args, "list", "--json"])
+    assert result.exit_code == 0, result.output
+    assert fake_app.kwargs == {"backend": backend}
+
+
+def test_edit_uses_database_features(runner, fake_app, monkeypatch):
+    """#75: checklists and tags, invisible in the HTML, block lossy edits"""
+    monkeypatch.setattr(cli_module.click, "edit", lambda text, **kw: None)
+    monkeypatch.setattr(
+        cli_module, "ConfigSettings", lambda: type("C", (), {"editor": None})()
+    )
+    note = fake_app._notes[1]
+    note.features = ["bold or italic", "checklists"]
+    result = runner.invoke(cli_main, ["edit", "Log"])
+    assert result.exit_code == 1
+    assert "checklists" in result.output and "bold" not in result.output
+    result = runner.invoke(cli_main, ["edit", "Log", "--html"])
+    assert result.exit_code == 1
+    # replacing the body only refuses for content that isn't text
+    result = runner.invoke(cli_main, ["edit", "Log", "--body", "x"])
+    assert result.exit_code == 0, result.output
+
+    note.features = ["tags"]
+    result = runner.invoke(cli_main, ["edit", "Log", "--body", "y"])
+    assert result.exit_code == 1
+    assert "tags" in result.output
+    note.features = ["bold or italic", "links"]
+    result = runner.invoke(cli_main, ["edit", "Log"])
+    assert result.exit_code == 0, result.output
+
+
 def test_unexpected_error_is_reported(runner, monkeypatch):
     """#79: errors are reported as a message with exit code 1, not a traceback"""
 
-    def boom():
+    def boom(**kwargs):
         raise RuntimeError("boom")
 
     monkeypatch.setattr(macnotesapp, "NotesApp", boom)
@@ -244,3 +290,36 @@ def test_permission_error_is_reported(runner, monkeypatch):
     result = runner.invoke(cli_main, ["list"])
     assert result.exit_code == 1
     assert "Privacy & Security > Automation" in result.output
+
+
+def test_unsaved_changes_passed_to_next_command(tmp_path, unsaved_changes_file):
+    """Changes Notes.app hasn't saved yet are passed to the next CLI command"""
+    import shutil
+
+    from macnotesapp.database import NotesDatabase
+
+    path = tmp_path / "NoteStore.sqlite"
+    data = pathlib.Path(__file__).parent / "data" / "NoteStore-macOS-26-Tahoe.sqlite"
+    shutil.copy(data, path)
+    first, second = NotesDatabase(path), NotesDatabase(path)
+    note_id = first.notes(name=["This is a note"], exact_name=True)[0].id
+    first.notify_write(note_id, "folder", first.note_state(note_id, "folder"))
+
+    cli_module.save_unsaved_changes(first)
+    assert unsaved_changes_file.exists()
+    cli_module.load_unsaved_changes(second)
+    assert second.unsaved_note_ids() == {note_id}
+
+    # once saved (or expired), the file is removed
+    first._unsaved = []
+    cli_module.save_unsaved_changes(first)
+    assert not unsaved_changes_file.exists()
+    first.close()
+    second.close()
+
+
+def test_unsaved_changes_file_damaged(unsaved_changes_file):
+    unsaved_changes_file.parent.mkdir(parents=True)
+    unsaved_changes_file.write_text("not json")
+    database = type("D", (), {"notify_write": lambda self, *args: None})()
+    cli_module.load_unsaved_changes(database)  # ignored, no error
