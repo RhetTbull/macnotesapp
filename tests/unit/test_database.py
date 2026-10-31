@@ -1,8 +1,8 @@
 """Test reading the Notes database using fixture databases in tests/unit/data
 
-The fixtures come from apple-notes-parser's tests: small On My Mac databases created
-on macOS 12, 15, and 26 with notes in nested folders, a locked note, a deleted note,
-tags, a table, a checklist, and an attachment.
+The macOS 12, 15, and 26 fixtures come from apple-notes-parser's tests. The macOS 27
+fixture was made for macnotesapp. Each is a small On My Mac database with notes in
+nested folders, a locked note, tags, a checklist, and an attachment; see FIXTURES.
 """
 
 import gzip
@@ -11,12 +11,15 @@ import shutil
 import sqlite3
 import threading
 import time
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 
 import pytest
 from apple_notes_parser.notestore_pb2 import NoteStoreProto
 
 from macnotesapp import database
 from macnotesapp.database import (
+    CHANGE_COLUMNS,
     DatabaseUnavailableError,
     NotesDatabase,
     connect_read_only,
@@ -25,10 +28,71 @@ from macnotesapp.database import (
 
 DATA = pathlib.Path(__file__).parent / "data"
 TAHOE = "NoteStore-macOS-26-Tahoe.sqlite"
+MACOS27 = "NoteStore-macOS-27.sqlite"
+
+
+@dataclass(frozen=True)
+class Fixture:
+    """What a fixture database contains"""
+
+    file: str
+    plain: str  # a note without formatting in the default Notes folder
+    buried: str  # a note three folders deep
+    buried_path: str
+    locked: str
+    formatted: str
+    formatting: set[str]  # some of the formatted note's content_features()
+    tags: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    deleted: bool = True  # has a note in Recently Deleted
+
+    def __str__(self):
+        return self.file
+
+
 FIXTURES = [
-    "NoteStore-macOS-12-Monterey.sqlite",
-    "NoteStore-macOS-15-Sequoia.sqlite",
-    TAHOE,
+    Fixture(
+        file="NoteStore-macOS-12-Monterey.sqlite",
+        plain="This is a note",
+        buried="This note is deeply buried",
+        buried_path="Folder2/Subfolder/Subsubfolder",
+        locked="This note is password protected",
+        formatted="This note has special formatting",
+        formatting={"checklists", "tables"},
+    ),
+    Fixture(
+        file="NoteStore-macOS-15-Sequoia.sqlite",
+        plain="This is a note",
+        buried="This note is deeply buried",
+        buried_path="Folder2/Subfolder/Subsubfolder",
+        locked="This note is password protected",
+        formatted="This note has special formatting",
+        formatting={"checklists", "tables"},
+        tags={"This note has tags": ("travel", "vacation")},
+    ),
+    Fixture(
+        file=TAHOE,
+        plain="This is a note",
+        buried="This is a deeply buried note",
+        buried_path="Folder2/Subfolder/Subsubfolder",
+        locked="This note is password protected",
+        formatted="This note has special formatting",
+        formatting={"checklists", "tables"},
+        tags={"This note has tags": ("travel", "vacation")},
+    ),
+    Fixture(
+        file=MACOS27,
+        plain="This is a plain text note",
+        buried="This note is 3 levels deep in a folder",
+        buried_path="Folder2/SubFolder/SubSubFolder",
+        locked="This note is locked. The password is “foobar”",
+        formatted="This note has text formatting",
+        formatting={"headings", "lists", "bold or italic"},
+        tags={
+            "This note has a tag named “Test”": ("Test",),
+            "This note has 2 tags: Test, todo": ("Test", "todo"),
+        },
+        deleted=False,
+    ),
 ]
 
 
@@ -72,33 +136,60 @@ def by_name(db: NotesDatabase) -> dict:
     return {r.name: r for r in db.notes()}
 
 
-@pytest.mark.parametrize("fixture", FIXTURES)
+def utc(local: datetime) -> str:
+    """Return a naive local datetime (as the database returns) in UTC, so tests
+    don't depend on the time zone"""
+    return local.astimezone(UTC).strftime("%Y-%m-%d %H:%M")
+
+
+@pytest.mark.parametrize("fixture", FIXTURES, ids=str)
 def test_fixture_notes(tmp_path, open_db, fixture):
-    db = open_db(copy_fixture(tmp_path, fixture))
+    db = open_db(copy_fixture(tmp_path, fixture.file))
     [(account_id, account)] = db.accounts.items()
     assert account == "On My Mac"
     assert account_id.startswith("x-coredata://") and "/ICAccount/p" in account_id
 
     notes = by_name(db)
-    assert notes["This is a note"].folder == "Notes"
+    plain = notes[fixture.plain]
+    assert plain.folder == "Notes" and plain.folder_path == "Notes"
+    assert not plain.password_protected
+    assert plain.plaintext.startswith(f"{fixture.plain}\n")
+    assert plain.creation_date <= plain.modification_date
+    assert db.content_features(plain.id) == []
     assert all(r.account_id == account_id for r in notes.values())
     assert all(
         r.id.startswith(account_id.split("/ICAccount/")[0]) for r in notes.values()
     )
-    buried = next(r for name, r in notes.items() if "deeply buried" in name)
-    assert buried.folder == "Subsubfolder"
-    assert buried.folder_path == "Folder2/Subfolder/Subsubfolder"
+    buried = notes[fixture.buried]
+    assert buried.folder == fixture.buried_path.split("/")[-1]
+    assert buried.folder_path == fixture.buried_path
     # Notes.app lists notes in Recently Deleted, so the database does too
-    assert any(r.folder == "Recently Deleted" for r in notes.values())
+    assert any(r.folder == "Recently Deleted" for r in notes.values()) == (
+        fixture.deleted
+    )
 
-    locked = notes["This note is password protected"]
+    locked = notes[fixture.locked]
     assert locked.password_protected
     assert locked.plaintext == ""
     assert locked.tags == ()
     assert db.content_features(locked.id) == []
+    assert [r.name for r in notes.values() if r.password_protected] == [fixture.locked]
 
-    formatting = db.content_features(notes["This note has special formatting"].id)
-    assert {"checklists", "tables"} <= set(formatting)
+    formatting = db.content_features(notes[fixture.formatted].id)
+    assert fixture.formatting <= set(formatting)
+
+    assert {name: r.tags for name, r in notes.items() if r.tags} == fixture.tags
+
+
+@pytest.mark.parametrize("fixture", FIXTURES, ids=str)
+def test_fixture_note_state(tmp_path, open_db, fixture):
+    """The columns that Notes.app updates when it saves a change exist in every
+    macOS version"""
+    db = open_db(copy_fixture(tmp_path, fixture.file))
+    note_id = by_name(db)[fixture.plain].id
+    for change in CHANGE_COLUMNS:
+        [value] = db.note_state(note_id, change)
+        assert value is not None
 
 
 def test_record_values(tahoe):
@@ -107,11 +198,119 @@ def test_record_values(tahoe):
     note = notes["This is a note"]
     assert note.id == "x-coredata://9B3F80E8-BEEE-4921-BE3B-57B7D6FFAF2E/ICNote/p27"
     assert note.plaintext == "This is a note\n\nIt is not in a folder\n"
-    assert note.creation_date.strftime("%Y-%m-%d %H:%M") == "2025-07-31 07:06"
+    assert utc(note.creation_date) == "2025-07-31 12:06"
     assert note.creation_date <= note.modification_date
     assert not note.password_protected
     assert notes["This note has tags"].tags == ("travel", "vacation")
     assert note.tags == ()
+
+
+@pytest.mark.parametrize("tz", ["UTC", "America/Chicago", "Asia/Tokyo"])
+def test_record_dates_any_time_zone(tmp_path, open_db, monkeypatch, tz):
+    """Dates are local times, so the same instant in any time zone"""
+    monkeypatch.setenv("TZ", tz)
+    time.tzset()
+    try:
+        db = open_db(copy_fixture(tmp_path, MACOS27))
+        note = by_name(db)["This is a plain text note"]
+        assert utc(note.creation_date) == "2026-10-31 13:27"
+        assert utc(note.modification_date) == "2026-10-31 13:27"
+    finally:
+        monkeypatch.undo()
+        time.tzset()
+
+
+@pytest.fixture
+def macos27(tmp_path, open_db) -> NotesDatabase:
+    return open_db(copy_fixture(tmp_path, MACOS27))
+
+
+def test_macos27_record_values(macos27):
+    notes = by_name(macos27)
+    assert macos27.accounts == {
+        "x-coredata://EB1BCA2E-7356-4972-8942-F674CA548E9C/ICAccount/p3": "On My Mac"
+    }
+    note = notes["This is a plain text note"]
+    assert note.id == "x-coredata://EB1BCA2E-7356-4972-8942-F674CA548E9C/ICNote/p4"
+    assert note.plaintext == (
+        "This is a plain text note\n\nThis note has no special formatting\n"
+    )
+    assert not note.pinned
+    # ScriptingBridge returns whole seconds
+    assert note.creation_date.strftime("%S.%f") == "00.000000"
+    assert note.modification_date.strftime("%S.%f") == "16.000000"
+    assert sorted({r.folder_path for r in notes.values()}) == [
+        "Folder1",
+        "Folder2/SubFolder",
+        "Folder2/SubFolder/SubSubFolder",
+        "Notes",
+    ]
+    assert notes["This note is in a subfolder"].folder == "SubFolder"
+    # a title with trailing whitespace
+    checklist = notes["This note has a checklist with 1 item checked and 2 unchecked"]
+    assert checklist.plaintext.splitlines()[2:] == ["Item 1", "Item 2", "Item 3"]
+
+
+def test_macos27_filters(macos27):
+    names = lambda records: sorted(r.name for r in records)  # noqa: E731
+    assert names(macos27.notes(tag=["test"])) == [
+        "This note has 2 tags: Test, todo",
+        "This note has a tag named “Test”",
+    ]
+    assert names(macos27.notes(tag=["#TODO"])) == ["This note has 2 tags: Test, todo"]
+    # the locked note's text isn't searched, but its title is
+    assert names(macos27.notes(text=["foobar"])) == [
+        "The locked note has password foobar",
+        "This note is locked. The password is “foobar”",
+    ]
+    assert names(macos27.notes(body=["foobar"])) == [
+        "The locked note has password foobar"
+    ]
+    assert names(macos27.notes(name=["named “test”"])) == [
+        "This note has a tag named “Test”"
+    ]
+    assert macos27.notes(name=['named "test"']) == []
+    assert names(macos27.notes(text=["goldfish.jpeg"])) == [
+        "This note contains an image"
+    ]
+
+
+def test_macos27_content_features(macos27):
+    """Each note in the macOS 27 fixture describes its own content"""
+    features = {
+        r.name: macos27.content_features(r.id)
+        for r in macos27.notes(password_protected=False)
+    }
+    assert features == {
+        "This is a plain text note": [],
+        "This note has a tag named “Test”": ["tags"],
+        "This note has a checklist with 1 item checked and 2 unchecked": ["checklists"],
+        # the purple text is a highlight color
+        "This note has text formatting": [
+            "block quotes",
+            "bold or italic",
+            "headings",
+            "highlights",
+            "lists",
+            "monospaced",
+            "underline or strikethrough",
+        ],
+        "This note has 2 tags: Test, todo": ["tags"],
+        "The locked note has password foobar": [],
+        "This note contains an image": ["attachments"],
+        "This note is in Folder1": [],
+        "This note is in a subfolder": [],
+        "This note is 3 levels deep in a folder": [],
+    }
+
+
+def test_relative_path(tmp_path, open_db, monkeypatch):
+    copy_fixture(tmp_path, MACOS27)
+    monkeypatch.chdir(tmp_path)
+    db = open_db("NoteStore.sqlite")
+    assert db.path == tmp_path / "NoteStore.sqlite"
+    assert len(db.notes()) == 11
+    connect_read_only(pathlib.Path("NoteStore.sqlite")).close()
 
 
 def test_filters(tahoe):
@@ -407,6 +606,27 @@ def test_note_data_features_ignores_title_line():
     assert note_data_features(zdata) == ["bold or italic"]
     del note.attribute_run[2]
     assert note_data_features(gzip.compress(proto.SerializeToString())) == []
+
+
+def test_note_data_features_title_style():
+    """The Title style is a heading in the body, but not on the title line"""
+
+    def features(*runs):
+        proto = NoteStoreProto()
+        proto.document.version = 1
+        note = proto.document.note
+        note.note_text = "".join(text for text, _ in runs)
+        for text, style_type in runs:
+            run = note.attribute_run.add()
+            run.length = len(text)
+            if style_type is not None:
+                run.paragraph_style.style_type = style_type
+        return note_data_features(gzip.compress(proto.SerializeToString()))
+
+    assert features(("Title\n", 0), ("body\n", None)) == []
+    assert features(("Title", 0), ("\n", 0), ("body\n", None)) == []
+    assert features(("Title\n", 0), ("body\n", None), ("Big\n", 0)) == ["headings"]
+    assert features(("Title\nBig\n", 0)) == ["headings"]
 
 
 def test_note_data_features_plain():
