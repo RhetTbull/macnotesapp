@@ -1,6 +1,7 @@
-""""Remove rich markup from the given text.
+""" "Remove rich markup from the given text.
 The CLI docstrings use rich markup for pretty-printing help text but this needs to be stripped for serving the docs.
 """
+
 import re
 
 import mkdocs.plugins

@@ -5,9 +5,6 @@ from __future__ import annotations
 import html
 import re
 
-import markdown2
-from markdownify import markdownify
-
 # extra features to support for Markdown to HTML conversion with markdown2
 MARKDOWN_EXTRAS = ["fenced-code-blocks", "footnotes", "tables"]
 
@@ -33,11 +30,16 @@ def text_to_html(text: str) -> str:
 
 def markdown_to_html(text: str) -> str:
     """Convert Markdown to HTML"""
+    import markdown2
+
     return markdown2.markdown(text, extras=MARKDOWN_EXTRAS)
 
 
 def html_to_markdown(text: str) -> str:
     """Convert HTML to Markdown"""
+    # imported here because markdownify loads BeautifulSoup and lxml
+    from markdownify import markdownify
+
     return markdownify(text)
 
 

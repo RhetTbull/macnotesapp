@@ -44,7 +44,7 @@ def test_note_account_cached(monkeypatch):
 def test_note_id_missing_raises():
     """#77: Note.id raises instead of returning 0"""
     with pytest.raises(ScriptingBridgeError):
-        Note(FakeSBNote(id=0)).id
+        _ = Note(FakeSBNote(id=0)).id
 
 
 def test_note_folder_container_none(monkeypatch):
@@ -116,3 +116,16 @@ def test_noteslist_missing_values():
     assert noteslist.body == [""]
     assert noteslist.plaintext == [""]
     assert noteslist.container == [None]
+
+
+def test_noteslist_account_and_asdict_without_body():
+    noteslist = NotesList(
+        FakeSBNotesArray([_sbnote(1), _sbnote(2)]),
+        FakeSBNotesArray([_sbnote(3)]),
+        accounts=["iCloud", "On My Mac"],
+    )
+    assert noteslist.account == ["iCloud", "iCloud", "On My Mac"]
+    records = noteslist.asdict(body=False)
+    assert [r["account"] for r in records] == ["iCloud", "iCloud", "On My Mac"]
+    assert "body" not in records[0] and "plaintext" not in records[0]
+    assert NotesList(FakeSBNotesArray([_sbnote(1)])).account == [None]

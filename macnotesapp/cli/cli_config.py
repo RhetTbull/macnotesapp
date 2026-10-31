@@ -4,19 +4,20 @@ from __future__ import annotations
 
 import os
 import pathlib
+import sys
 
-import toml
+import tomli_w
 from xdg_base_dirs import xdg_config_home
 
-from macnotesapp import NotesApp
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    import tomli as tomllib
 
 
 def get_config_dir() -> pathlib.Path:
-    """Get the directory where config files are stored; create it if necessary."""
-    config_dir = xdg_config_home() / "macnotesapp"
-    if not config_dir.is_dir():
-        config_dir.mkdir(parents=True)
-    return config_dir
+    """Get the directory where config files are stored"""
+    return xdg_config_home() / "macnotesapp"
 
 
 CONFIG_DIR = get_config_dir()
@@ -32,69 +33,57 @@ DEFAULT_EDITOR = "$EDITOR"
 
 
 class ConfigSettings:
+    """Settings for the CLI stored in CONFIG_FILE.
+
+    Reading settings never creates the config file; it is written by `notes config`.
+    Defaults for account and folder are looked up from Notes.app only when needed.
+    """
+
     config_file = CONFIG_FILE
 
-    def __init__(self):
-        if not self.config_file.is_file():
-            self._create_config_file()
-
     def read(self) -> dict[str, str]:
-        """Read data from config file"""
-        data = toml.load(self.config_file)
+        """Read data from config file; returns empty dict if file doesn't exist"""
+        if not self.config_file.is_file():
+            return {}
+        with open(self.config_file, "rb") as fp:
+            data = tomllib.load(fp)
         return data.get("defaults", {})
 
     def write(self, settings: dict[str, str]):
         """Write settings dict to config file"""
-        data = {"defaults": settings}
-        if not self.config_file.is_file():
-            self._create_config_file()
-        with open(self.config_file, "w") as fp:
-            toml.dump(data, fp)
+        self.config_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.config_file, "wb") as fp:
+            tomli_w.dump({"defaults": settings}, fp)
 
     @property
-    def account(self):
+    def account(self) -> str:
         """Return default account"""
-        data = self.read()
-        return data.get("account", NotesApp().default_account)
+        if account := self.read().get("account"):
+            return account
+        from macnotesapp import NotesApp
+
+        return NotesApp().default_account
 
     @property
-    def folder(self):
+    def folder(self) -> str:
         """Return default folder"""
-        data = self.read()
-        if folder := data.get("folder"):
+        if folder := self.read().get("folder"):
             return folder
+        from macnotesapp import NotesApp
+
         notes = NotesApp()
-        return notes.account(notes.default_account).default_folder
+        return notes.account(self.account).default_folder
 
     @property
-    def format(self):
+    def format(self) -> str:
         """Return default note format"""
-        data = self.read()
-        return data.get("format", DEFAULT_FORMAT)
+        return self.read().get("format", DEFAULT_FORMAT)
 
     @property
     def editor(self) -> str | None:
         """Return default editor or None if not set (click.edit() will then choose one)"""
-        data = self.read()
-        editor = data.get("editor", DEFAULT_EDITOR)
+        editor = self.read().get("editor", DEFAULT_EDITOR)
         if editor.startswith("$"):
             # environment variable
             return os.environ.get(editor[1:])
         return editor
-
-    def _create_config_file(self):
-        config_dir = self.config_file.parent
-        config_dir.mkdir(exist_ok=True)
-        notes = NotesApp()
-        account = notes.default_account
-        folder = notes.account(account).default_folder
-        config_defaults = {
-            "defaults": {
-                "editor": DEFAULT_EDITOR,
-                "format": DEFAULT_FORMAT,
-                "account": account,
-                "folder": folder,
-            },
-        }
-        with open(self.config_file, "w") as fp:
-            toml.dump(config_defaults, fp)

@@ -1,13 +1,15 @@
-"""Test Python to AppleScript interface for macnotesapp """
+"""Test Python to AppleScript interface for macnotesapp"""
+
+import pathlib
 
 import pytest
 import questionary
 
-from macnotesapp import Account, Note, NotesApp
+from macnotesapp import Account, NotesApp
 
-from .utils import get_macos_version
+from ..utils import get_macos_version
 
-ATTACHMENT_PATH = "tests/attachment.txt"
+ATTACHMENT_PATH = str(pathlib.Path(__file__).parent.parent / "attachment.txt")
 
 
 @pytest.fixture(scope="session")
@@ -119,18 +121,20 @@ def test_notes_make_note(notes):
     print("This test will make a new note in the default account.")
     name = input("\nPlease type name of note to make: ")
     body = input("\nPlease type body of note to make: ")
-    note = notes.make_note(name=name, body=body)
+    notes.make_note(name=name, body=body)
     assert prompt(f"Was a new note named '{name}' created in default account?")
 
 
-@pytest.mark.skipif(get_macos_version() < (13, 0, 0), reason="Requires macOS 13.0 or higher")
+@pytest.mark.skipif(
+    get_macos_version() < (13, 0, 0), reason="Requires macOS 13.0 or higher"
+)
 def test_notes_make_note_with_attachment(notes):
     """Test NotesApp.make_note"""
     print("This test will make a new note in the default account.")
     name = "Note with attachment"
     body = "This note has an attachment. #macnotesapp<br>"
     attachment = ATTACHMENT_PATH
-    note = notes.make_note(name=name, body=body, attachments=[attachment])
+    notes.make_note(name=name, body=body, attachments=[attachment])
     assert prompt(
         f"Was a new note named '{name}' created in default account with attachment?"
     )
@@ -208,7 +212,7 @@ def test_account_make_note(notes):
     account = notes.account(account_name)
     name = input("\nPlease type name of note to make: ")
     body = input("\nPlease type body of note to make: ")
-    note = account.make_note(name=name, body=body)
+    account.make_note(name=name, body=body)
     assert prompt(f"Was a new note named '{name}' created in account '{account.name}'?")
 
 
@@ -228,7 +232,7 @@ def test_account_make_note_in_folder(notes):
     ).ask()
     name = input("\nPlease type name of note to make: ")
     body = input("\nPlease type body of note to make: ")
-    note = account.make_note(name=name, body=body, folder=folder)
+    account.make_note(name=name, body=body, folder=folder)
     assert prompt(
         f"Was a new note named '{name}' created in folder '{folder}' of account '{account.name}'?"
     )
@@ -281,7 +285,6 @@ def test_note_set_body(notes):
     selection = notes.selection
     assert selection
     note = selection[0]
-    old_body = note.body
     new_body = input(f"\nEnter new body for note named '{note.name}': ")
     note.body = new_body
     assert prompt(f"Was note body for note '{note.name}' changed to '{new_body}'?")

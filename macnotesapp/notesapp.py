@@ -6,16 +6,17 @@ import html
 import os
 import pathlib
 import re
+from collections.abc import Generator
 from datetime import datetime
 from functools import cached_property
-from typing import Any, Generator, Optional
+from typing import Any
 
 import AppKit
 import applescript
 import Foundation
 import ScriptingBridge
 
-from ._version import __version__
+from .errors import AppleScriptError, ScriptingBridgeError
 from .script_loader import run_script
 from .utils import NSDate_to_datetime, OSType, get_macos_version
 
@@ -24,20 +25,6 @@ from .utils import NSDate_to_datetime, OSType, get_macos_version
 
 
 MAC_OS_VERSION = int(get_macos_version()[0])
-
-
-class AppleScriptError(Exception):
-    """Error raised when AppleScript fails to execute"""
-
-    def __init__(self, *message):
-        super().__init__(*message)
-
-
-class ScriptingBridgeError(Exception):
-    """ "Errors raised when ScriptingBridge fails to execute"""
-
-    def __init__(self, *message):
-        super().__init__(*message)
 
 
 def parse_id_from_object(obj: ScriptingBridge.SBObject) -> str:
@@ -150,7 +137,7 @@ class NotesApp:
         id: list[str] | None = None,
         accounts: list[str] | None = None,
         exact_name: bool = False,
-    ) -> list["Note"]:
+    ) -> list[Note]:
         """Return Note object for all notes contained in Notes.app or notes filtered by property.
 
         Args:
@@ -185,7 +172,7 @@ class NotesApp:
         id: list[str] | None = None,
         accounts: list[str] | None = None,
         exact_name: bool = False,
-    ) -> "NotesList":
+    ) -> NotesList:
         """Return NoteList object for all notes contained in account or notes filtered by property.
 
         Args:
@@ -200,9 +187,12 @@ class NotesApp:
         Returns:
             NotesList object
         """
-        account_list = filter_accounts(self.app.accounts(), accounts)
+        account_list = [
+            Account(account)
+            for account in filter_accounts(self.app.accounts(), accounts)
+        ]
         noteslists = [
-            Account(account)._noteslist(
+            account._noteslist(
                 name=name,
                 body=body,
                 text=text,
@@ -212,10 +202,10 @@ class NotesApp:
             )
             for account in account_list
         ]
-        return NotesList(*noteslists)
+        return NotesList(*noteslists, accounts=[a.name for a in account_list])
 
     @property
-    def selection(self) -> list["Note"]:
+    def selection(self) -> list[Note]:
         """Return lit of Note objects for selected notes"""
         notes = self.app.selection()
         return [Note(note) for note in notes]
@@ -232,7 +222,7 @@ class NotesApp:
         attachments: list[str] | None = None,
         *,
         folder: str | None = None,
-    ) -> "Note":
+    ) -> Note:
         """Create new note in default account.
 
         Args:
@@ -247,7 +237,7 @@ class NotesApp:
         account = Account(self.app.defaultAccount())
         return account.make_note(name, body, folder=folder, attachments=attachments)
 
-    def account(self, account: Optional[str] = None) -> "Account":
+    def account(self, account: str | None = None) -> Account:
         """Return Account object for account or default account if account is None.
 
         Arg:
@@ -276,7 +266,7 @@ class NotesApp:
         """Return count of notes in Notes.app"""
         return sum(len(account.notes()) for account in self.app.accounts())
 
-    def __iter__(self) -> Generator["Note", None, None]:
+    def __iter__(self) -> Generator[Note, None, None]:
         """Generator to yield Note object for all notes contained in Notes.app"""
         for account in self.app.accounts():
             account_name = str(account.name())
@@ -295,7 +285,6 @@ class Account:
     def name(self) -> str:
         """Return name of account"""
         return str(self._account.name())
-        # return str(self._run_script("accountName"))
 
     @property
     def folders(self) -> list[str]:
@@ -326,7 +315,7 @@ class Account:
         password_protected: bool | None = None,
         id: list[str] | None = None,
         exact_name: bool = False,
-    ) -> list["Note"]:
+    ) -> list[Note]:
         """Return Note object for all notes contained in account or notes filtered by property.
 
         Args:
@@ -353,7 +342,7 @@ class Account:
         password_protected: bool | None = None,
         id: list[str] | None = None,
         exact_name: bool = False,
-    ) -> "NotesList":
+    ) -> NotesList:
         """Return NoteList object for all notes contained in account or notes filtered by property.
 
         Args:
@@ -367,9 +356,9 @@ class Account:
         Returns:
             NotesList object"""
         notes = self._noteslist(name, body, text, password_protected, id, exact_name)
-        return NotesList(notes)
+        return NotesList(notes, accounts=[self.name])
 
-    def folder(self, folder: str) -> "Folder":
+    def folder(self, folder: str) -> Folder:
         """Return Folder object for folder with name folder."""
         folder_obj = self._folder_for_name(folder)
         return Folder(folder_obj)
@@ -384,7 +373,7 @@ class Account:
         body: str,
         folder: str | None = None,
         attachments: list[str] | None = None,
-    ) -> "Note":
+    ) -> Note:
         """Create new note in account
 
         Args:
@@ -462,7 +451,7 @@ class Account:
     def _run_script(self, script, *args):
         return run_script(script, self.name, *args)
 
-    def make_folder(self, folder_name: str) -> "Folder":
+    def make_folder(self, folder_name: str) -> Folder:
         """Create a new folder in this account.
 
         Args:
@@ -485,7 +474,6 @@ class Account:
     def __len__(self) -> int:
         """Return count of notes"""
         return len(self._account.notes())
-        # return self._run_script("accountGetCount")
 
     def __iter__(self) -> Generator[Note, None, None]:
         """Generator to yield all notes contained in Notes.app"""
@@ -499,8 +487,28 @@ class NotesList:
     Represents an SBElementArray of notes as returned by noteslist()
     """
 
-    def __init__(self, *noteslist: ScriptingBridge.SBElementArray):
+    def __init__(
+        self,
+        *noteslist: ScriptingBridge.SBElementArray,
+        accounts: list[str] | None = None,
+    ):
+        """Create NotesList
+
+        Args:
+            *noteslist: one SBElementArray of notes per account
+            accounts: optional name of the account for each SBElementArray
+        """
         self._noteslist = noteslist
+        self._accounts = accounts or [None] * len(noteslist)
+
+    @property
+    def account(self) -> list[str | None]:
+        """Return account name of every note in list (None if not known)"""
+        return [
+            account
+            for noteslist, account in zip(self._noteslist, self._accounts, strict=True)
+            for _ in range(len(noteslist))
+        ]
 
     @property
     def id(self) -> list[str]:
@@ -547,29 +555,30 @@ class NotesList:
         """Return whether every note in list is password protected as list of bools"""
         return self._apply_selector("passwordProtected")
 
-    def asdict(self) -> list[dict[str, str]]:
-        """Return list of dict representations of note"""
+    def asdict(self, body: bool = True) -> list[dict[str, Any]]:
+        """Return list of dict representations of notes
+
+        Args:
+            body: if False, don't include body and plaintext (faster for large lists)
+        """
+        fields = {
+            "account": self.account,
+            "id": self.id,
+            "name": self.name,
+        }
+        if body:
+            fields["body"] = self.body
+            fields["plaintext"] = self.plaintext
+        fields |= {
+            "creation_date": self.creation_date,
+            "modification_date": self.modification_date,
+            "password_protected": self.password_protected,
+            "folder": self.container,
+        }
+        # strict: every field must have exactly one value per note
         return [
-            {
-                "id": note[0],
-                "name": note[1],
-                "body": note[2],
-                "plaintext": note[3],
-                "creation_date": note[4],
-                "modification_date": note[5],
-                "password_protected": note[6],
-                "folder": note[7],
-            }
-            for note in zip(
-                self.id,
-                self.name,
-                self.body,
-                self.plaintext,
-                self.creation_date,
-                self.modification_date,
-                self.password_protected,
-                self.container,
-            )
+            dict(zip(fields, values, strict=True))
+            for values in zip(*fields.values(), strict=True)
         ]
 
     def _apply_selector(self, selector) -> list[Any]:
@@ -717,7 +726,7 @@ class Note:
         return str(self._run_script("noteGetContainer"))
 
     @property
-    def attachments(self) -> list["Attachment"]:
+    def attachments(self) -> list[Attachment]:
         """Return list of attachments for note as Attachment objects"""
 
         # .attachments() method on note object sometimes returns duplicates, e.g each attachment is returned twice
@@ -733,7 +742,7 @@ class Note:
             if attachment.id not in [a.id for a in attachments[:i]]
         ]
 
-    def add_attachment(self, path: str | os.PathLike) -> "Attachment":
+    def add_attachment(self, path: str | os.PathLike) -> Attachment:
         """Add attachment to note
 
         Args:
