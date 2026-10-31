@@ -99,7 +99,7 @@ class NotesDatabase:
         Raises:
             DatabaseUnavailableError: if the database can't be opened
         """
-        self.path = pathlib.Path(path) if path else DEFAULT_DATABASE_PATH
+        self.path = pathlib.Path(path).absolute() if path else DEFAULT_DATABASE_PATH
         self._connection = connect_read_only(self.path)
         self._data_version: int | None = None
         # changes to notes that Notes.app may not have saved yet:
@@ -321,6 +321,7 @@ def connect_read_only(path: pathlib.Path) -> sqlite3.Connection:
     Raises:
         DatabaseUnavailableError: if the database can't be opened
     """
+    path = path.absolute()
     shm = path.with_name(f"{path.name}-shm")
     wal = path.with_name(f"{path.name}-wal")
     try:
@@ -405,8 +406,8 @@ def _load_records(
                 folder_path=note.folder.get_path(),
                 # the text of a locked note is encrypted; Notes.app returns ""
                 plaintext="" if locked else note.content or "",
-                creation_date=note.creation_date,
-                modification_date=note.modification_date,
+                creation_date=_whole_seconds(note.creation_date),
+                modification_date=_whole_seconds(note.modification_date),
                 password_protected=locked,
                 pinned=note.is_pinned,
                 tags=() if locked else tags.get(note.note_id, ()),
@@ -459,7 +460,11 @@ def note_data_features(zdata: bytes | None) -> list[str]:
         if run.HasField("paragraph_style"):
             style = run.paragraph_style
             style_type = style.style_type if style.HasField("style_type") else None
-            if style_type in (STYLE_HEADING, STYLE_SUBHEADING):
+            # the title line, including its newline, has the Title style; so can
+            # lines in the body
+            if style_type in (STYLE_HEADING, STYLE_SUBHEADING) or (
+                style_type == STYLE_TITLE and start > title_end + 1
+            ):
                 features.add("headings")
             elif style_type == STYLE_MONOSPACED:
                 features.add("monospaced")
@@ -503,6 +508,11 @@ def note_data_features(zdata: bytes | None) -> list[str]:
             else:
                 features.add("attachments")
     return sorted(features)
+
+
+def _whole_seconds(date: datetime | None) -> datetime | None:
+    """Drop fractions of a second, which ScriptingBridge doesn't return"""
+    return date.replace(microsecond=0) if date else date
 
 
 def _primary_key(note_id: str) -> int:

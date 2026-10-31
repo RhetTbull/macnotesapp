@@ -48,7 +48,8 @@ Beyond the fakes, no mocks exist for Notes.app. Read-only checks against Notes.a
 - The CLI saves unsaved changes to `$XDG_STATE_HOME/macnotesapp/unsaved_changes.json` after each command and loads them in `get_notes_app()`, so the next command sees them. Tests redirect this file.
 - Filtering must match ScriptingBridge: `contains[cd]` ignores case and diacritics; exact names (`==[c]`) ignore case only. Locked notes have empty text and no tags.
 - Tags, `folder_path`, and `content_features()` (formatting and objects that edits would lose) exist only for notes in the database.
-- `tests/unit/test_database.py` uses fixture databases in `tests/unit/data` from apple-notes-parser's tests.
+- `tests/unit/test_database.py` uses fixture databases in `tests/unit/data`: macOS 12, 15, and 26 from apple-notes-parser's tests, and macOS 27 made for macnotesapp (each note's title describes its content). `FIXTURES` lists what each contains. A new fixture must be a single checkpointed file: copy `NoteStore.sqlite` and `-wal` (not `-shm`) and open the copy with `sqlite3` so the WAL is merged in.
+- Database dates are naive local times, truncated to whole seconds like ScriptingBridge. Compare them in UTC in tests, since CI runs in UTC.
 
 ### Two automation backends
 
