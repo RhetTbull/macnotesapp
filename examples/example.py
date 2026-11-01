@@ -24,14 +24,21 @@ print(note.asdict())
 notes = notesapp.notes(accounts=["iCloud"])
 
 # Create a new note in default folder of default account
+# The body is HTML unless you give another format: "text" or "markdown"
 new_note = notesapp.make_note(
-    name="New Note", body="This is a new note created with #macnotesapp"
+    name="New Note",
+    body="This is a new note created with **#macnotesapp**",
+    format="markdown",
 )
 
-# Create a new note in a specific folder of a specific account
+# Create a new note in a specific folder of a specific account;
+# a subfolder can be given by its path, such as "Work/Projects"
 account = notesapp.account("iCloud")
 account.make_note(
-    "My New Note", "This is a new note created with #macnotesapp", folder="Notes"
+    "My New Note",
+    "This is a new note created with #macnotesapp",
+    folder="Notes",
+    format="text",
 )
 
 # If working with many notes, it is far more efficient to use the NotesList object

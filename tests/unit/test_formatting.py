@@ -1,10 +1,15 @@
 """Test conversion between text, Markdown, and Notes HTML"""
 
+import pytest
+
 from macnotesapp.formatting import (
     features_lost,
     markdown_lossy_features,
     markdown_to_html,
+    normalize_format,
     text_to_html,
+    title_from_line,
+    to_html,
 )
 from macnotesapp.notesapp import title_html
 
@@ -68,7 +73,8 @@ def test_features_lost():
     """#75: what each kind of edit loses, from Note.content_features()"""
     features = ["bold or italic", "checklists", "colors", "links", "tables", "tags"]
     assert features_lost(features, "replace") == ["tables", "tags"]
-    assert features_lost(features, "html") == ["checklists", "tables", "tags"]
+    # rewriting the HTML keeps tables; colors haven't been checked
+    assert features_lost(features, "html") == ["checklists", "colors", "tags"]
     assert features_lost(features, "markdown") == [
         "checklists",
         "colors",
@@ -76,3 +82,80 @@ def test_features_lost():
         "tags",
     ]
     assert features_lost(["headings", "lists", "links"], "markdown") == []
+    # dividers are objects in the text, so replacing the body loses them
+    assert features_lost(["dividers", "links"], "replace") == ["dividers"]
+
+
+def test_features_lost_append():
+    """#51: appending rewrites the HTML, which keeps only what was checked to survive"""
+    kept = [
+        "bold or italic",
+        "dividers",
+        "fonts",
+        "headings",
+        "links",
+        "lists",
+        "monospaced",
+        "tables",
+        "underline or strikethrough",
+    ]
+    assert features_lost(kept, "append") == []
+    lost = [
+        "attachments",
+        "block quotes",
+        "checklists",
+        "colors",
+        "highlights",
+        "inline objects",
+        "link previews",
+        "mentions",
+        "tags",
+    ]
+    assert features_lost(lost, "append") == lost
+    with pytest.raises(ValueError):
+        features_lost([], "prepend")
+
+
+@pytest.mark.parametrize(
+    "format, expected",
+    [
+        ("text", "text"),
+        ("plaintext", "text"),
+        ("Markdown", "markdown"),
+        ("HTML", "html"),
+    ],
+)
+def test_normalize_format(format, expected):
+    assert normalize_format(format) == expected
+
+
+def test_normalize_format_unknown():
+    with pytest.raises(ValueError, match="rtf"):
+        normalize_format("rtf")
+
+
+def test_to_html():
+    """#39, #37: bodies can be text, Markdown, or HTML"""
+    assert to_html("a\nb <c>", "text") == ("<div>a</div>\n<div>b &lt;c&gt;</div>\n")
+    assert "<li>item</li>" in to_html("- item", "markdown")
+    assert to_html("<p>x</p>", "html") == "<p>x</p>"
+
+
+@pytest.mark.parametrize(
+    "line, format, name",
+    [
+        ("# Title", "markdown", "Title"),
+        ("## Title ##", "markdown", "Title"),
+        ("   ###   Spaced", "markdown", "Spaced"),
+        ("Issue #42", "markdown", "Issue #42"),
+        ("#hashtag", "markdown", "#hashtag"),
+        ("C# notes", "markdown", "C# notes"),
+        ("<h1>Tom &amp; Jerry</h1>", "html", "Tom & Jerry"),
+        ("<div><b>Bold</b> title</div>", "html", "Bold title"),
+        ("# Not markdown", "text", "# Not markdown"),
+        ("  padded  ", "text", "padded"),
+    ],
+)
+def test_title_from_line(line, format, name):
+    """#13: the name is plain text, without Markdown or HTML markup"""
+    assert title_from_line(line, format) == name

@@ -6,7 +6,13 @@ from datetime import datetime
 
 import Foundation
 
-from macnotesapp.errors import DatabaseUnavailableError
+from macnotesapp.errors import (
+    ContentLossError,
+    DatabaseUnavailableError,
+    FolderNotFoundError,
+)
+from macnotesapp.formatting import features_lost
+from macnotesapp.notesapp import FolderTree
 
 
 class FakeSBContainer:
@@ -80,7 +86,8 @@ class FakeNote:
         attachments=(),
         features=None,
     ):
-        """features: content_features() of the note, or None if the database isn't available"""
+        """features: content_features() of the note, None if the database isn't
+        available, or an exception for content_features() to raise"""
         self.name = name
         self.id = id
         self.folder = folder
@@ -94,10 +101,28 @@ class FakeNote:
     def content_features(self):
         if self.features is None:
             raise DatabaseUnavailableError("no database")
+        if isinstance(self.features, Exception):
+            raise self.features
         return self.features
 
     def delete(self):
         self.deleted = True
+
+    def append(self, body, format="text", *, force=False):
+        """Like Note.append(), checking features with features_lost()"""
+        if not force:
+            try:
+                features = self.content_features()
+            except DatabaseUnavailableError as e:
+                raise ContentLossError(f"Can't check: {e}") from e
+            if lost := features_lost(features, "append"):
+                raise ContentLossError(f"would lose {', '.join(lost)}", lost)
+        self.appended = (body, format, force)
+
+    def move(self, folder):
+        if folder == "Missing":
+            raise FolderNotFoundError(f"Folder '{folder}' not found")
+        self.folder = folder
 
     def asdict(self):
         return {
@@ -120,12 +145,16 @@ class FakeDatabase:
         self.records = list(records)
         self.features = features or {}
         self.writes = []
+        self.unsaved = set()
 
     def note(self, note_id):
         return next((r for r in self.records if r.id == note_id), None)
 
     def content_features(self, note_id):
         return self.features.get(note_id, [])
+
+    def unsaved_note_ids(self):
+        return set(self.unsaved)
 
     def note_state(self, note_id, change):
         return ("state", note_id, change)
@@ -148,14 +177,53 @@ class FakeNotesList:
         return records
 
 
+class FakeAccount:
+    """Stand-in for macnotesapp.Account that records changes"""
+
+    def __init__(self, name="iCloud", tree=None):
+        self.name = name
+        self.tree = tree or FolderTree(["f1"], ["Notes"], [None])
+        self.made_notes = []
+        self.made_folders = []
+        self.deleted_folders = []
+
+    def _folder_tree(self):
+        return self.tree
+
+    def make_note(self, name, body, folder=None, attachments=None, *, format="html"):
+        self.made_notes.append(
+            dict(
+                name=name,
+                body=body,
+                folder=folder,
+                attachments=attachments,
+                format=format,
+            )
+        )
+
+    def make_folder(self, folder, parents=False):
+        self.made_folders.append((folder, parents))
+
+    def delete_folder(self, folder, *, confirm_seconds=0.0):
+        self._delete_folder_in_tree(self.tree, self.tree.resolve(folder))
+
+    def _delete_folder_in_tree(self, tree, folder_id, confirm_seconds=0.0):
+        self.deleted_folders.append(tree.path(folder_id))
+
+
 class FakeNotesApp:
     """Stand-in for macnotesapp.NotesApp that records how notes() was called"""
 
     database = None
+    default_account = "iCloud"
 
-    def __init__(self, notes):
+    def __init__(self, notes, account=None):
         self._notes = notes
         self.calls = []
+        self.fake_account = account or FakeAccount()
+
+    def account(self, name=None):
+        return self.fake_account
 
     def noteslist(self, **kwargs):
         self.calls.append(kwargs)

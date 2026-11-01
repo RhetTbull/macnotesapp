@@ -578,6 +578,12 @@ def zdata(*runs) -> bytes:
             {"attachment_info.type_uti": "com.apple.notes.inlinetextattachment.x"},
             "inline objects",
         ),
+        (
+            {
+                "attachment_info.type_uti": "com.apple.notes.inlinetextattachment.dividerline"
+            },
+            "dividers",
+        ),
     ],
 )
 def test_note_data_features(run, feature):

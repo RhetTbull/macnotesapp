@@ -69,6 +69,8 @@ Still on AppleScript and ScriptingBridge.
 - #4: folder paths for creating notes and moving them into subfolders
 - Spike: run Shortcuts actions through the `shortcuts` CLI. "Append to Note" may append without losing formatting, and Shortcuts may also be able to add tags (#56) and create checklists (#29), which AppleScript can't. Not yet verified on macOS 27.
 
+Status: done except the Shortcuts spike, which is deferred. On macOS 27, no HTML gives a line the Title style, so #13 is limited to clean names and a bold, large title. #64 stays open: attachments are added with AppleScript, which stores the file but makes Notes.app show it twice. Pointing to the file from the note's HTML shows it once, but Notes.app doesn't copy the file's contents, so that isn't a fix. The Shortcuts spike may help with both.
+
 ## Phase 4: Features on the fast read path
 
 - #23: `export`, including a SQLite dump (formerly #20)

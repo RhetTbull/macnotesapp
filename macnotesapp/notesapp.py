@@ -6,10 +6,11 @@ import html
 import os
 import pathlib
 import re
+import time
 from collections.abc import Generator, Iterator
 from contextlib import contextmanager
 from datetime import datetime
-from functools import cached_property
+from functools import cache, cached_property
 from typing import Any
 
 import AppKit
@@ -18,7 +19,17 @@ import Foundation
 import ScriptingBridge
 
 from .database import NoteRecord, NotesDatabase, filter_records
-from .errors import AppleScriptError, DatabaseUnavailableError, ScriptingBridgeError
+from .errors import (
+    AppleScriptError,
+    ContentLossError,
+    DatabaseUnavailableError,
+    FolderNotFoundError,
+    MacNotesAppError,
+    NotesPermissionError,
+    ScriptingBridgeError,
+    UnsavedChangesError,
+)
+from .formatting import features_lost, to_html
 from .logging import logger
 from .script_loader import run_script
 from .utils import NSDate_to_datetime, OSType, get_macos_version
@@ -35,6 +46,16 @@ MAC_OS_VERSION = int(get_macos_version()[0])
 # "scriptingbridge": always ask Notes.app through ScriptingBridge
 # Accounts that aren't in the database (IMAP accounts) are always read with ScriptingBridge.
 BACKENDS = ("auto", "database", "scriptingbridge")
+
+# Notes.app sometimes ignores a request to delete a folder, so delete_folder() checks
+# for this long and tries again
+FOLDER_DELETE_ATTEMPTS = 3
+FOLDER_DELETE_WAIT_SECONDS = 2.0
+# how often delete_folder(confirm_seconds=...) checks that deleted folders stay deleted
+FOLDER_CONFIRM_INTERVAL_SECONDS = 1.0
+
+# how long Note.content_features() waits for Notes.app to save recent changes
+CONTENT_SAVE_WAIT_SECONDS = 3.0
 
 
 def parse_id_from_object(obj: ScriptingBridge.SBObject) -> str:
@@ -110,8 +131,125 @@ def filter_accounts(
 
 
 def title_html(name: str) -> str:
-    """Return HTML for the title line of a note"""
+    """Return HTML for the title line of a note
+
+    Notes.app stores this as bold text in a large font: there's no way to give a line
+    the Title style through scripting (#13).
+    """
     return f"<div><h1>{html.escape(name, quote=False)}</h1></div>\n"
+
+
+@cache
+def _notes_application() -> ScriptingBridge.SBApplication:
+    return ScriptingBridge.SBApplication.applicationWithBundleIdentifier_(
+        "com.apple.Notes"
+    )
+
+
+class FolderTree:
+    """The folders of an account and their parents, for finding folders by path
+
+    A path names a folder and its parent folders from the top level, separated by "/",
+    such as "Work/Projects". ScriptingBridge lists an account's folders, including
+    subfolders, without their parents, so the tree comes from AppleScript.
+    """
+
+    def __init__(self, ids: list[str], names: list[str], parent_ids: list[str]):
+        """Create tree from lists of folder IDs, names, and parent folder IDs
+        ("" or None for top-level folders), as returned by accountGetFolderTree"""
+        self.names = dict(zip(ids, names, strict=True))
+        # a subfolder whose parent was deleted keeps its parent's ID; treat it as
+        # top-level
+        self.parents = {
+            folder_id: parent_id if parent_id in self.names else None
+            for folder_id, parent_id in zip(ids, parent_ids, strict=True)
+        }
+
+    @classmethod
+    def for_account(cls, account_name: str) -> FolderTree:
+        """Return the folder tree of account_name, read from Notes.app"""
+        ids, names, parent_ids = run_script("accountGetFolderTree", account_name)
+        return cls(
+            [str(i) for i in ids],
+            [str(n) for n in names],
+            [str(p) if p else None for p in parent_ids],
+        )
+
+    def children(self, parent_id: str | None) -> list[str]:
+        """Return IDs of folders in parent_id, or of top-level folders if None"""
+        return [i for i, parent in self.parents.items() if parent == parent_id]
+
+    def path(self, folder_id: str) -> str:
+        """Return path of folder_id, such as "Work/Projects" """
+        parts = []
+        seen = set()
+        while folder_id and folder_id not in seen:
+            seen.add(folder_id)
+            parts.append(self.names[folder_id])
+            folder_id = self.parents.get(folder_id)
+        return "/".join(reversed(parts))
+
+    def paths(self) -> list[str]:
+        """Return paths of all folders, sorted"""
+        return sorted((self.path(i) for i in self.names), key=str.casefold)
+
+    def descendants(self, folder_id: str) -> list[str]:
+        """Return IDs of folders inside folder_id at any depth, deepest first"""
+        result = []
+        for child in self.children(folder_id):
+            result.extend(self.descendants(child))
+            result.append(child)
+        return result
+
+    def find(self, path: str) -> list[str]:
+        """Return IDs of the folders whose full path is path, such as "Work/Projects".
+
+        Paths match exactly, or ignoring case if nothing matches exactly. Folder names
+        may contain "/", so a path can match more than one folder.
+        """
+        paths = {folder_id: self.path(folder_id) for folder_id in self.names}
+        if exact := [i for i, p in paths.items() if p == path]:
+            return exact
+        return [i for i, p in paths.items() if p.casefold() == path.casefold()]
+
+    def resolve(self, path: str) -> str:
+        """Return the ID of the folder at path
+
+        Paths match exactly, or ignoring case if nothing matches exactly. A name
+        without "/" may also name a subfolder anywhere if exactly one has that name.
+
+        Raises:
+            FolderNotFoundError: if no folder matches
+            MacNotesAppError: if more than one folder matches
+        """
+        if not path:
+            raise FolderNotFoundError("No folder given")
+        matches = self.find(path)
+        if not matches and "/" not in path:
+            matches = self._named(list(self.names), path)
+        if not matches:
+            raise FolderNotFoundError(f"Folder '{path}' not found")
+        return self.one(matches, path)
+
+    def _named(self, folder_ids: list[str], name: str) -> list[str]:
+        """Return the folders in folder_ids named name, ignoring case if none match exactly"""
+        exact = [i for i in folder_ids if self.names[i] == name]
+        if exact:
+            return exact
+        return [i for i in folder_ids if self.names[i].casefold() == name.casefold()]
+
+    def one(self, matches: list[str], path: str) -> str:
+        """Return the only ID in matches, the folders that match path
+
+        Raises:
+            MacNotesAppError: if more than one folder matches
+        """
+        if len(matches) > 1:
+            found = ", ".join(sorted(self.path(m) for m in matches))
+            raise MacNotesAppError(
+                f"{len(matches)} folders match '{path}' ({found}); use a full path"
+            )
+        return matches[0]
 
 
 class NotesApp:
@@ -286,23 +424,28 @@ class NotesApp:
         self,
         name: str,
         body: str,
-        attachments: list[str] | None = None,
+        attachments: list[str | os.PathLike] | None = None,
         *,
         folder: str | None = None,
+        format: str = "html",
     ) -> Note:
         """Create new note in default account.
 
         Args:
-            name: name of note; will be escaped for HTML
-            body: body of note as HTML text
-            attachments: optional list of paths to attachments to add to note
-            folder: optional folder to create note in; if None, uses default folder
+            name: name of note, the first line of the note; plain text
+            body: body of note, in format
+            attachments: optional list of paths of files to attach to note
+            folder: optional folder to create note in, or path of a subfolder such as
+                "Work/Projects"; if None, uses the default folder
+            format: format of body: "html" (default), "markdown", or "text"
 
         Returns:
             newly created Note object
         """
         account = Account(self.app.defaultAccount(), database=self.database)
-        return account.make_note(name, body, folder=folder, attachments=attachments)
+        return account.make_note(
+            name, body, folder=folder, attachments=attachments, format=format
+        )
 
     def account(self, account: str | None = None) -> Account:
         """Return Account object for account or default account if account is None.
@@ -385,10 +528,15 @@ class Account:
 
     @property
     def folders(self) -> list[str]:
-        """Return list of folder names in account"""
+        """Return list of names of folders in account, including subfolders"""
         if folders := self._account.folders():
             return [str(f.name()) for f in folders]
         return [str(f) for f in self._run_script("accountGetFolderNames")]
+
+    @property
+    def folder_paths(self) -> list[str]:
+        """Return paths of folders in account, such as "Work" and "Work/Projects" """
+        return self._folder_tree().paths()
 
     @property
     def default_folder(self) -> str:
@@ -473,9 +621,13 @@ class Account:
         return NotesList(notes, accounts=[self.name])
 
     def folder(self, folder: str) -> Folder:
-        """Return Folder object for folder with name folder."""
-        folder_obj = self._folder_for_name(folder)
-        return Folder(folder_obj)
+        """Return Folder object for folder, a name or a path such as "Work/Projects"
+
+        Raises:
+            FolderNotFoundError: if the folder isn't found
+            MacNotesAppError: if more than one folder matches
+        """
+        return Folder(self._folder_for_name(folder))
 
     def show(self):
         """Show account in Notes.app UI"""
@@ -486,34 +638,44 @@ class Account:
         name: str,
         body: str,
         folder: str | None = None,
-        attachments: list[str] | None = None,
+        attachments: list[str | os.PathLike] | None = None,
+        *,
+        format: str = "html",
     ) -> Note:
         """Create new note in account
 
         Args:
-            name: name of note; will be escaped for HTML
-            body: body of note as HTML text
-            folder: optional folder to create note in; if None, uses default folder
-            attachments: optional list of file paths to attach to note
+            name: name of note, the first line of the note; plain text
+            body: body of note, in format
+            folder: optional folder to create note in, or path of a subfolder such as
+                "Work/Projects"; if None, uses default folder
+            attachments: optional list of paths of files to attach to note
+            format: format of body: "html" (default), "markdown", or "text"
 
         Returns:
             Note object for new note
 
         Raises:
             ScriptingBridgeError: if note could not be created
-            FileNotFoundError: if attachment file could not be found
+            FileNotFoundError: if an attachment file doesn't exist
+            FolderNotFoundError: if folder isn't found
+            ValueError: if format isn't known
         """
-
-        # reference: https://developer.apple.com/documentation/scriptingbridge/sbobject/1423973-initwithproperties
-        notes_app = NotesApp()
+        attachment_paths = [
+            pathlib.Path(path).expanduser().resolve() for path in attachments or []
+        ]
+        for path in attachment_paths:
+            if not path.is_file():
+                raise FileNotFoundError(f"File not found: {path}")
+        body_html = to_html(body, format)
         folder_obj = (
             self._folder_for_name(folder) if folder else self._account.defaultFolder()
         )
-        properties = {
-            "body": f"{title_html(name)}{body}",
-        }
+        properties = {"body": title_html(name) + body_html}
+        # reference: https://developer.apple.com/documentation/scriptingbridge/sbobject/1423973-initwithproperties
         note = (
-            notes_app.app.classForScriptingClass_("note")
+            _notes_application()
+            .classForScriptingClass_("note")
             .alloc()
             .initWithProperties_(properties)
         )
@@ -523,19 +685,14 @@ class Account:
         len_after = len(notes)
 
         if len_after <= len_before:
-            raise ScriptingBridgeError(
-                f"Could not create note '{name}' with body '{body}'"
-            )
+            raise ScriptingBridgeError(f"Could not create note '{name}'")
 
         new_note = Note(note, account=self.name, database=self._database)
         if new_note._in_database():
             # wait for Notes.app to save the new note before the next read
             self._database.notify_write(new_note.id, "modified", None)
-        if attachments:
-            for attachment in attachments:
-                if not os.path.exists(attachment):
-                    raise FileNotFoundError(f"File {attachment} does not exist")
-                new_note.add_attachment(attachment)
+        for path in attachment_paths:
+            new_note.add_attachment(path)
         return new_note
 
     def _noteslist(
@@ -618,39 +775,145 @@ class Account:
         """Return True if this account's notes are read from the Notes database"""
         return self._database is not None and self.id in self._database.accounts
 
+    def _folder_tree(self) -> FolderTree:
+        return FolderTree.for_account(self.name)
+
     def _folder_for_name(self, folder: str) -> ScriptingBridge.SBObject:
-        """Return ScriptingBridge folder object for folder"""
-        if folder_objs := self._account.folders().filteredArrayUsingPredicate_(
-            AppKit.NSPredicate.predicateWithFormat_("name == %@", folder)
-        ):
-            return folder_objs[0]
-        else:
-            raise ValueError(f"Could not find folder {folder}")
+        """Return ScriptingBridge folder object for folder, a name or path"""
+        if "/" not in folder:
+            # Fast path: getting the folder tree takes an Apple event per folder.
+            # A name that exactly one folder has is that folder, as resolve() would
+            # find, except that resolve() prefers a top-level folder whose name
+            # differs only in case.
+            matches = self._account.folders().filteredArrayUsingPredicate_(
+                AppKit.NSPredicate.predicateWithFormat_("name == %@", folder)
+            )
+            if matches is not None and len(matches) == 1:
+                return matches[0]
+        folder_id = self._folder_tree().resolve(folder)
+        return self._account.folders().objectWithID_(folder_id)
 
     def _run_script(self, script, *args):
         return run_script(script, self.name, *args)
 
-    def make_folder(self, folder_name: str) -> Folder:
+    def make_folder(self, folder: str, parents: bool = False) -> Folder:
         """Create a new folder in this account.
 
         Args:
-            folder_name: name for the new folder
+            folder: name of the new folder, or its path to create it inside another
+                folder, such as "Work/Projects"
+            parents: if True, create missing parent folders, and return the folder
+                if it already exists, like `mkdir -p`
 
         Returns:
             Folder object for the new folder
-        """
-        run_script("folderCreate", self.name, folder_name)
-        self._changed()
-        return self.folder(folder_name)
 
-    def delete_folder(self, folder_name: str):
-        """Delete a folder from this account.
+        Raises:
+            FolderNotFoundError: if a parent folder doesn't exist and parents is False
+            MacNotesAppError: if the folder already exists and parents is False
+        """
+        tree = self._folder_tree()
+        # only a full path counts, not a subfolder found by its name: "Work/Projects"
+        # is made at the top level even if "Home/Work" exists
+        if existing := tree.find(folder):
+            if parents:
+                folder_id = tree.one(existing, folder)
+                return Folder(self._account.folders().objectWithID_(folder_id))
+            raise MacNotesAppError(f"Folder '{folder}' already exists")
+        parent_path, _, name = folder.rpartition("/")
+        if not name:
+            raise ValueError(f"Invalid folder name: '{folder}'")
+        if not parent_path:
+            folder_id = run_script("folderCreate", self.name, name)
+        else:
+            if parent_ids := tree.find(parent_path):
+                parent_id = tree.one(parent_ids, parent_path)
+            elif parents:
+                parent_id = self.make_folder(parent_path, parents=True).id
+            else:
+                raise FolderNotFoundError(f"Folder '{parent_path}' not found")
+            folder_id = run_script("folderCreateIn", self.name, parent_id, name)
+        self._changed()
+        return Folder(self._account.folders().objectWithID_(str(folder_id)))
+
+    def delete_folder(self, folder: str, *, confirm_seconds: float = 0.0):
+        """Delete a folder, its subfolders, and their notes (which Notes.app moves to
+        Recently Deleted).
+
+        Notes.app sometimes puts a deleted folder back, with its notes, from about
+        30 seconds to an hour later (#89). To catch folders that come back soon, pass
+        confirm_seconds: delete_folder() then keeps checking for that long and deletes
+        any folder that comes back.
 
         Args:
-            folder_name: name of folder to delete
+            folder: name or path of folder to delete
+            confirm_seconds: how long to check that the folders stay deleted
+
+        Raises:
+            FolderNotFoundError: if the folder isn't found
+            AppleScriptError: if Notes.app doesn't delete the folder, or keeps putting
+                it back
         """
-        run_script("folderDelete", self.name, folder_name)
+        tree = self._folder_tree()
+        self._delete_folder_in_tree(tree, tree.resolve(folder), confirm_seconds)
+
+    def _delete_folder_in_tree(
+        self, tree: FolderTree, folder_id: str, confirm_seconds: float = 0.0
+    ):
+        """Delete folder_id and its subfolders in tree; see delete_folder()"""
+        # Notes.app leaves subfolders behind when deleting a folder, so delete them
+        # first.
+        targets = [*tree.descendants(folder_id), folder_id]
+        for target in targets:
+            self._delete_folder_id(target, tree.path(target))
+        deadline = time.monotonic() + confirm_seconds
+        restored = 0
+        while time.monotonic() < deadline:
+            time.sleep(FOLDER_CONFIRM_INTERVAL_SECONDS)
+            listed = self._folder_ids()
+            for target in targets:
+                if target in listed:
+                    restored += 1
+                    if restored > FOLDER_DELETE_ATTEMPTS:
+                        raise AppleScriptError(
+                            f"Notes.app keeps putting back folder '{tree.path(target)}'"
+                        )
+                    logger.debug(f"Notes.app put back folder {target}; deleting again")
+                    self._delete_folder_id(target, tree.path(target))
         self._changed()
+
+    def _delete_folder_id(self, folder_id: str, path: str):
+        """Delete the folder with folder_id, checking that it's gone.
+
+        Notes.app sometimes ignores a delete, so this tries again.
+        """
+        for _ in range(FOLDER_DELETE_ATTEMPTS):
+            try:
+                run_script("folderDelete", self.name, folder_id)
+            except NotesPermissionError:
+                raise
+            except applescript.ScriptError as e:
+                # an earlier attempt may have deleted it after all
+                logger.debug(f"Deleting folder {folder_id}: {e}")
+            if self._wait_for_folder_deleted(folder_id):
+                return
+        raise AppleScriptError(f"Notes.app did not delete folder '{path}'")
+
+    def _folder_ids(self) -> set[str]:
+        """Return IDs of all folders in the account, including subfolders"""
+        return {
+            str(i) for i in self._account.folders().arrayByApplyingSelector_("id") or []
+        }
+
+    def _wait_for_folder_deleted(self, folder_id: str) -> bool:
+        """Return True once folder_id is gone, or False after FOLDER_DELETE_WAIT_SECONDS"""
+        deadline = time.monotonic() + FOLDER_DELETE_WAIT_SECONDS
+        while True:
+            if folder_id not in self._folder_ids():
+                return True
+            if time.monotonic() > deadline:
+                return False
+            time.sleep(0.1)
 
     def _changed(self):
         """Tell the database that Notes.app was asked to change this account"""
@@ -971,8 +1234,12 @@ class Note:
     def body(self, body: str):
         """Set body of note"""
         with self._changing("modified"):
+            # self.body reads with AppleScript when ScriptingBridge can't
+            before = self.body
             self._note.setValue_forKey_(body, "body")
-            if self.body != body:
+            # Notes.app rewrites the HTML, so compare with the old body: setting the
+            # body twice would make attachments in it again
+            if body != before and self.body == before:
                 self._run_script("noteSetBody", body)
 
     @property
@@ -1045,38 +1312,82 @@ class Note:
         ]
 
     def add_attachment(self, path: str | os.PathLike) -> Attachment:
-        """Add attachment to note
+        """Add attachment to the end of the note
+
+        Notes.app copies the file into the note, but shows the attachment twice (#64).
+        HTML such as <object data="file://..."> in the body isn't a way around this:
+        Notes.app makes an attachment with the file's name and type but doesn't copy
+        its contents.
 
         Args:
             path: path to file to attach
 
         Returns:
-            Attachment object for attached file
+            Attachment object for attached file. Scripting can't see some attachments,
+            such as PDFs, so this object's properties may not be readable.
 
         Raises:
             FileNotFoundError: if file not found
         """
-
-        # Implementation note:
-        # this is currently done with AppleScript which takes ~300ms on M1 Mac
-        # it's faster with ScriptingBridge (~80ms) but when adding via ScriptingBridge
-        # the attachment sometimes is added twice
-        # See #15 for more details
-
         # must pass fully resolved path to attachment
         path = pathlib.Path(path).expanduser().resolve()
-        if not path.exists():
+        if not path.is_file():
             raise FileNotFoundError(f"File not found: {path}")
         with self._changing("modified"):
             try:
                 attachment_id = self._run_script("noteAddAttachment", str(path))
             except applescript.ScriptError as e:
+                # Notes.app can't find some attachments it just made, such as PDFs,
+                # but the error has the ID
                 attachment_id = parse_id_from_error(str(e))
         if not attachment_id:
             raise AppleScriptError(
                 f"Could not get attachment id for attachment at path {path}"
             )
         return Attachment(self._note.attachments().objectWithID_(attachment_id))
+
+    def append(self, body: str, format: str = "text", *, force: bool = False):
+        """Add body to the end of the note
+
+        Notes.app can only change a note by replacing its HTML, so appending reads the
+        HTML and writes it back with body added. That loses some content, such as
+        attachments, checklists, and tags (see formatting.HTML_SAFE_FEATURES), so
+        append refuses to change notes with such content unless force is True. Checking
+        needs the Notes database.
+
+        Args:
+            body: text to add
+            format: format of body: "text" (default), "markdown", or "html"
+            force: append even if content would be lost or can't be checked
+
+        Raises:
+            ContentLossError: if content would be lost or can't be checked, and force
+                is False
+            MacNotesAppError: if the note is locked
+            ValueError: if format isn't known
+        """
+        new_html = to_html(body, format)
+        if self.password_protected:
+            raise MacNotesAppError(f"Note '{self.name}' is locked")
+        if not force:
+            self._check_content_kept("append")
+        self.body = self.body + new_html
+
+    def _check_content_kept(self, edit: str):
+        """Raise ContentLossError if edit (see formatting.features_lost()) would lose
+        content of the note, or the content can't be checked"""
+        try:
+            features = self.content_features()
+        except DatabaseUnavailableError as e:
+            raise ContentLossError(
+                f"Can't check whether changing note '{self.name}' would lose content: "
+                f"{e}"
+            ) from e
+        if lost := features_lost(features, edit):
+            raise ContentLossError(
+                f"Changing note '{self.name}' would lose content: {', '.join(lost)}",
+                lost,
+            )
 
     def show(self):
         """Show note in Notes.app UI"""
@@ -1087,14 +1398,19 @@ class Note:
         with self._changing("folder"):
             run_script("noteDelete", self.id)
 
-    def move(self, folder_name: str):
-        """Move this note to a different folder.
+    def move(self, folder: str):
+        """Move this note to a different folder in its account.
 
         Args:
-            folder_name: name of folder to move note to
+            folder: name of folder to move note to, or path of a subfolder such as
+                "Work/Projects"
+
+        Raises:
+            FolderNotFoundError: if the folder isn't found
         """
+        folder_id = FolderTree.for_account(self.account).resolve(folder)
         with self._changing("folder"):
-            run_script("noteMove", self.id, folder_name, self.account)
+            self._run_script("noteMoveToFolder", folder_id)
 
     @property
     def folder_path(self) -> str:
@@ -1122,7 +1438,20 @@ class Note:
 
         Raises:
             DatabaseUnavailableError: if the note can't be read from the Notes database
+            UnsavedChangesError: if Notes.app hasn't saved recent changes to the note
+                to the database yet (a subclass of DatabaseUnavailableError)
         """
+        if self._in_database():
+            # the database has the note's old content (or none, for a new note)
+            # until Notes.app saves changes
+            deadline = time.monotonic() + CONTENT_SAVE_WAIT_SECONDS
+            while self.id in self._database.unsaved_note_ids():
+                if time.monotonic() > deadline:
+                    raise UnsavedChangesError(
+                        f"Notes.app hasn't saved recent changes to note '{self.name}' "
+                        "to the Notes database yet; try again later"
+                    )
+                time.sleep(0.1)
         record = self._database_record()
         return self._database.content_features(record.id)
 
