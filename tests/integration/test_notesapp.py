@@ -6,11 +6,16 @@ import time
 import pytest
 
 from macnotesapp.database import NotesDatabase
-from macnotesapp.errors import DatabaseUnavailableError
+from macnotesapp.errors import (
+    ContentLossError,
+    DatabaseUnavailableError,
+    FolderNotFoundError,
+    MacNotesAppError,
+)
 from macnotesapp.formatting import text_to_html
 from macnotesapp.notesapp import title_html
 
-from ..utils import get_macos_version
+from .conftest import png_file, saved_attachments, wait_until_saved
 
 ATTACHMENT_PATH = pathlib.Path(__file__).parent.parent / "attachment.txt"
 
@@ -121,15 +126,98 @@ def test_database_properties(notesapp, account, sandbox, note_name):
     assert record["tags"] == []
 
 
-@pytest.mark.skipif(
-    get_macos_version() < (13, 0, 0), reason="Requires macOS 13.0 or higher"
-)
-@pytest.mark.xfail(reason="attachments are unreliable on recent macOS (#64)")
+def test_make_note_formats(account, sandbox, note_name, backend):
+    """#39, #37: bodies can be text, Markdown, or HTML"""
+    text = account.make_note(note_name, "line 1\nline <2>", sandbox, format="text")
+    assert "line 1\nline <2>" in text.plaintext
+    markdown = account.make_note(
+        f"{note_name} md", "- one\n- two\n\n**bold**", sandbox, format="markdown"
+    )
+    assert "one\ntwo\nbold" in markdown.plaintext
+    if backend == "database":
+        wait_until_saved(markdown.id)
+        assert {"lists", "bold or italic"} <= set(markdown.content_features())
+
+
+def test_make_note_with_attachments(account, sandbox, note_name, tmp_path):
+    """Attachments are copied into the note, and Notes.app shows them twice (#64)"""
+    image = png_file(tmp_path / "image.png")
+    note = account.make_note(
+        note_name, "has attachments", sandbox, [ATTACHMENT_PATH, image], format="text"
+    )
+    assert sorted(a.name for a in note.attachments) == ["attachment.txt", "image.png"]
+    attachments, references, stored = saved_attachments(note.id, 2)
+    assert attachments == stored == ["public.plain-text", "public.png"]
+    assert sorted(set(references)) == attachments
+    # the source can go: the note has its own copy
+    image.unlink()
+    assert saved_attachments(note.id, 2)[2] == stored
+
+
 def test_add_attachment(account, sandbox, note_name):
-    note = account.make_note(note_name, text_to_html("has attachment"), sandbox)
+    """An added attachment is copied into the note, and Notes.app shows it twice (#64)"""
+    note = account.make_note(note_name, "plain", sandbox, format="text")
     attachment = note.add_attachment(ATTACHMENT_PATH)
-    assert attachment.id
+    assert attachment.name == "attachment.txt"
     assert [a.id for a in note.attachments] == [attachment.id]
+    attachments, references, stored = saved_attachments(note.id, 1)
+    assert attachments == stored == ["public.plain-text"]
+    assert set(references) == {"public.plain-text"}
+
+
+def test_append(account, sandbox, note_name, backend):
+    """#51: append adds to the end, and refuses to lose attachments"""
+    note = account.make_note(note_name, "first", sandbox, format="text")
+    if backend == "database":
+        wait_until_saved(note.id)
+        note.append("second <line>")
+    else:
+        # without the database, content can't be checked
+        with pytest.raises(ContentLossError, match="Can't check"):
+            note.append("second <line>")
+        note.append("second <line>", force=True)
+    assert note.plaintext.rstrip().endswith("first\nsecond <line>")
+    note.append("- item", format="markdown", force=True)
+    assert note.plaintext.rstrip().endswith("item")
+
+    attached = account.make_note(
+        f"{note_name} att", "x", sandbox, [ATTACHMENT_PATH], format="text"
+    )
+    saved_attachments(attached.id, 1)
+    with pytest.raises(ContentLossError) as e:
+        attached.append("y")
+    if backend == "database":
+        assert e.value.features == ["attachments"]
+    assert "y" not in attached.plaintext
+
+
+def test_subfolders(notesapp, account, sandbox, note_name, run_id):
+    """#4: make notes in, move notes to, and delete subfolders by path"""
+    sub = f"{sandbox}/macnotesapp-test-sub-{run_id}"
+    deeper = f"{sub}/macnotesapp-test-deeper-{run_id}"
+    folder = account.make_folder(deeper, parents=True)
+    assert folder.name == f"macnotesapp-test-deeper-{run_id}"
+    assert {sub, deeper} <= set(account.folder_paths)
+    with pytest.raises(MacNotesAppError, match="already exists"):
+        account.make_folder(sub)
+    assert (
+        account.make_folder(sub, parents=True).name == f"macnotesapp-test-sub-{run_id}"
+    )
+
+    note = account.make_note(note_name, "nested", deeper, format="text")
+    assert note.folder == f"macnotesapp-test-deeper-{run_id}"
+    note.move(sub)
+    assert note.folder == f"macnotesapp-test-sub-{run_id}"
+    [found] = notesapp.notes(id=[note.id])
+    assert found.folder == f"macnotesapp-test-sub-{run_id}"
+    with pytest.raises(FolderNotFoundError):
+        note.move(f"{sandbox}/missing")
+
+    account.delete_folder(sub)
+    paths = account.folder_paths
+    assert sub not in paths and deeper not in paths
+    # Notes.app would leave the subfolder behind, without a parent
+    assert f"macnotesapp-test-deeper-{run_id}" not in paths
 
 
 def test_delete(notesapp, account, sandbox, note_name):

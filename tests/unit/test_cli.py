@@ -11,6 +11,7 @@ from click.testing import CliRunner
 import macnotesapp
 from macnotesapp.cli import cli as cli_module
 from macnotesapp.cli.cli import NotFoundError, cli_main, resolve_note
+from macnotesapp.errors import UnsavedChangesError
 
 from .fakes import FakeNote, FakeNotesApp
 
@@ -47,7 +48,9 @@ def fake_app(monkeypatch):
     return app
 
 
-@pytest.mark.parametrize("command", ["add", "cat", "edit", "list", "delete"])
+@pytest.mark.parametrize(
+    "command", ["add", "cat", "edit", "list", "delete", "append", "mkdir"]
+)
 def test_dash_h_is_help(runner, command):
     """#73: -h shows help for every command"""
     result = runner.invoke(cli_main, [command, "-h"])
@@ -323,3 +326,183 @@ def test_unsaved_changes_file_damaged(unsaved_changes_file):
     unsaved_changes_file.write_text("not json")
     database = type("D", (), {"notify_write": lambda self, *args: None})()
     cli_module.load_unsaved_changes(database)  # ignored, no error
+
+
+# ---- Phase 3: add, append, and folder paths
+
+
+@pytest.fixture
+def config(monkeypatch):
+    """Settings for `notes add` and `notes append` instead of the user's config file"""
+    settings = type(
+        "Config",
+        (),
+        {"format": "plaintext", "account": "iCloud", "folder": None, "editor": None},
+    )()
+    monkeypatch.setattr(cli_module, "ConfigSettings", lambda: settings)
+    return settings
+
+
+def test_add_markdown_title_and_attachments(runner, fake_app, config, tmp_path):
+    """#13, #39, #64: the name is plain text, and files are attached"""
+    path = tmp_path / "a.txt"
+    path.write_text("x")
+    result = runner.invoke(
+        cli_main,
+        ["add", "-m", "-f", "Work/Projects", "-A", str(path), "# Title\n\n**body**"],
+    )
+    assert result.exit_code == 0, result.output
+    [made] = fake_app.fake_account.made_notes
+    assert made == dict(
+        name="Title",
+        body="\n**body**",
+        folder="Work/Projects",
+        attachments=[str(path)],
+        format="markdown",
+    )
+
+
+@pytest.mark.parametrize(
+    "flag, format_, name",
+    [
+        ("-H", "html", "Tom & Jerry"),
+        ("-p", "text", "<b>Tom &amp; Jerry</b>"),
+        (None, "text", "<b>Tom &amp; Jerry</b>"),
+    ],
+)
+def test_add_formats(runner, fake_app, config, flag, format_, name):
+    args = ["add", *([flag] if flag else []), "<b>Tom &amp; Jerry</b>\nbody"]
+    result = runner.invoke(cli_main, args)
+    assert result.exit_code == 0, result.output
+    [made] = fake_app.fake_account.made_notes
+    assert (made["name"], made["format"]) == (name, format_)
+
+
+def test_add_configured_format(runner, fake_app, config):
+    config.format = "Markdown"
+    result = runner.invoke(cli_main, ["add", "## Title\n- item"])
+    assert result.exit_code == 0, result.output
+    [made] = fake_app.fake_account.made_notes
+    assert (made["name"], made["format"]) == ("Title", "markdown")
+
+
+def test_add_missing_attachment(runner, fake_app, config, tmp_path):
+    result = runner.invoke(cli_main, ["add", "-A", str(tmp_path / "missing"), "x"])
+    assert result.exit_code == 2
+    assert not fake_app.fake_account.made_notes
+
+
+def test_append(runner, fake_app, config):
+    """#51: append adds text to the end of a note"""
+    fake_app._notes[1].features = []
+    result = runner.invoke(cli_main, ["append", "Log", "more text"])
+    assert result.exit_code == 0, result.output
+    assert fake_app._notes[1].appended == ("more text", "text", False)
+    assert "Appended to 'Log'" in result.output
+
+
+def test_append_stdin_and_id(runner, fake_app, config):
+    note = fake_app._notes[1]
+    note.features = []
+    result = runner.invoke(cli_main, ["append", "--id", note.id, "-m"], input="- a\n")
+    assert result.exit_code == 0, result.output
+    assert note.appended == ("- a", "markdown", False)
+    result = runner.invoke(cli_main, ["append", "Log", "-"], input="<b>x</b>\n\n")
+    assert result.exit_code == 0, result.output
+    assert note.appended == ("<b>x</b>", "text", False)
+
+
+def test_append_configured_format(runner, fake_app, config):
+    config.format = "HTML"
+    fake_app._notes[1].features = []
+    result = runner.invoke(cli_main, ["append", "Log", "<b>x</b>"])
+    assert result.exit_code == 0, result.output
+    assert fake_app._notes[1].appended == ("<b>x</b>", "html", False)
+
+
+def test_append_refuses_content_loss(runner, fake_app, config):
+    """#51, #71: append refuses to lose content unless --force is given"""
+    note = fake_app._notes[1]
+    note.features = ["bold or italic", "checklists"]
+    result = runner.invoke(cli_main, ["append", "Log", "x"])
+    assert result.exit_code == 1
+    assert "checklists" in result.output and "--force" in result.output
+    assert not hasattr(note, "appended")
+    result = runner.invoke(cli_main, ["append", "Log", "x", "--force"])
+    assert result.exit_code == 0, result.output
+    assert note.appended == ("x", "text", True)
+    # without the database, the content can't be checked
+    note.features = None
+    result = runner.invoke(cli_main, ["append", "Log", "x"])
+    assert result.exit_code == 1
+    assert "Can't check" in result.output
+
+
+@pytest.mark.parametrize(
+    "args, exit_code, message",
+    [
+        (["append", "Log", "a", "b"], 2, "Expected: notes append NOTE_NAME [TEXT]"),
+        (["append", "--id", "x-coredata://A/ICNote/p2", "Log", "a"], 2, "--id ID"),
+        (["append", "-H", "-m", "Log", "a"], 2, "Only one of"),
+        (["append", "Log", "  "], 1, "No text"),
+        (["append", "Nope", "a"], 3, "not found"),
+    ],
+)
+def test_append_usage(runner, fake_app, config, args, exit_code, message):
+    result = runner.invoke(cli_main, args)
+    assert result.exit_code == exit_code, result.output
+    assert message in result.output
+
+
+def test_move_missing_folder_is_not_found(runner, fake_app):
+    result = runner.invoke(cli_main, ["move", "Log", "-f", "Missing"])
+    assert result.exit_code == 3
+    assert "Folder 'Missing' not found" in result.output
+
+
+def test_move_to_subfolder(runner, fake_app):
+    result = runner.invoke(cli_main, ["move", "Log", "-f", "Work/Projects"])
+    assert result.exit_code == 0, result.output
+    assert fake_app._notes[1].folder == "Work/Projects"
+
+
+def test_mkdir_parents(runner, fake_app):
+    result = runner.invoke(cli_main, ["mkdir", "-p", "A/B"])
+    assert result.exit_code == 0, result.output
+    assert fake_app.fake_account.made_folders == [("A/B", True)]
+
+
+def test_rmdir_counts_subfolders(runner, fake_app):
+    fake_app.fake_account.tree = macnotesapp.notesapp.FolderTree(
+        ["w", "p", "y"], ["Work", "Projects", "2026"], [None, "w", "p"]
+    )
+    result = runner.invoke(cli_main, ["rmdir", "Work"], input="n\n")
+    assert "Delete folder 'Work' and its 2 subfolder(s)" in result.output
+    assert fake_app.fake_account.deleted_folders == []
+    result = runner.invoke(cli_main, ["rmdir", "-y", "work/projects"])
+    assert result.exit_code == 0, result.output
+    # the folder confirmed is deleted, by its full path
+    assert fake_app.fake_account.deleted_folders == ["Work/Projects"]
+    assert "Deleted folder 'Work/Projects'" in result.output
+    result = runner.invoke(cli_main, ["rmdir", "-y", "Missing"])
+    assert result.exit_code == 3
+
+
+def test_edit_refuses_unsaved_note(runner, fake_app):
+    """The database has old content until Notes.app saves; the check without it
+    misses checklists, so edit refuses unless forced"""
+    note = fake_app._notes[1]
+    note.features = UnsavedChangesError("Notes.app hasn't saved recent changes")
+    result = runner.invoke(cli_main, ["edit", "Log", "--body", "x"])
+    assert result.exit_code == 1
+    assert "hasn't saved" in result.output and "--force" in result.output
+    result = runner.invoke(cli_main, ["edit", "Log", "--body", "x", "--force"])
+    assert result.exit_code == 0, result.output
+
+
+@pytest.mark.parametrize("args", [["-m", "#\nbody"], ["-H", "<!DOCTYPE html>\nbody"]])
+def test_add_empty_name(runner, fake_app, config, args):
+    result = runner.invoke(cli_main, ["add", *args])
+    assert result.exit_code == 1
+    assert "No note name" in result.output
+    assert not fake_app.fake_account.made_notes

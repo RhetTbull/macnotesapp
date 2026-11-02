@@ -65,6 +65,8 @@ ATTACHMENT_FEATURES = {
     "com.apple.notes.table": "tables",
     "com.apple.notes.inlinetextattachment.hashtag": "tags",
     "com.apple.notes.inlinetextattachment.mention": "mentions",
+    # a horizontal rule (<hr> in HTML)
+    "com.apple.notes.inlinetextattachment.dividerline": "dividers",
     "public.url": "link previews",
 }
 

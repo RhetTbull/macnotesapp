@@ -17,13 +17,21 @@ from xdg_base_dirs import xdg_state_home
 import macnotesapp
 from macnotesapp import NotesList, __version__
 from macnotesapp.database import NotesDatabase
-from macnotesapp.errors import DatabaseUnavailableError, NotesPermissionError
+from macnotesapp.errors import (
+    ContentLossError,
+    DatabaseUnavailableError,
+    FolderNotFoundError,
+    NotesPermissionError,
+    UnsavedChangesError,
+)
 from macnotesapp.formatting import (
     features_lost,
     html_to_markdown,
     markdown_lossy_features,
     markdown_to_html,
+    normalize_format,
     text_to_html,
+    title_from_line,
 )
 from macnotesapp.logging import get_debug, logger, set_debug
 from macnotesapp.notesapp import BACKENDS, title_html
@@ -151,11 +159,30 @@ def accounts(json_):
     "folder_name",
     metavar="FOLDER",
     type=str,
-    help="Add note to folder FOLDER.",
+    help="Add note to folder FOLDER, or a subfolder given by its path such as 'Work/Projects'.",
+)
+@click.option(
+    "--attach",
+    "-A",
+    "attachments",
+    metavar="FILE",
+    multiple=True,
+    type=click.Path(exists=True, dir_okay=False),
+    help="Attach FILE to the end of the note; may be repeated.",
 )
 @click.argument("note", metavar="NOTE", required=False, default="")
 def add_note(
-    show, file, url, html, markdown, plaintext, edit, account_name, folder_name, note
+    show,
+    file,
+    url,
+    html,
+    markdown,
+    plaintext,
+    edit,
+    account_name,
+    folder_name,
+    attachments,
+    note,
 ):
     """Add new note.
 
@@ -190,10 +217,15 @@ def add_note(
 
     Body of note must be plain text unless [i]--html/-H[/] or [i]--markdown/-m[/] flag is set
     in which case body should be HTML or Markdown, respectively.
+    The name is plain text: a Markdown heading marker ("# ") or HTML tags in the first line are removed.
+    Notes.app shows the name in a large bold font, but scripting can't give it the Title style.
     If [i]--edit/-e[/] flag is set, note will be opened in default editor before being added.
     If [i]--show/-s[/] flag is set, note will be shown in Notes.app after being added.
+    Files given with [i]--attach/-A[/] are attached at the end of the note;
+    Notes.app shows each one twice (#64).
 
-    Account and top level folder may be specified with [i]--account/-a[/] and [i]--folder/-f[/], respectively.
+    Account and folder may be specified with [i]--account/-a[/] and [i]--folder/-f[/], respectively;
+    give a subfolder by its path, such as [i]--folder "Work/Projects"[/].
     If not provided, default account and folder are used.
     """
 
@@ -252,16 +284,18 @@ def add_note(
         raise click.ClickException("No note text.")
 
     note_text = note_text.strip()
-    note_parts = note_text.partition("\n")
-    name, body = note_parts[0], note_parts[2]
-
-    if format_ == FORMAT_MARKDOWN:
-        body = markdown_to_html(body)
-    elif format_ != FORMAT_HTML:
-        body = text_to_html(body)
+    first_line, _, body = note_text.partition("\n")
+    format_ = normalize_format(format_)
+    name = title_from_line(first_line, format_)
+    if not name:
+        raise click.ClickException(
+            f"No note name: the first line ({first_line!r}) has no text."
+        )
 
     account = notes.account(account_name)
-    new_note = account.make_note(name, body, folder_name)
+    new_note = account.make_note(
+        name, body, folder_name, attachments=list(attachments), format=format_
+    )
     if show:
         new_note.show()
 
@@ -374,7 +408,7 @@ def config():
 
     # folder
     account = notes.account(settings["account"])
-    folders = account.folders
+    folders = account.folder_paths
     folder = settings.get("folder")
     folder = folder if folder and folder in folders else account.default_folder
     settings["folder"] = questionary.select(
@@ -577,10 +611,11 @@ def edit_note(
 
     Without --body, the note is opened in the default editor as Markdown
     (or as HTML with --html). Converting to Markdown and back loses
-    tables, checklists, and styling such as fonts and colors, and writing the
-    body loses attachments and tags, so edit refuses to modify notes containing
-    these unless --force is given. Checklists and tags can only be detected
-    when the Notes database is readable.
+    tables, checklists, and styling such as fonts and colors. Writing the HTML
+    back loses attachments, checklists, tags, block quotes, and highlights, and
+    replacing the body with --body loses attachments and tags. edit refuses to
+    modify notes containing these unless --force is given. Checklists and tags
+    can only be detected when the Notes database is readable.
 
     Example: notes edit "My Note" --body "New content"
     """
@@ -594,6 +629,14 @@ def edit_note(
     edit = "replace" if body is not None else "html" if use_html else "markdown"
     try:
         lost = features_lost(note.content_features(), edit)
+    except UnsavedChangesError as e:
+        # the database has old content; the check without it misses checklists
+        if not force:
+            raise click.ClickException(
+                f"Can't check what editing '{original_name}' would lose: {e}. "
+                "Use --force to edit anyway."
+            ) from e
+        lost = []
     except DatabaseUnavailableError:
         # without the database, check what ScriptingBridge and the HTML show
         lost = []
@@ -633,16 +676,86 @@ def edit_note(
     click.echo(f"Updated '{original_name}'")
 
 
+@click.command(name="append")
+@click.argument("args", metavar="[NOTE_NAME] [TEXT]", nargs=-1)
+@click.option("--html", "-H", is_flag=True, help="TEXT is HTML.")
+@click.option("--markdown", "-m", is_flag=True, help="TEXT is Markdown.")
+@click.option(
+    "--plaintext",
+    "-p",
+    is_flag=True,
+    help="TEXT is plain text (default unless changed in `notes config`).",
+)
+@click.option(
+    "--force",
+    is_flag=True,
+    help="Append even if content such as attachments or checklists would be lost, "
+    "or the note's content can't be checked.",
+)
+@note_selection_options
+def append_note(
+    args, html, markdown, plaintext, force, note_id, contains, account_name
+):
+    """Add text to the end of a note.
+
+    NOTE_NAME must match the note's name exactly (case-insensitive) unless --contains is given.
+    If --id is given, only TEXT is needed. If TEXT is missing or "-", it's read from STDIN.
+
+    Notes.app can only change a note by rewriting its HTML, which loses attachments,
+    checklists, tags, block quotes, and highlights, so append refuses to change notes
+    with such content unless --force is given. Checking needs access to the Notes database.
+
+    Example: notes append "Shopping" "- milk"
+    """
+    if sum([html, markdown, plaintext]) > 1:
+        raise click.UsageError(
+            "Only one of --html, --markdown, and --plaintext can be specified."
+        )
+    max_args = 1 if note_id else 2
+    if len(args) > max_args:
+        usage = "--id ID [TEXT]" if note_id else "NOTE_NAME [TEXT]"
+        raise click.UsageError(f"Expected: notes append {usage}")
+    note_name = None if note_id else (args[0] if args else None)
+    text = args[-1] if len(args) == max_args else "-"
+    if text == "-":
+        text = sys.stdin.read()
+    if not text.strip():
+        raise click.ClickException("No text to append.")
+
+    format_ = (
+        "html"
+        if html
+        else "markdown"
+        if markdown
+        else "text"
+        if plaintext
+        else normalize_format(ConfigSettings().format)
+    )
+    notes_app = get_notes_app()
+    note = resolve_note(notes_app, note_name, note_id, account_name, contains)
+    name = note.name
+    try:
+        note.append(text.rstrip("\n"), format=format_, force=force)
+    except ContentLossError as e:
+        raise click.ClickException(f"{e}. Use --force to append anyway.") from e
+    click.echo(f"Appended to '{name}'")
+
+
 @click.command(name="move")
 @click.argument("note_name", metavar="NOTE_NAME", required=False)
-@click.option("--folder", "-f", required=True, help="Destination folder.")
+@click.option(
+    "--folder",
+    "-f",
+    required=True,
+    help="Destination folder, or the path of a subfolder such as 'Work/Projects'.",
+)
 @note_selection_options
 def move_note(note_name, folder, note_id, contains, account_name):
     """Move a note to a different folder.
 
     NOTE_NAME must match the note's name exactly (case-insensitive) unless --contains is given.
 
-    Example: notes move "My Note" --folder "Archive"
+    Example: notes move "My Note" --folder "Archive/2026"
     """
     notes_app = get_notes_app()
     note = resolve_note(notes_app, note_name, note_id, account_name, contains)
@@ -653,7 +766,7 @@ def move_note(note_name, folder, note_id, contains, account_name):
 
 
 @click.command(name="mkdir")
-@click.argument("folder_name", metavar="FOLDER_NAME")
+@click.argument("folder_name", metavar="FOLDER")
 @click.option(
     "--account",
     "-a",
@@ -662,20 +775,28 @@ def move_note(note_name, folder, note_id, contains, account_name):
     type=str,
     help="Account to create folder in.",
 )
-def make_folder(folder_name, account_name):
+@click.option(
+    "--parents",
+    "-p",
+    is_flag=True,
+    help="Create missing parent folders, and don't fail if the folder exists.",
+)
+def make_folder(folder_name, account_name, parents):
     """Create a new folder.
 
-    Example: notes mkdir "Archive"
+    To create a subfolder, give its path, such as "Archive/2026".
+
+    Example: notes mkdir -p "Archive/2026"
     """
     notes_app = get_notes_app()
     account_name = account_name or notes_app.default_account
     account = notes_app.account(account_name)
-    account.make_folder(folder_name)
+    account.make_folder(folder_name, parents=parents)
     click.echo(f"Created folder '{folder_name}' in {account_name}")
 
 
 @click.command(name="rmdir")
-@click.argument("folder_name", metavar="FOLDER_NAME")
+@click.argument("folder_name", metavar="FOLDER")
 @click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt.")
 @click.option(
     "--account",
@@ -686,21 +807,37 @@ def make_folder(folder_name, account_name):
     help="Account to delete folder from.",
 )
 def remove_folder(folder_name, yes, account_name):
-    """Delete a folder.
+    """Delete a folder, its subfolders, and their notes.
+
+    Notes.app moves the notes to Recently Deleted.
+    To delete a subfolder, give its path, such as "Archive/2026".
+
+    Note: a deleted folder sometimes comes back, with its notes, from seconds to
+    an hour later (#89). If it does, delete it again.
 
     Example: notes rmdir "Old Folder"
     """
     notes_app = get_notes_app()
     account_name = account_name or notes_app.default_account
     account = notes_app.account(account_name)
-    if folder_name not in account.folders:
-        raise NotFoundError(f"Folder '{folder_name}' not found in {account_name}.")
+    tree = account._folder_tree()
+    try:
+        folder_id = tree.resolve(folder_name)
+    except FolderNotFoundError as e:
+        raise NotFoundError(f"{e} in {account_name}.") from e
     if not yes:
-        if not click.confirm(f"Delete folder '{folder_name}' and all its notes?"):
+        subfolders = len(tree.descendants(folder_id))
+        contents = (
+            f"its {subfolders} subfolder(s), and their notes"
+            if subfolders
+            else "all its notes"
+        )
+        if not click.confirm(f"Delete folder '{tree.path(folder_id)}' and {contents}?"):
             click.echo("Aborted.")
             sys.exit(0)
-    account.delete_folder(folder_name)
-    click.echo(f"Deleted folder '{folder_name}' from {account_name}")
+    # delete the folder that was confirmed, without finding it again
+    account._delete_folder_in_tree(tree, folder_id)
+    click.echo(f"Deleted folder '{tree.path(folder_id)}' from {account_name}")
 
 
 # Click CLI object & context settings
@@ -735,6 +872,8 @@ class NotesGroup(click.Group):
             raise
         except NotesPermissionError as e:
             raise click.ClickException(str(e)) from e
+        except FolderNotFoundError as e:
+            raise NotFoundError(f"{e}.") from e
         except Exception as e:
             if get_debug():
                 raise
@@ -783,6 +922,7 @@ for command in [
     rename_note,
     delete_note,
     edit_note,
+    append_note,
     move_note,
     make_folder,
     remove_folder,

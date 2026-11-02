@@ -188,6 +188,29 @@ on accountGetFolderNames(accountName)
 	return 0
 end accountGetFolderNames
 
+on accountGetFolderTree(accountName)
+	(* Get {ids, names, parent folder ids} of every folder in accountName, including
+	subfolders; the parent id of a top-level folder is "" *)
+	tell application "Notes"
+		tell account accountName
+			set folderIDs to {}
+			set folderNames to {}
+			set parentIDs to {}
+			repeat with theFolder in every folder
+				set end of folderIDs to id of theFolder
+				set end of folderNames to name of theFolder
+				set theContainer to container of theFolder
+				if class of theContainer is folder then
+					set end of parentIDs to id of theContainer
+				else
+					set end of parentIDs to ""
+				end if
+			end repeat
+			return {folderIDs, folderNames, parentIDs}
+		end tell
+	end tell
+end accountGetFolderTree
+
 on accountShow(accountName)
 	(* Show account in Notes UI *)
 	tell application "Notes"
@@ -216,31 +239,40 @@ on noteDelete(noteID)
 	end tell
 end noteDelete
 
-on noteMove(noteID, folderName, accountName)
-	(* Move note to folder *)
+on noteMoveToFolder(accountName, noteID, folderID)
+	(* Move noteID to the folder with folderID, which may be a subfolder *)
 	tell application "Notes"
 		tell account accountName
-			set theNote to first note whose id is noteID
-			set targetFolder to first folder whose name is folderName
-			move theNote to targetFolder
+			move note id noteID to folder id folderID
 		end tell
 	end tell
-end noteMove
+end noteMoveToFolder
 
 on folderCreate(accountName, folderName)
-	(* Create new folder in account *)
+	(* Create new top-level folder in account; returns id of new folder *)
 	tell application "Notes"
 		tell account accountName
-			make new folder with properties {name:folderName}
+			set newFolder to make new folder with properties {name:folderName}
+			return id of newFolder
 		end tell
 	end tell
 end folderCreate
 
-on folderDelete(accountName, folderName)
-	(* Delete folder from account *)
+on folderCreateIn(accountName, parentID, folderName)
+	(* Create new folder inside the folder with parentID; returns id of new folder *)
 	tell application "Notes"
 		tell account accountName
-			delete folder folderName
+			set newFolder to make new folder at folder id parentID with properties {name:folderName}
+			return id of newFolder
+		end tell
+	end tell
+end folderCreateIn
+
+on folderDelete(accountName, folderID)
+	(* Delete the folder with folderID; Notes leaves its subfolders behind, so delete those first *)
+	tell application "Notes"
+		tell account accountName
+			delete folder id folderID
 		end tell
 	end tell
 end folderDelete

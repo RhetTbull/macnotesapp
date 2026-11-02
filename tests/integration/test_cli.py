@@ -7,6 +7,9 @@ from click.testing import CliRunner
 
 from macnotesapp.cli.cli import cli_main
 
+from .conftest import saved_attachments, wait_until_saved
+from .test_notesapp import ATTACHMENT_PATH
+
 
 @pytest.fixture
 def notes(account, backend):
@@ -84,3 +87,47 @@ def test_mkdir_rmdir(notes, account, run_id):
         notes("rmdir", "-y", "-a", account.name, name)
     assert name not in account.folders
     notes("rmdir", "-y", "-a", account.name, name, exit_code=3)
+
+
+def test_add_append_attach(notes, account, sandbox, note_name, backend):
+    """#13, #39, #51, #64"""
+    a = ["-a", account.name]
+    notes("add", "-m", *a, "-f", sandbox, f"# {note_name}\n\n- item")
+    [record] = find(notes, account, note_name)
+    if backend == "database":
+        wait_until_saved(record["id"])
+        notes("append", *a, note_name, "appended")
+    else:
+        result = notes("append", *a, note_name, "appended", exit_code=1)
+        assert "Can't check" in result.output
+        notes("append", *a, note_name, "appended", "--force")
+    [cat] = json.loads(notes("cat", "--json", "--plaintext", note_name).output)
+    assert cat["body"].rstrip().endswith("item\nappended")
+
+    attached = f"{note_name} att"
+    notes("add", "-p", *a, "-f", sandbox, "-A", str(ATTACHMENT_PATH), attached)
+    [record] = find(notes, account, attached)
+    attachments, references, stored = saved_attachments(record["id"], 1)
+    assert attachments == stored == ["public.plain-text"]
+    assert set(references) == {"public.plain-text"}
+    result = notes("append", *a, attached, "more", exit_code=1)
+    assert "--force" in result.output
+
+
+def test_folder_paths(notes, account, sandbox, note_name, run_id):
+    """#4: subfolders by path"""
+    a = ["-a", account.name]
+    sub = f"{sandbox}/macnotesapp-test-cli-{run_id}"
+    notes("mkdir", *a, "-p", f"{sub}/deeper")
+    notes("mkdir", *a, sub, exit_code=1)
+    notes("add", "-p", *a, "-f", f"{sub}/deeper", note_name)
+    [record] = find(notes, account, note_name)
+    assert record["folder"] == "deeper"
+    notes("move", *a, note_name, "-f", sub)
+    [record] = find(notes, account, note_name)
+    assert record["folder"] == f"macnotesapp-test-cli-{run_id}"
+    notes("move", *a, note_name, "-f", f"{sub}/missing", exit_code=3)
+    notes("rmdir", "-y", *a, sub)
+    assert not [
+        p for p in account.folder_paths if f"macnotesapp-test-cli-{run_id}" in p
+    ]
